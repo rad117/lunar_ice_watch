@@ -3,13 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>Lunar Ice Watch - Upload</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="navbar">
-  <div class="brand">LUNAR ICE WATCH</div>
-  <div>
+  <div class="brand"><span class="dot"></span>LUNAR ICE WATCH</div>
+  <div class="links d-flex align-items-center flex-wrap gap-1">
     <a href="index.html">Dashboard</a>
     <a href="upload.html">Upload</a>
     <a href="map.html">Map</a>
@@ -26,18 +30,27 @@
     <label for="siteName">Site name</label>
     <input type="text" id="siteName" placeholder="e.g. Site B1">
 
-    <label for="fileInput">Data file</label>
-    <input type="file" id="fileInput">
+    <label>Data file</label>
+    <div class="dropzone" id="dropzone">
+      <div class="dz-title">Drag a data file here, or click to browse</div>
+      <div class="dz-sub">Accepts radar / thermal pass exports</div>
+      <div class="dz-file" id="dzFile"></div>
+    </div>
+    <input type="file" id="fileInput" style="display:none">
 
     <button onclick="startUpload()">Run Analysis</button>
 
-    <div class="progress-bg" id="progressWrap" style="display:none">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <ul class="checklist" id="checklist">
+      <li data-stage="read"><span class="step-icon"></span>Reading file</li>
+      <li data-stage="radar"><span class="step-icon"></span>Computing radar metrics</li>
+      <li data-stage="thermal"><span class="step-icon"></span>Checking thermal gate</li>
+      <li data-stage="evidence"><span class="step-icon"></span>Running evidence engine</li>
+    </ul>
     <p id="statusText" class="subtext"></p>
   </div>
 </div>
 
+<script src="js/ui.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/data.js"></script>
 <script src="js/upload.js"></script>

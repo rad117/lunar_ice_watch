@@ -62,6 +62,13 @@ function waypointColor(type) {
 
 let progress = 0;
 let timer = null;
+let speed = 1;
+
+const speedRange = document.getElementById("speedRange");
+speedRange.addEventListener("input", function () {
+  speed = Number(speedRange.value);
+  document.getElementById("speedLabel").textContent = speed.toFixed(1) + "×";
+});
 
 function drawBackground() {
   ctx.strokeStyle = "#1c2230";
@@ -126,15 +133,31 @@ function statusForProgress(p) {
   return "arrived at Ice Target";
 }
 
+function highlightActiveRow() {
+  let activeIndex = -1;
+  for (let i = 0; i < waypoints.length; i++) {
+    if (progress <= waypoints[i].fracTo + 0.0001) {
+      activeIndex = i;
+      break;
+    }
+  }
+  if (progress >= 1) activeIndex = waypoints.length - 1;
+
+  document.querySelectorAll("#waypointTable tr").forEach(function (tr, i) {
+    tr.classList.toggle("wp-active", i === activeIndex && progress > 0);
+  });
+}
+
 function playTraverse() {
   if (timer) return;
   document.getElementById("playBtn").disabled = true;
 
   timer = setInterval(function () {
-    progress += 0.01;
+    progress += 0.01 * speed;
     if (progress >= 1) {
       progress = 1;
       draw();
+      highlightActiveRow();
       document.getElementById("statusText").textContent = statusForProgress(progress);
       clearInterval(timer);
       timer = null;
@@ -142,6 +165,7 @@ function playTraverse() {
       return;
     }
     draw();
+    highlightActiveRow();
     document.getElementById("statusText").textContent = statusForProgress(progress);
   }, 50);
 }
@@ -153,6 +177,7 @@ function resetTraverse() {
   }
   progress = 0;
   draw();
+  highlightActiveRow();
   document.getElementById("statusText").textContent = "rover parked at base station";
   document.getElementById("playBtn").disabled = false;
 }

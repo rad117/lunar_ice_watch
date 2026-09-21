@@ -89,3 +89,24 @@ function classColor(classification) {
   if (classification === "INCONCLUSIVE") return "#fbbf24";
   return "#f87171";
 }
+
+function hazardLevelColor(h) {
+  if (h < 30) return "#4ade80";
+  if (h < 50) return "#fbbf24";
+  return "#f87171";
+}
+
+(function loadExtraSites() {
+  try {
+    const raw = localStorage.getItem("liw_extra_sites");
+    if (!raw) return;
+    const extra = JSON.parse(raw);
+    if (Array.isArray(extra)) {
+      extra.forEach(function (s) {
+        if (s && s.id && !getSiteById(s.id)) siteData.push(s);
+      });
+    }
+  } catch (e) {
+    /* ignore malformed local storage */
+  }
+})();
