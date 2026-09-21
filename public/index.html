@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lunar Ice Watch - Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">LUNAR ICE WATCH</div>
+  <div>
+    <a href="index.html">Dashboard</a>
+    <a href="upload.html">Upload</a>
+    <a href="map.html">Map</a>
+    <a href="traverse.html">Traverse</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Candidate Site Overview</h1>
+  <p class="subtext">South pole permanently shadowed regions currently under screening</p>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Crater / Region</th>
+        <th>Thermal Gate</th>
+        <th>Hazard</th>
+        <th>Classification</th>
+      </tr>
+    </thead>
+    <tbody id="siteTable"></tbody>
+  </table>
+</div>
+
+<script src="js/nav.js"></script>
+<script src="js/data.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

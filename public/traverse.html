@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lunar Ice Watch - Traverse</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">LUNAR ICE WATCH</div>
+  <div>
+    <a href="index.html">Dashboard</a>
+    <a href="upload.html">Upload</a>
+    <a href="map.html">Map</a>
+    <a href="traverse.html">Traverse</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1>Rover Traverse Simulation</h1>
+  <p class="subtext">Simulated path from the base station to the selected candidate site</p>
+
+  <label for="siteSelect">Target site</label>
+  <select id="siteSelect" onchange="changeSite(this.value)"></select>
+
+  <canvas id="traverseCanvas" width="760" height="440"></canvas>
+
+  <div class="control-row">
+    <button id="playBtn" onclick="playTraverse()">Play</button>
+    <button class="secondary" onclick="resetTraverse()">Reset</button>
+    <span class="subtext" id="statusText">rover parked at base station</span>
+  </div>
+
+  <div class="card">
+    <h3>Waypoint Plan</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Type</th>
+          <th>Distance (m)</th>
+          <th>Slope (deg)</th>
+          <th>Hazard</th>
+          <th>Boulders</th>
+        </tr>
+      </thead>
+      <tbody id="waypointTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="js/nav.js"></script>
+<script src="js/data.js"></script>
+<script src="js/traverse.js"></script>
+</body>
+</html>

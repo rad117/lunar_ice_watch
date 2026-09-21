@@ -1,0 +1,11 @@
+{
+  "name": "lunar-ice-watch",
+  "version": "1.0.0",
+  "description": "Lunar south pole ice candidate screening dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

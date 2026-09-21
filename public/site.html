@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lunar Ice Watch - Site Detail</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">LUNAR ICE WATCH</div>
+  <div>
+    <a href="index.html">Dashboard</a>
+    <a href="upload.html">Upload</a>
+    <a href="map.html">Map</a>
+    <a href="traverse.html">Traverse</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <a href="index.html" class="back-link">&larr; back to dashboard</a>
+  <h1 id="siteTitle">Site</h1>
+  <p class="subtext" id="siteSub"></p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Radar Metrics</h3>
+      <div id="metricsBox"></div>
+    </div>
+
+    <div class="card">
+      <h3>Gates &amp; Flags</h3>
+      <p>Thermal Gate: <span class="pill" id="thermalPill"></span></p>
+      <p class="subtext" id="thermalTempText"></p>
+      <p>Alt-Explanation Flag: <span class="pill" id="altPill"></span></p>
+      <p class="subtext" id="altNoteText"></p>
+      <p>Terrain Hazard: <span id="hazardText"></span></p>
+      <p>Boulder Count (optical): <span id="boulderText"></span></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Evidence Engine Result</h3>
+    <p><span class="badge" id="classBadge" style="font-size:14px;padding:6px 14px;"></span></p>
+    <p class="subtext">Strong evidence tier: <span id="tierText"></span></p>
+    <p id="rationaleText"></p>
+    <a class="back-link" id="traverseLink" href="#">view rover traverse &rarr;</a>
+  </div>
+</div>
+
+<script src="js/nav.js"></script>
+<script src="js/data.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

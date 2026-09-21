@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lunar Ice Watch - Map</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">LUNAR ICE WATCH</div>
+  <div>
+    <a href="index.html">Dashboard</a>
+    <a href="upload.html">Upload</a>
+    <a href="map.html">Map</a>
+    <a href="traverse.html">Traverse</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1>South Pole Site Map</h1>
+  <p class="subtext">Click a marker to preview a landing point and rover traverse path</p>
+
+  <canvas id="mapCanvas" width="720" height="480"></canvas>
+
+  <p class="subtext">
+    Hazard shading: <span style="color:#4ade80">low</span> /
+    <span style="color:#fbbf24">medium</span> /
+    <span style="color:#f87171">high</span> terrain hazard around each site.
+    Dashed line shows the planned rover traverse from the base station through
+    Entry Point &rarr; Nav Node(s) &rarr; Ice Target, flagging any Hazard Zone waypoint in red.
+  </p>
+
+  <div class="card" id="infoCard">
+    <p class="subtext">Select a marker on the map to see details here.</p>
+  </div>
+</div>
+
+<script src="js/nav.js"></script>
+<script src="js/data.js"></script>
+<script src="js/map.js"></script>
+</body>
+</html>
