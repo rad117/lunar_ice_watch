@@ -1,7 +1,7 @@
 (function () {
   var section = document.getElementById("moon3dCanvas");
   if (!section) return;
-  var statusEl = section.querySelector(".moon3d-status");
+  var fallback = section.querySelector(".moon3d-fallback");
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function supportsWebGL() {
@@ -13,10 +13,8 @@
     }
   }
 
-  if (!supportsWebGL()) {
-    if (statusEl) statusEl.textContent = "3D preview needs WebGL, which isn't available in this browser.";
-    return;
-  }
+  // No WebGL: leave the static CSS moon (.moon3d-fallback) showing, nothing else to do.
+  if (!supportsWebGL()) return;
 
   // Procedurally drawn crater texture -- no external image/network dependency.
   function generateMoonTexture() {
@@ -57,37 +55,26 @@
     return canvas;
   }
 
-  var started = false;
-  var startObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting && !started) {
-        started = true;
-        init();
-      }
-    });
-  }, { rootMargin: "200px" });
-  startObserver.observe(section);
+  init();
 
   async function init() {
-    if (statusEl) statusEl.textContent = "Loading 3D moon…";
-
     var THREE, OrbitControls;
     try {
       THREE = await import("three");
       OrbitControls = (await import("three/addons/controls/OrbitControls.js")).OrbitControls;
     } catch (e) {
-      if (statusEl) statusEl.textContent = "Couldn't load the 3D viewer.";
-      return;
+      return; // fallback CSS moon stays showing
     }
 
     var width = section.clientWidth;
     var height = section.clientHeight;
+    if (!width || !height) return;
 
     var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
-    if (statusEl) statusEl.remove();
     section.appendChild(renderer.domElement);
+    if (fallback) fallback.style.display = "none";
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);

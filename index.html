@@ -15,8 +15,8 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    "three": "./js/vendor/three/three.module.min.js",
+    "three/addons/": "./js/vendor/three/"
   }
 }
 </script>
@@ -53,11 +53,13 @@
         <span><b>03</b> Traverse planning</span>
       </div>
     </div>
-    <div class="moon-orbit" aria-hidden="true">
-      <div class="moon-large"><span></span></div>
-      <div class="orbit-ring ring-one"></div>
-      <div class="orbit-ring ring-two"></div>
-      <div class="orbit-dot"></div>
+    <div class="moon-orbit">
+      <div class="hero-moon3d" id="moon3dCanvas" role="img" aria-label="Interactive 3D model of the Moon. Drag to rotate.">
+        <div class="moon-large moon3d-fallback" aria-hidden="true"><span></span></div>
+      </div>
+      <div class="orbit-ring ring-one" aria-hidden="true"></div>
+      <div class="orbit-ring ring-two" aria-hidden="true"></div>
+      <div class="orbit-dot" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -71,17 +73,6 @@
       <article class="home-card featured"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div><h3>Why the lunar south pole?</h3><p>Permanently shadowed regions can remain extremely cold because sunlight rarely reaches their floors. That makes them important targets when screening for possible water-ice resources.</p></article>
       <article class="home-card"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 6a6 6 0 0 1 6 6"/><path d="M12 10a2 2 0 0 1 2 2"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div><h3>Multiple evidence signals</h3><p>Compare thermal conditions with radar indicators and terrain context instead of relying on a single measurement.</p></article>
       <article class="home-card"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2l-2 5.6-5.6 2 2-5.6z"/></svg></div><h3>From site to route</h3><p>Once a candidate is selected, the Map and Traverse views provide a visual way to inspect the area and simulate a rover path.</p></article>
-    </div>
-
-    <div class="section-heading compact">
-      <div><p class="eyebrow">INTERACTIVE</p><h2>Explore the Moon</h2></div>
-      <p>A lightweight 3D model of the lunar surface, rendered locally in your browser.</p>
-    </div>
-    <div class="moon3d-card">
-      <div class="moon3d-canvas" id="moon3dCanvas">
-        <p class="moon3d-status">Loading 3D moon&hellip;</p>
-      </div>
-      <p class="moon3d-caption">Drag to rotate.</p>
     </div>
 
     <div class="home-section-card">
