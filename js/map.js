@@ -172,13 +172,37 @@ function showInfo(site) {
     Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2)
   ) * 3);
 
-  document.getElementById("infoCard").innerHTML =
-    "<h3>" + escapeHtml(site.label) + " - " + escapeHtml(site.crater) + "</h3>" +
-    "<p>Classification: <span class=\"badge " + classificationClass(site.classification) + "\">" + site.classification + "</span></p>" +
-    "<p class=\"subtext\">Terrain hazard: " + site.terrainHazard + "% | Boulder count (optical): " + site.boulderCount + "</p>" +
-    "<p class=\"subtext\">Estimated distance from base station: " + dist + " m</p>" +
-    "<a class=\"back-link\" href=\"site.html?id=" + site.id + "\">view full evidence &rarr;</a><br>" +
-    "<a class=\"back-link\" href=\"traverse.html?id=" + site.id + "\">simulate rover traverse &rarr;</a>";
+  const heading = document.createElement("h3");
+  heading.textContent = site.label + " - " + site.crater;
+
+  const classP = document.createElement("p");
+  classP.append("Classification: ");
+  const badge = document.createElement("span");
+  badge.className = "badge " + classificationClass(site.classification);
+  badge.textContent = site.classification;
+  classP.appendChild(badge);
+
+  const hazardP = document.createElement("p");
+  hazardP.className = "subtext";
+  hazardP.textContent = "Terrain hazard: " + site.terrainHazard + "% | Boulder count (optical): " + site.boulderCount;
+
+  const distP = document.createElement("p");
+  distP.className = "subtext";
+  distP.textContent = "Estimated distance from base station: " + dist + " m";
+
+  const evidenceLink = document.createElement("a");
+  evidenceLink.className = "back-link";
+  evidenceLink.href = "site.html?id=" + encodeURIComponent(site.id);
+  evidenceLink.textContent = "view full evidence →";
+
+  const traverseLink = document.createElement("a");
+  traverseLink.className = "back-link";
+  traverseLink.href = "traverse.html?id=" + encodeURIComponent(site.id);
+  traverseLink.textContent = "simulate rover traverse →";
+
+  document.getElementById("infoCard").replaceChildren(
+    heading, classP, hazardP, distP, evidenceLink, document.createElement("br"), traverseLink
+  );
 }
 
 if (reduceMotion) {
