@@ -38,7 +38,7 @@
 
 <main id="main-content">
   <section class="home-hero" aria-labelledby="home-title">
-    <div class="home-stars" aria-hidden="true">✦　·　✧　　·　✦　·　　✧　·</div>
+    <div class="home-hero-fade" aria-hidden="true"></div>
     <div class="home-hero-copy">
       <p class="eyebrow">LUNAR SOUTH POLE · MISSION INTELLIGENCE</p>
       <h1 id="home-title">Find the Moon's<br><span class="accent-line">hidden ice.</span></h1>
@@ -53,13 +53,11 @@
         <span><b>03</b> Traverse planning</span>
       </div>
     </div>
-    <div class="moon-orbit">
-      <div class="hero-moon3d" id="moon3dCanvas" role="img" aria-label="Interactive 3D model of the Moon. Drag to rotate.">
+    <div class="home-hero-moon">
+      <div class="hero-moon3d" id="moon3dCanvas" role="img" aria-label="Interactive 3D model of the Moon. Drag to rotate, click the moon to reveal a debris ring.">
         <div class="moon-large moon3d-fallback" aria-hidden="true"><span></span></div>
       </div>
-      <div class="orbit-ring ring-one" aria-hidden="true"></div>
-      <div class="orbit-ring ring-two" aria-hidden="true"></div>
-      <div class="orbit-dot" aria-hidden="true"></div>
+      <p class="hero-moon3d-hint">Click the Moon</p>
     </div>
   </section>
 
