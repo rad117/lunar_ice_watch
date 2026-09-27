@@ -823,14 +823,9 @@ body::before {
   height: 150px;
   right: 7vw;
   top: 84px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 30%, rgba(255,255,255,.95) 0 2%, transparent 3%),
-    radial-gradient(circle at 68% 58%, rgba(85,96,119,.28) 0 8%, transparent 9%),
-    radial-gradient(circle at 35% 70%, rgba(85,96,119,.22) 0 6%, transparent 7%),
-    linear-gradient(145deg, #f7fbff, #b9c7d9 62%, #8291a7);
-  box-shadow: 0 0 55px rgba(191, 219, 254, .16), 0 0 130px rgba(76, 201, 255, .08);
-  opacity: .88;
+  background: url("../img/moon-4k.png") center / contain no-repeat;
+  filter: drop-shadow(0 0 45px rgba(191, 219, 254, .28)) drop-shadow(0 0 90px rgba(76, 201, 255, .14));
+  opacity: .92;
 }
 
 body::after {
@@ -1044,6 +1039,7 @@ body.compact-mode .page-hero { padding: 22px; }
 body.compact-mode .card { padding: 16px; }
 body.compact-mode .stat-card { padding: 14px 16px; }
 body.no-moon::before, body.no-moon::after { display:none; }
+body.no-moon .starfield { display:none; }
 .map-tooltip { transform: translate(-50%, -120%); }
 
 /* Homepage / landing experience */
