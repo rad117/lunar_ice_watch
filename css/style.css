@@ -819,18 +819,13 @@ body::before {
   content: "";
   position: fixed;
   z-index: -3;
-  width: 150px;
-  height: 150px;
-  right: 7vw;
-  top: 84px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 32% 30%, rgba(255,255,255,.95) 0 2%, transparent 3%),
-    radial-gradient(circle at 68% 58%, rgba(85,96,119,.28) 0 8%, transparent 9%),
-    radial-gradient(circle at 35% 70%, rgba(85,96,119,.22) 0 6%, transparent 7%),
-    linear-gradient(145deg, #f7fbff, #b9c7d9 62%, #8291a7);
-  box-shadow: 0 0 55px rgba(191, 219, 254, .16), 0 0 130px rgba(76, 201, 255, .08);
-  opacity: .88;
+  width: 640px;
+  height: 640px;
+  right: -3vw;
+  top: -20px;
+  background: url("../img/moon-4k.png") center / contain no-repeat;
+  filter: drop-shadow(0 0 130px rgba(191, 219, 254, .3)) drop-shadow(0 0 290px rgba(76, 201, 255, .16));
+  opacity: .92;
 }
 
 body::after {
@@ -1019,7 +1014,7 @@ button.secondary { background: rgba(30,41,59,.76); border-color: rgba(148,163,18
 .footer-note { margin-top: 30px; text-align:center; color:var(--text-dim); font:12px/1.6 var(--font-sans); }
 
 @media (max-width: 800px) {
-  body::before { width: 95px; height: 95px; right: 3vw; top: 105px; opacity:.6; }
+  body::before { width: 170px; height: 170px; right: 3vw; top: 110px; opacity:.55; }
   .navbar { align-items:flex-start; gap:10px; flex-direction:column; }
   .navbar .links { width:100%; overflow-x:auto; flex-wrap:nowrap !important; padding-bottom:2px; }
   .navbar .links a { white-space:nowrap; }
@@ -1044,6 +1039,7 @@ body.compact-mode .page-hero { padding: 22px; }
 body.compact-mode .card { padding: 16px; }
 body.compact-mode .stat-card { padding: 14px 16px; }
 body.no-moon::before, body.no-moon::after { display:none; }
+body.no-moon .starfield { display:none; }
 .map-tooltip { transform: translate(-50%, -120%); }
 
 /* Homepage / landing experience */
