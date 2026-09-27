@@ -87,29 +87,6 @@ button:hover:not(:disabled), .home-cta:hover {
 }
 .home-cta:hover { box-shadow: 0 16px 45px var(--accent-warm-glow) !important; }
 
-/* ---------- layered CSS starfield (populated once by js/starfield.js) ---------- */
-.starfield {
-  position: fixed;
-  inset: 0;
-  z-index: -5;
-  pointer-events: none;
-  overflow: hidden;
-}
-.starfield .star-layer {
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  border-radius: 50%;
-  animation: star-twinkle 5s ease-in-out infinite;
-}
-.starfield .star-layer.layer-1 { animation-duration: 4s; opacity: 0.9; }
-.starfield .star-layer.layer-2 { animation-duration: 6s; animation-delay: -2s; opacity: 0.7; }
-.starfield .star-layer.layer-3 { animation-duration: 8s; animation-delay: -4s; opacity: 0.5; }
-@keyframes star-twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
-}
-
 /* ---------- custom star cursor ---------- */
 html.has-custom-cursor, html.has-custom-cursor * {
   cursor: none !important;
@@ -157,9 +134,6 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
 }
 
 /* ---------- reduced motion + touch safety net ---------- */
-@media (prefers-reduced-motion: reduce) {
-  .starfield .star-layer { animation: none !important; }
-}
 @media (hover: none), (pointer: coarse) {
   html.has-custom-cursor, html.has-custom-cursor * { cursor: auto !important; }
   #cursor-star, .cursor-sparkle { display: none !important; }

@@ -1,50 +1,36 @@
 (function () {
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  function randomShadows(count, size, colorFn) {
-    var parts = [];
-    for (var i = 0; i < count; i++) {
-      var x = Math.round(Math.random() * window.innerWidth);
-      var y = Math.round(Math.random() * window.innerHeight);
-      parts.push(x + "px " + y + "px " + colorFn());
-    }
-    return parts.join(",");
+  var field = document.querySelector(".starfield");
+  if (!field) {
+    field = document.createElement("div");
+    field.className = "starfield";
+    field.setAttribute("aria-hidden", "true");
+    field.innerHTML =
+      '<div class="star-parallax-layer" data-depth="6"><div id="stars"></div></div>' +
+      '<div class="star-parallax-layer" data-depth="12"><div id="stars2"></div></div>' +
+      '<div class="star-parallax-layer" data-depth="20"><div id="stars3"></div></div>';
+    document.body.prepend(field);
   }
 
-  function build() {
-    var field = document.querySelector(".starfield");
-    if (!field) {
-      field = document.createElement("div");
-      field.className = "starfield";
-      field.setAttribute("aria-hidden", "true");
-      field.innerHTML =
-        '<div class="star-layer layer-1"></div>' +
-        '<div class="star-layer layer-2"></div>' +
-        '<div class="star-layer layer-3"></div>';
-      document.body.prepend(field);
-    }
+  var canParallax = window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!canParallax) return;
 
-    var layers = [
-      { el: field.querySelector(".layer-1"), count: 70, size: "1px", color: function () { return "rgba(255,255,255,.9)"; } },
-      { el: field.querySelector(".layer-2"), count: 55, size: "2px", color: function () { return "rgba(196,220,255,.7)"; } },
-      { el: field.querySelector(".layer-3"), count: 35, size: "2px", color: function () { return "rgba(139,220,255,.55)"; } }
-    ];
+  var layers = Array.prototype.slice.call(field.querySelectorAll(".star-parallax-layer"));
+  var tx = 0, ty = 0, cx = 0, cy = 0;
 
+  window.addEventListener("mousemove", function (e) {
+    tx = e.clientX / window.innerWidth - 0.5;
+    ty = e.clientY / window.innerHeight - 0.5;
+  }, { passive: true });
+
+  function raf() {
+    cx += (tx - cx) * 0.06;
+    cy += (ty - cy) * 0.06;
     layers.forEach(function (layer) {
-      if (!layer.el) return;
-      layer.el.style.boxShadow = randomShadows(layer.count, layer.size, layer.color);
-      layer.el.style.width = layer.size;
-      layer.el.style.height = layer.size;
+      var depth = parseFloat(layer.dataset.depth);
+      layer.style.transform = "translate(" + (-cx * depth) + "px," + (-cy * depth) + "px)";
     });
+    requestAnimationFrame(raf);
   }
-
-  build();
-
-  if (!reduceMotion) {
-    var resizeTimer;
-    window.addEventListener("resize", function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(build, 400);
-    });
-  }
+  requestAnimationFrame(raf);
 })();
