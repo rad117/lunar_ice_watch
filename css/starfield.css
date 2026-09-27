@@ -24,11 +24,15 @@
   top: 0;
   left: 0;
   background: transparent;
+  border-radius: 50%;
+}
+#stars, #stars2, #stars3, #stars:after, #stars2:after, #stars3:after {
+  filter: drop-shadow(0 0 2px rgba(180, 220, 255, 0.85));
 }
 
 #stars {
-  width: 1px;
-  height: 1px;
+  width: 2px;
+  height: 2px;
   box-shadow:
     501px 811px #fff, 1450px 1324px #fff, 1093px 1780px #fff, 1469px 678px #fff, 904px 741px #fff,
     1160px 781px #fff, 1841px 1962px #fff, 1630px 1667px #fff, 1788px 676px #fff, 367px 1734px #fff,
@@ -183,8 +187,8 @@
 }
 
 #stars2 {
-  width: 2px;
-  height: 2px;
+  width: 3px;
+  height: 3px;
   box-shadow:
     1925px 1320px #fff, 693px 1778px #fff, 1016px 711px #fff, 1171px 563px #fff, 661px 1919px #fff,
     1610px 44px #fff, 1275px 140px #fff, 1208px 1802px #fff, 1473px 1587px #fff, 11px 1117px #fff,
@@ -239,8 +243,8 @@
 }
 
 #stars3 {
-  width: 3px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
   box-shadow:
     200px 981px #fff, 1731px 521px #fff, 132px 1039px #fff, 1888px 1547px #fff, 899px 1226px #fff,
     1887px 580px #fff, 1548px 1092px #fff, 1626px 689px #fff, 254px 1072px #fff, 1684px 1211px #fff,
