@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lunar Ice Watch - Traverse</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div class="navbar" role="navigation" aria-label="Primary navigation">
+  <div class="brand"><span class="brand-moon" aria-hidden="true">☾</span><span class="dot" aria-hidden="true"></span>LUNAR ICE WATCH</div>
+  <div class="links d-flex align-items-center flex-wrap gap-1">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="upload.html">Upload</a>
+    <a href="map.html">Map</a>
+    <a href="traverse.html">Traverse</a>
+    <a href="index.html#about">About</a>
+    <button class="theme-toggle" type="button" onclick="toggleMoonMode()" aria-label="Toggle moonlight interface mode" title="Toggle moonlight mode">☾ Moonlight</button>
+    <a href="#" onclick="logout(); return false;">Logout</a>
+  </div>
+</div>
+
+<main class="container" id="main-content">
+  <section class="page-hero">
+    <p class="eyebrow">Surface Operations</p>
+    <h1>Rover Traverse Simulation</h1>
+    <p class="subtext">Simulate a route from the base station to a selected candidate site and inspect every waypoint.</p>
+  </section>
+
+  <label for="siteSelect">Target site</label>
+  <select id="siteSelect" onchange="changeSite(this.value)"></select>
+
+  <canvas id="traverseCanvas" width="760" height="440"></canvas>
+
+  <div class="control-row d-flex align-items-center flex-wrap gap-3 mb-3">
+    <button id="playBtn" onclick="playTraverse()">Play</button>
+    <button class="secondary" onclick="resetTraverse()">Reset</button>
+    <div class="speed-control d-flex align-items-center gap-2">
+      <span>Speed</span>
+      <input type="range" id="speedRange" min="0.5" max="3" step="0.5" value="1">
+      <span id="speedLabel">1.0&times;</span>
+    </div>
+    <span class="subtext" id="statusText">rover parked at base station</span>
+  </div>
+
+  <div class="card">
+    <h3>Waypoint Plan</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Type</th>
+          <th>Distance (m)</th>
+          <th>Slope (deg)</th>
+          <th>Hazard</th>
+          <th>Boulders</th>
+        </tr>
+      </thead>
+      <tbody id="waypointTable"></tbody>
+    </table>
+  </div>
+</main>
+
+<script src="js/ui.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/data.js"></script>
+<script src="js/traverse.js"></script>
+</body>
+</html>
