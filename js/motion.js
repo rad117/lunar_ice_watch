@@ -63,19 +63,37 @@
       });
     });
 
+    gsap.set(".journey-progress", { opacity: 0, y: 10 });
+
     var journeyTl = gsap.timeline({
-      scrollTrigger: { trigger: ".journey-section", start: "top top", end: "+=100%", scrub: true, pin: true }
+      scrollTrigger: { trigger: ".journey-section", start: "top top", end: "+=280%", scrub: 0.6, pin: true, anticipatePin: 1 }
     });
     journeyTl
-      .to(".journey-moon", { scale: 1.55, boxShadow: "0 0 220px rgba(139,220,255,.3)", duration: 1 })
-      .to(".journey-copy", { opacity: 1, duration: 0.6 }, "-=0.35");
+      // anticipation: a slow, quiet drift toward the moon
+      .to(".journey-moon", { scale: 1.5, duration: 1.2, ease: "none" })
+      .to(".journey-progress", { opacity: 0.6, y: 0, duration: 0.4 }, 0.1)
+      .to(".journey-glow", { opacity: 0.25, scale: 1.3, duration: 1.2, ease: "none" }, "<")
+      // rapid approach: the moon fills the frame
+      .to(".journey-moon", { scale: 4.2, duration: 2.1, ease: "power1.in" })
+      .to(".journey-glow", { opacity: 0.6, scale: 2, duration: 2.1, ease: "power1.in" }, "<")
+      .to(".journey-progress", { opacity: 0, duration: 0.3 }, "<")
+      // fly-through climax: consumed by light
+      .to(".journey-moon", { scale: 9, opacity: 0.1, filter: "blur(6px)", duration: 1.3, ease: "power2.in" })
+      .to(".journey-glow", { opacity: 1, scale: 3.4, duration: 1.1, ease: "power2.in" }, "<")
+      .to(".journey-flash", { opacity: 0.85, duration: 0.65, ease: "power2.in" }, "-=0.5")
+      // emerge: flash fades, briefing card settles in
+      .to(".journey-flash", { opacity: 0, duration: 0.9, ease: "power1.out" })
+      .to(".journey-glow", { opacity: 0.22, scale: 2.2, duration: 0.9, ease: "power1.out" }, "<")
+      .to(".journey-copy", { opacity: 1, y: "-50%", duration: 0.9, ease: "power2.out" }, "-=0.7");
 
     return function () {};
   });
 
   mm.add("(max-width: 800px)", function () {
+    gsap.set(".journey-moon", { scale: 1.15 });
+    gsap.set(".journey-glow", { opacity: 0.35, scale: 1.6 });
     gsap.to(".journey-copy", {
-      opacity: 1, duration: 0.6,
+      opacity: 1, y: "-50%", duration: 0.6,
       scrollTrigger: { trigger: ".journey-section", start: "top 70%" }
     });
     return function () {};
