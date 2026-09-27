@@ -63,12 +63,12 @@ function renderTable() {
 
   let html = "";
   rows.forEach(function (s) {
-    html += '<tr class="site-row" tabindex="0" role="link" aria-label="Open ' + s.label + '" data-site-id="' + s.id + '">' +
-      '<td>' + s.label + '</td>' +
-      '<td>' + s.crater + '</td>' +
+    html += '<tr class="site-row" tabindex="0" role="link" aria-label="Open ' + escapeHtml(s.label) + '" data-site-id="' + s.id + '">' +
+      '<td>' + escapeHtml(s.label) + '</td>' +
+      '<td>' + escapeHtml(s.crater) + '</td>' +
       '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + s.thermalGate.toUpperCase() + '</span></td>' +
       '<td>' + s.terrainHazard + '%</td>' +
-      '<td><span class="badge" style="background:' + classColor(s.classification) + '">' + s.classification + '</span></td>' +
+      '<td><span class="badge ' + classificationClass(s.classification) + '">' + s.classification + '</span></td>' +
       '</tr>';
   });
   document.getElementById("siteTable").innerHTML = html ||

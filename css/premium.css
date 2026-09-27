@@ -1,0 +1,192 @@
+/* ===== Lunar Ice Watch — premium redesign layer =====
+   Icons, glass polish, status pills, hover states, starfield, and the
+   custom cursor. Loaded after tokens.css + style.css so it can refine,
+   not replace, the existing system. */
+
+/* ---------- display type on headings ---------- */
+h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .login-box h1, .home-bottom-cta h2 {
+  font-family: var(--font-display);
+}
+.home-hero h1 { letter-spacing: -0.03em; }
+.page-hero h1 { letter-spacing: -0.02em; }
+
+/* ---------- inline SVG icons ---------- */
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+.navbar .brand .brand-moon svg { width: 18px; height: 18px; color: var(--accent); }
+.home-icon svg, .info-card .icon svg { width: 26px; height: 26px; color: var(--accent); }
+.theme-toggle svg { width: 13px; height: 13px; margin-right: 2px; }
+
+/* ---------- status pills (classification) ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent !important;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+}
+.badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+.badge.badge--high { color: var(--ok); background: rgba(103, 232, 165, 0.12) !important; border-color: rgba(103, 232, 165, 0.32); }
+.badge.badge--moderate { color: var(--info); background: rgba(96, 165, 250, 0.12) !important; border-color: rgba(96, 165, 250, 0.32); }
+.badge.badge--inconclusive { color: var(--warn); background: rgba(251, 191, 36, 0.12) !important; border-color: rgba(251, 191, 36, 0.32); }
+.badge.badge--unlikely { color: var(--bad); background: rgba(251, 113, 133, 0.12) !important; border-color: rgba(251, 113, 133, 0.32); }
+
+/* ---------- glass polish ---------- */
+.card, .stat-card, .home-card, .home-section-card, .page-hero, .login-box, .toast, .workflow-step {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+}
+
+/* ---------- nav / button hover polish ---------- */
+.navbar a { overflow: hidden; }
+.navbar a::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 2px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.navbar a:hover::before { transform: scaleX(1); }
+.navbar a.active::before { display: none; }
+
+button, .home-cta, .home-secondary, .text-link {
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), background var(--dur-base) ease, color var(--dur-fast) ease;
+}
+button:hover:not(:disabled), .home-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* warm accent reserved for marketing CTAs, not functional/data buttons */
+.home-cta, .home-bottom-cta .home-cta {
+  background: linear-gradient(135deg, var(--accent-warm-bright), var(--accent-warm)) !important;
+  box-shadow: var(--shadow-glow-warm) !important;
+  color: #201202 !important;
+}
+.home-cta:hover { box-shadow: 0 16px 45px var(--accent-warm-glow) !important; }
+
+/* ---------- custom star cursor ---------- */
+html.has-custom-cursor, html.has-custom-cursor * {
+  cursor: none !important;
+}
+html.has-custom-cursor input, html.has-custom-cursor textarea {
+  cursor: text !important;
+}
+#cursor-star {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  pointer-events: none;
+  z-index: 9999;
+  /* no transition here: transform is updated every frame by JS for
+     position tracking, and a transition on it would fight/lag that. */
+}
+#cursor-star .cursor-star-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-base) ease, filter var(--dur-base) ease;
+}
+#cursor-star.cursor-active .cursor-star-inner {
+  transform: scale(1.5) rotate(20deg);
+  color: var(--accent-warm);
+  filter: drop-shadow(0 0 12px var(--accent-warm-glow));
+}
+.cursor-sparkle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 1;
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+/* ---------- reduced motion + touch safety net ---------- */
+@media (hover: none), (pointer: coarse) {
+  html.has-custom-cursor, html.has-custom-cursor * { cursor: auto !important; }
+  #cursor-star, .cursor-sparkle { display: none !important; }
+}
+
+/* ---------- interactive 3D moon (Three.js), black-card hero layout ---------- */
+.home-hero-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, #05070c 0%, rgba(5, 7, 12, 0.88) 45%, transparent 68%);
+  pointer-events: none;
+}
+.home-hero-moon {
+  position: relative;
+  flex: 1 1 55%;
+  min-width: 0;
+  overflow: hidden;
+}
+.hero-moon3d {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+.hero-moon3d:active { cursor: grabbing; }
+.hero-moon3d canvas { display: block; width: 100% !important; height: 100% !important; }
+.hero-moon3d .moon3d-fallback {
+  position: absolute;
+  inset: 0;
+  width: 60%;
+  height: 60%;
+  left: 20%;
+  top: 20%;
+}
+.hero-moon3d-hint {
+  position: absolute;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  z-index: 2;
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(5, 8, 16, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(6px);
+  color: var(--text-dim);
+  font: 11px var(--font-sans);
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
+@media (max-width: 650px) {
+  .home-hero-fade { background: linear-gradient(180deg, transparent 0%, #05070c 92%); }
+  .home-hero-moon { flex-basis: 320px; min-height: 320px; }
+}

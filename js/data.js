@@ -83,11 +83,26 @@ function getSiteById(id) {
   return siteData.find(function (s) { return s.id === id; });
 }
 
+// Site labels can come from the free-text "Site name" field on the Upload
+// page (stored in localStorage), so escape before interpolating into HTML.
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
 function classColor(classification) {
   if (classification === "ICE-SUPPORTED-HIGH") return "#4ade80";
   if (classification === "ICE-SUPPORTED-MODERATE") return "#60a5fa";
   if (classification === "INCONCLUSIVE") return "#fbbf24";
   return "#f87171";
+}
+
+function classificationClass(classification) {
+  if (classification === "ICE-SUPPORTED-HIGH") return "badge--high";
+  if (classification === "ICE-SUPPORTED-MODERATE") return "badge--moderate";
+  if (classification === "INCONCLUSIVE") return "badge--inconclusive";
+  return "badge--unlikely";
 }
 
 function hazardLevelColor(h) {

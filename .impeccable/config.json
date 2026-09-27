@@ -1,0 +1,32 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-27T12:45:38.850Z",
+        "reason": "User's own design brief explicitly requested Inter as the body font (paired with Space Grotesk for headings) — a deliberate, user-specified choice, not an accidental default."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "css/style.css"
+        ],
+        "createdAt": "2026-09-27T12:46:08.747Z",
+        "reason": "Pre-existing .rationale/.toast left-accent borders, unchanged from before this redesign session (present in prior commit 544b250) — legitimate callout/severity-indicator convention, not part of the requested redesign scope."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "css/style.css"
+        ],
+        "createdAt": "2026-09-27T12:46:08.827Z",
+        "reason": "Pre-existing .metric-bar-fill width transition, unchanged from before this redesign session (present in prior commit 544b250) — a single one-time load-time gauge fill, not a scroll/interaction-driven animation; converting to transform would require touching working JS outside the requested redesign scope."
+      }
+    ]
+  }
+}
