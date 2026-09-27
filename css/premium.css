@@ -138,3 +138,44 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   html.has-custom-cursor, html.has-custom-cursor * { cursor: auto !important; }
   #cursor-star, .cursor-sparkle { display: none !important; }
 }
+
+/* ---------- interactive 3D moon (Three.js, lazy-loaded) ---------- */
+.moon3d-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  padding: clamp(20px, 3vw, 32px);
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.9), rgba(6, 10, 20, 0.85));
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  box-shadow: var(--shadow-lg);
+}
+.moon3d-canvas {
+  position: relative;
+  width: 100%;
+  height: clamp(300px, 40vw, 440px);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, rgba(76, 201, 255, 0.08), transparent 65%), #05080f;
+  cursor: grab;
+}
+.moon3d-canvas:active { cursor: grabbing; }
+.moon3d-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+.moon3d-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--text-dim);
+  font: 13px var(--font-sans);
+  pointer-events: none;
+  text-align: center;
+  padding: 0 20px;
+}
+.moon3d-caption {
+  margin: 12px 0 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
