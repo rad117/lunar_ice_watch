@@ -1,0 +1,274 @@
+/* ===== Lunar Ice Watch — premium redesign layer =====
+   Icons, glass polish, status pills, hover states, starfield, scroll-reveal
+   utilities, custom cursor, and the homepage scroll-journey. Loaded after
+   tokens.css + style.css so it can refine, not replace, the existing system. */
+
+/* ---------- display type on headings ---------- */
+h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .login-box h1, .home-bottom-cta h2 {
+  font-family: var(--font-display);
+}
+.home-hero h1 { letter-spacing: -0.03em; }
+.page-hero h1 { letter-spacing: -0.02em; }
+
+/* ---------- inline SVG icons ---------- */
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+.navbar .brand .brand-moon svg { width: 18px; height: 18px; color: var(--accent); }
+.home-icon svg, .info-card .icon svg { width: 26px; height: 26px; color: var(--accent); }
+.theme-toggle svg { width: 13px; height: 13px; margin-right: 2px; }
+
+/* ---------- status pills (classification) ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent !important;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+}
+.badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+.badge.badge--high { color: var(--ok); background: rgba(103, 232, 165, 0.12) !important; border-color: rgba(103, 232, 165, 0.32); }
+.badge.badge--moderate { color: var(--info); background: rgba(96, 165, 250, 0.12) !important; border-color: rgba(96, 165, 250, 0.32); }
+.badge.badge--inconclusive { color: var(--warn); background: rgba(251, 191, 36, 0.12) !important; border-color: rgba(251, 191, 36, 0.32); }
+.badge.badge--unlikely { color: var(--bad); background: rgba(251, 113, 133, 0.12) !important; border-color: rgba(251, 113, 133, 0.32); }
+
+/* ---------- glass polish ---------- */
+.card, .stat-card, .home-card, .home-section-card, .page-hero, .login-box, .toast, .workflow-step {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+}
+
+/* ---------- nav / button hover polish ---------- */
+.navbar a { overflow: hidden; }
+.navbar a::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 2px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.navbar a:hover::before { transform: scaleX(1); }
+.navbar a.active::before { display: none; }
+
+button, .home-cta, .home-secondary, .text-link {
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), background var(--dur-base) ease, color var(--dur-fast) ease;
+}
+button:hover:not(:disabled), .home-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* warm accent reserved for marketing CTAs, not functional/data buttons */
+.home-cta, .home-bottom-cta .home-cta {
+  background: linear-gradient(135deg, var(--accent-warm-bright), var(--accent-warm)) !important;
+  box-shadow: var(--shadow-glow-warm) !important;
+  color: #201202 !important;
+}
+.home-cta:hover { box-shadow: 0 16px 45px var(--accent-warm-glow) !important; }
+
+/* ---------- layered CSS starfield (populated once by js/starfield.js) ---------- */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  pointer-events: none;
+  overflow: hidden;
+}
+.starfield .star-layer {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border-radius: 50%;
+  animation: star-twinkle 5s ease-in-out infinite;
+}
+.starfield .star-layer.layer-1 { animation-duration: 4s; opacity: 0.9; }
+.starfield .star-layer.layer-2 { animation-duration: 6s; animation-delay: -2s; opacity: 0.7; }
+.starfield .star-layer.layer-3 { animation-duration: 8s; animation-delay: -4s; opacity: 0.5; }
+@keyframes star-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ---------- scroll-reveal utilities (driven by js/motion.js) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: transform, opacity;
+}
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+.reveal-line > span {
+  display: inline-block;
+  transform: translateY(110%);
+  will-change: transform;
+}
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  will-change: transform, opacity;
+}
+
+/* progress line connecting the 4 workflow steps */
+.workflow { position: relative; }
+.workflow-progress {
+  position: absolute;
+  top: 30px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: rgba(148, 163, 184, 0.16);
+  z-index: 0;
+}
+.workflow-progress .fill {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.workflow-step { position: relative; z-index: 1; }
+
+/* satellite traveling the homepage scroll path */
+.scroll-satellite {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
+  color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+/* pinned "journey" section */
+.journey-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, rgba(76, 201, 255, 0.06), transparent 60%), #030509;
+}
+.journey-stage {
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+  padding: 0 20px;
+}
+.journey-moon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(40vw, 380px);
+  height: min(40vw, 380px);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 34% 30%, #f8fcff 0%, #d9e5ee 34%, #93a5b7 70%, #596979 100%);
+  box-shadow: 0 0 120px rgba(139, 220, 255, 0.14);
+}
+.journey-copy {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 40px);
+  border-radius: var(--radius-xl);
+  background: rgba(5, 8, 16, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+.journey-copy .eyebrow { color: var(--accent); font: 700 11px/1 var(--font-mono); letter-spacing: 2px; text-transform: uppercase; }
+.journey-copy h2 { margin: 10px 0 14px; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.journey-copy p { max-width: 560px; margin: 0 auto; color: var(--text-mid); font: 15px/1.75 var(--font-sans); }
+
+/* final CTA reveal burst */
+.home-bottom-cta { position: relative; overflow: hidden; }
+.cta-burst {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(255, 180, 84, 0.22), transparent 55%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- custom star cursor ---------- */
+html.has-custom-cursor, html.has-custom-cursor * {
+  cursor: none !important;
+}
+html.has-custom-cursor input, html.has-custom-cursor textarea {
+  cursor: text !important;
+}
+#cursor-star {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  pointer-events: none;
+  z-index: 9999;
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-base) ease;
+}
+#cursor-star.cursor-active {
+  transform: scale(1.5) rotate(20deg);
+  color: var(--accent-warm);
+  filter: drop-shadow(0 0 12px var(--accent-warm-glow));
+}
+.cursor-sparkle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ---------- reduced motion + touch safety net ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-stagger > *, .journey-copy { opacity: 1 !important; transform: none !important; }
+  .reveal-line > span { transform: none !important; }
+  .starfield .star-layer { animation: none !important; }
+  .scroll-satellite { display: none !important; }
+}
+@media (hover: none), (pointer: coarse) {
+  html.has-custom-cursor, html.has-custom-cursor * { cursor: auto !important; }
+  #cursor-star, .cursor-sparkle { display: none !important; }
+}
+
+@media (max-width: 800px) {
+  .journey-moon { width: 60vw; height: 60vw; }
+}

@@ -61,7 +61,7 @@ requestAnimationFrame(function () {
 
 const badge = document.getElementById("classBadge");
 badge.textContent = site.classification;
-badge.style.background = classColor(site.classification);
+badge.className = "badge " + classificationClass(site.classification);
 
 document.getElementById("tierText").textContent = site.tier;
 document.getElementById("rationaleText").textContent = site.rationale;

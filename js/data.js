@@ -90,6 +90,13 @@ function classColor(classification) {
   return "#f87171";
 }
 
+function classificationClass(classification) {
+  if (classification === "ICE-SUPPORTED-HIGH") return "badge--high";
+  if (classification === "ICE-SUPPORTED-MODERATE") return "badge--moderate";
+  if (classification === "INCONCLUSIVE") return "badge--inconclusive";
+  return "badge--unlikely";
+}
+
 function hazardLevelColor(h) {
   if (h < 30) return "#4ade80";
   if (h < 50) return "#fbbf24";

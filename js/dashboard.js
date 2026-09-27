@@ -68,7 +68,7 @@ function renderTable() {
       '<td>' + s.crater + '</td>' +
       '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + s.thermalGate.toUpperCase() + '</span></td>' +
       '<td>' + s.terrainHazard + '%</td>' +
-      '<td><span class="badge" style="background:' + classColor(s.classification) + '">' + s.classification + '</span></td>' +
+      '<td><span class="badge ' + classificationClass(s.classification) + '">' + s.classification + '</span></td>' +
       '</tr>';
   });
   document.getElementById("siteTable").innerHTML = html ||

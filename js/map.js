@@ -174,7 +174,7 @@ function showInfo(site) {
 
   document.getElementById("infoCard").innerHTML =
     "<h3>" + site.label + " - " + site.crater + "</h3>" +
-    "<p>Classification: <span class=\"badge\" style=\"background:" + classColor(site.classification) + "\">" + site.classification + "</span></p>" +
+    "<p>Classification: <span class=\"badge " + classificationClass(site.classification) + "\">" + site.classification + "</span></p>" +
     "<p class=\"subtext\">Terrain hazard: " + site.terrainHazard + "% | Boulder count (optical): " + site.boulderCount + "</p>" +
     "<p class=\"subtext\">Estimated distance from base station: " + dist + " m</p>" +
     "<a class=\"back-link\" href=\"site.html?id=" + site.id + "\">view full evidence &rarr;</a><br>" +
