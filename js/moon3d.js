@@ -56,7 +56,12 @@
     // ---- realistic moon (real NASA-sourced texture, three.js's own bundled example asset) ----
     var RADIUS = 2.0;
     var loader = new THREE.TextureLoader();
-    var moonTex = loader.load("js/vendor/three/moon_1024.jpg");
+    var moonTex = loader.load("js/vendor/three/moon_1024.jpg", undefined, undefined, function () {
+      // texture failed to load: fall back to the static CSS moon instead of
+      // showing an untextured sphere.
+      renderer.domElement.remove();
+      if (fallback) fallback.style.display = "";
+    });
     if ("colorSpace" in moonTex) moonTex.colorSpace = THREE.SRGBColorSpace;
 
     var moon = new THREE.Mesh(

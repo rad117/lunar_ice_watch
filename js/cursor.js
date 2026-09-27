@@ -56,12 +56,12 @@
   }
 
   document.addEventListener("mouseover", function (e) {
-    if (e.target.closest("a, button, .chip, .site-row, input, select, [role='link']")) {
+    if (e.target.closest("a, button, .chip, .site-row, input, select, [role='link'], .hero-moon3d")) {
       star.classList.add("cursor-active");
     }
   });
   document.addEventListener("mouseout", function (e) {
-    if (e.target.closest("a, button, .chip, .site-row, input, select, [role='link']")) {
+    if (e.target.closest("a, button, .chip, .site-row, input, select, [role='link'], .hero-moon3d")) {
       star.classList.remove("cursor-active");
     }
   });
