@@ -7,6 +7,7 @@
 
   var star = document.createElement("div");
   star.id = "cursor-star";
+  star.setAttribute("aria-hidden", "true");
   star.innerHTML =
     '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.6 8.2L23 11l-8.4 2.8L12 22l-2.6-8.2L1 11l8.4-2.8z"/></svg>';
   document.body.appendChild(star);
@@ -29,6 +30,7 @@
   function spawnSparkle(x, y) {
     var s = document.createElement("div");
     s.className = "cursor-sparkle";
+    s.setAttribute("aria-hidden", "true");
     s.style.transform = "translate(" + x + "px," + y + "px)";
     document.body.appendChild(s);
     var life = 500;

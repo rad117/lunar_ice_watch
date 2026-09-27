@@ -11,6 +11,20 @@
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
+    ScrollTrigger.addEventListener("refresh", function () { lenis.resize(); });
+
+    document.querySelectorAll('a[href*="#"]').forEach(function (a) {
+      var hash = a.hash;
+      if (!hash || hash === "#" || a.pathname !== location.pathname) return;
+      a.addEventListener("click", function (e) {
+        var target = document.querySelector(hash);
+        if (!target) return;
+        e.preventDefault();
+        ScrollTrigger.refresh();
+        lenis.scrollTo(target, { offset: -70 });
+        history.pushState(null, "", hash);
+      });
+    });
   }
 
   /* ---- shared, light reveals (every page) ---- */
