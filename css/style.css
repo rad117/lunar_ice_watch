@@ -821,7 +821,7 @@ body::before {
   z-index: -3;
   width: 640px;
   height: 640px;
-  right: 9vw;
+  right: -3vw;
   top: -20px;
   background: url("../img/moon-4k.png") center / contain no-repeat;
   filter: drop-shadow(0 0 130px rgba(191, 219, 254, .3)) drop-shadow(0 0 290px rgba(76, 201, 255, .16));
