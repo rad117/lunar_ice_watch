@@ -37,6 +37,7 @@
     <p class="subtext">Explore candidate locations, compare terrain hazard and select a landing point for the simulated traverse.</p>
   </section>
 
+  <!-- The map itself: js/map.js draws the sites/markers/hazard shading/route onto this <canvas> and handles clicks -->
   <div class="canvas-wrap">
     <canvas id="mapCanvas" width="720" height="480"></canvas>
     <div class="map-tooltip" id="mapTooltip"></div>
@@ -50,6 +51,7 @@
     Entry Point &rarr; Nav Node(s) &rarr; Ice Target, flagging any Hazard Zone waypoint in red.
   </p>
 
+  <!-- Detail panel below the map; js/map.js fills this in with the clicked site's info -->
   <div class="card" id="infoCard">
     <p class="subtext">Select a marker on the map to see details here.</p>
   </div>

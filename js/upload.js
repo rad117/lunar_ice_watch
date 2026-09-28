@@ -1,3 +1,7 @@
+// Powers upload.html: the drag-and-drop zone, the fake "run analysis" pipeline, and generating
+// a brand-new (randomized) site record that gets classified and added to siteData.
+
+// ---- Drag-and-drop file picker (#dropzone) ----
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const dzFile = document.getElementById("dzFile");
@@ -32,6 +36,7 @@ dropzone.addEventListener("drop", function (e) {
   }
 });
 
+// ---- Fake "evidence engine": same pass/fail rules used to classify uploaded sites as on the demo dataset ----
 function classifyNewSite(m) {
   if (m.thermalGate === "fail") {
     return { classification: "ICE-UNLIKELY", tier: "NONE", rationale: "Region is not cold enough to sustain surface ice. Thermal gate failure overrides any radar signal." };
@@ -48,6 +53,7 @@ function classifyNewSite(m) {
   return { classification: "INCONCLUSIVE", tier: "NONE", rationale: "Radar signal is weak. Thermal gate passed but evidence is not strong enough for a confident call." };
 }
 
+// Invents random radar/thermal readings for the "uploaded" file and builds a full site record from them
 function synthesizeSite(name) {
   const cpr = +(0.6 + Math.random() * 1.0).toFixed(2);
   const terrainHazard = Math.round(15 + Math.random() * 55);
@@ -83,6 +89,7 @@ function synthesizeSite(name) {
   };
 }
 
+// Saves the new site to localStorage so it's still there next time any page loads js/data.js
 function persistSite(site) {
   let extra = [];
   try {
@@ -94,6 +101,7 @@ function persistSite(site) {
   localStorage.setItem("liw_extra_sites", JSON.stringify(extra));
 }
 
+// ---- Simulated processing checklist (#checklist) — purely visual, no real analysis happens ----
 function setStage(stageName, state) {
   const li = document.querySelector('#checklist li[data-stage="' + stageName + '"]');
   li.classList.remove("active", "done");
@@ -106,6 +114,8 @@ function wait(ms) {
   });
 }
 
+// Runs when the "Run Analysis" button is clicked: steps through the checklist with a short delay
+// per stage (so it *looks* like real processing), then generates and saves the new site
 async function startUpload() {
   const status = document.getElementById("statusText");
   const nameInput = document.getElementById("siteName");

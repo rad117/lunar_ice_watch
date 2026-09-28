@@ -1,3 +1,8 @@
+// Powers the interactive 3D moon in the homepage hero (index.html, <div id="moon3dCanvas">).
+// Built with the three.js library: renders a textured sphere the user can drag to rotate,
+// and clicking it plays a one-time animation that reveals a particle ring + asteroid belt around it.
+// If the browser has no WebGL or three.js fails to load, the plain CSS ".moon3d-fallback" circle
+// (already in index.html) is left showing instead — see supportsWebGL() below.
 (function () {
   var host = document.getElementById("moon3dCanvas");
   if (!host) return;
@@ -27,6 +32,7 @@
       return; // fallback CSS moon stays showing
     }
 
+    // ---- Basic three.js setup: renderer + scene + camera + lights, sized to fill the hero's moon area ----
     var width = host.clientWidth;
     var height = host.clientHeight;
     if (!width || !height) return;
@@ -119,6 +125,7 @@
       time: { value: 0 }
     };
 
+    // Custom shader tweaks so particles spiral in from a swirl and dodge nearby asteroids (see uAsteroids below)
     var ringMaterial = new THREE.PointsMaterial({
       size: 0.008,
       vertexColors: true,
@@ -218,6 +225,7 @@
     var ringState = "hidden";
     var raycaster = new THREE.Raycaster();
     var pointer = new THREE.Vector2();
+    // Detects a click landing on the moon itself (via raycasting) and starts the reveal animation
     renderer.domElement.addEventListener("click", function (e) {
       var rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -227,6 +235,7 @@
       if (hit.length && ringState === "hidden") ringState = "animating";
     });
 
+    // Lets the user drag to orbit the camera around the moon (that's the "drag to rotate" interaction)
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
@@ -250,6 +259,8 @@
     var invMat = new THREE.Matrix4();
     var astVec = new THREE.Vector3();
 
+    // The per-frame render loop: spins the moon/ring, advances the click-reveal animation
+    // progress, moves the asteroids along their orbits, then draws the frame
     (function animate() {
       requestAnimationFrame(animate);
       if (!visible) return;

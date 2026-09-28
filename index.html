@@ -23,6 +23,8 @@
 </head>
 <body class="home-page">
 <a class="skip-link" href="#main-content">Skip to content</a>
+
+<!-- TOP NAVBAR: the black bar with the logo + Home/Dashboard/Upload/Map/Traverse/Login links, present on every page -->
 <div class="navbar" role="navigation" aria-label="Primary navigation">
   <div class="brand"><span class="brand-moon" aria-hidden="true">☾</span><span class="dot" aria-hidden="true"></span>LUNAR ICE WATCH</div>
   <div class="links d-flex align-items-center flex-wrap gap-1">
@@ -31,12 +33,14 @@
     <a href="upload.html">Upload</a>
     <a href="map.html">Map</a>
     <a href="traverse.html">Traverse</a>
+    <!-- Moonlight/day theme switch button; toggleMoonMode() lives in js/ui.js -->
     <button class="theme-toggle" type="button" onclick="toggleMoonMode()" aria-label="Toggle moonlight interface mode">☾ Moonlight</button>
     <a href="login.html">Login</a>
   </div>
 </div>
 
 <main id="main-content">
+  <!-- HERO SECTION: the big "Find the Moon's hidden ice" banner at the top of the homepage, with the spinning 3D moon on the right -->
   <section class="home-hero" aria-labelledby="home-title">
     <div class="home-hero-fade" aria-hidden="true"></div>
     <div class="home-hero-copy">
@@ -54,6 +58,7 @@
       </div>
     </div>
     <div class="home-hero-moon">
+      <!-- 3D moon canvas: js/moon3d.js (Three.js) renders and animates this; draggable/clickable -->
       <div class="hero-moon3d" id="moon3dCanvas" role="img" aria-label="Interactive 3D model of the Moon. Drag to rotate, click the moon to reveal a debris ring.">
         <div class="moon-large moon3d-fallback" aria-hidden="true"><span></span></div>
       </div>
@@ -61,18 +66,21 @@
     </div>
   </section>
 
+  <!-- "MISSION BRIEFING" SECTION: explains what the site is, the 3 info cards, the workflow steps, and the site-label legend -->
   <section class="home-container" id="about">
     <div class="section-heading">
       <div><p class="eyebrow">MISSION BRIEFING</p><h2>What is Lunar Ice Watch?</h2></div>
       <p>A browser-based prototype for exploring lunar south-pole candidate sites and the evidence behind them.</p>
     </div>
 
+    <!-- 3 feature cards: why south pole / multiple evidence signals / site-to-route -->
     <div class="home-grid three">
       <article class="home-card featured"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div><h3>Why the lunar south pole?</h3><p>Permanently shadowed regions can remain extremely cold because sunlight rarely reaches their floors. That makes them important targets when screening for possible water-ice resources.</p></article>
       <article class="home-card"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 6a6 6 0 0 1 6 6"/><path d="M12 10a2 2 0 0 1 2 2"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div><h3>Multiple evidence signals</h3><p>Compare thermal conditions with radar indicators and terrain context instead of relying on a single measurement.</p></article>
       <article class="home-card"><div class="home-icon"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9.2l-2 5.6-5.6 2 2-5.6z"/></svg></div><h3>From site to route</h3><p>Once a candidate is selected, the Map and Traverse views provide a visual way to inspect the area and simulate a rover path.</p></article>
     </div>
 
+    <!-- WORKFLOW STEPS: the 01-04 Upload/Screen/Review/Traverse strip -->
     <div class="home-section-card">
       <div class="section-heading compact"><div><p class="eyebrow">WORKFLOW</p><h2>From observation to traverse</h2></div></div>
       <div class="workflow home-workflow">
@@ -83,11 +91,13 @@
       </div>
     </div>
 
+    <!-- Legend explaining the color-coded site labels used on the Dashboard/Map/Site pages, plus an accessibility blurb -->
     <div class="home-grid two">
       <article class="home-card"><p class="eyebrow">SITE LABELS</p><h3>Understand the screening output</h3><div class="legend-row"><div class="legend"><span class="legend-dot" style="background:#4ade80"></span>ICE-SUPPORTED-HIGH</div><div class="legend"><span class="legend-dot" style="background:#60a5fa"></span>ICE-SUPPORTED-MODERATE</div><div class="legend"><span class="legend-dot" style="background:#fbbf24"></span>INCONCLUSIVE</div><div class="legend"><span class="legend-dot" style="background:#f87171"></span>ICE-UNLIKELY</div></div><p class="small-note">These labels describe the demo screening logic in this prototype; they are not scientific confirmation of lunar ice.</p></article>
       <article class="home-card"><p class="eyebrow">DESIGNED FOR EVERYONE</p><h3>Easy to explore on any screen</h3><p>Responsive layouts, keyboard-friendly controls, visible focus states and reduced-motion support make the interface easier to use across desktops, tablets and phones.</p><a class="text-link" href="dashboard.html">Start exploring →</a></article>
     </div>
 
+    <!-- Bottom call-to-action banner pushing the user to the Dashboard -->
     <div class="home-bottom-cta">
       <div><p class="eyebrow">READY FOR MISSION CONTROL?</p><h2>Explore the candidate sites.</h2></div>
       <a class="home-cta" href="dashboard.html">Launch Dashboard <span aria-hidden="true">→</span></a>
@@ -95,6 +105,12 @@
     <p class="footer-note">Prototype note: site data and upload analysis are simulated locally in the browser using JavaScript and local storage.</p>
   </section>
 </main>
+<!-- Scripts loaded at the end so the HTML above renders first:
+     ui.js       -> theme toggle button + small shared UI helpers
+     nav.js      -> highlights/handles the top navbar
+     starfield.js -> the animated background stars
+     cursor.js   -> the custom glowing cursor effect
+     moon3d.js   -> the interactive 3D moon in the hero section (ES module, uses three.js) -->
 <script src="js/ui.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/starfield.js"></script>

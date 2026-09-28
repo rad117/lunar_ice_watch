@@ -16,6 +16,7 @@
 <body>
 
 <a class="skip-link" href="#main-content">Skip to content</a>
+<!-- Same top navbar as index.html, but "Logout" replaces "Login" since this is a logged-in page -->
 <div class="navbar" role="navigation" aria-label="Primary navigation">
   <div class="brand"><span class="brand-moon" aria-hidden="true">☾</span><span class="dot" aria-hidden="true"></span>LUNAR ICE WATCH</div>
   <div class="links d-flex align-items-center flex-wrap gap-1">
@@ -30,16 +31,20 @@
 </div>
 
 <main class="container" id="main-content">
+  <!-- Page title banner: "Candidate Site Overview" -->
   <section class="page-hero" aria-labelledby="dashboard-title">
     <p class="eyebrow">Lunar South Pole · Mission Control</p>
     <h1 id="dashboard-title">Candidate Site Overview</h1>
     <p class="subtext">Screen permanently shadowed regions using thermal, radar and terrain evidence in one calm workspace.</p>
   </section>
 
+  <!-- Summary number tiles (e.g. total sites, how many ice-supported); filled in by js/dashboard.js -->
   <div class="stats-row d-flex flex-wrap gap-3 mb-4" id="statsRow"></div>
 
+  <!-- Filter chips (All / ICE-SUPPORTED-HIGH / etc.); clicking one filters the table below -->
   <div class="chip-row d-flex flex-wrap gap-2 mb-3" id="chipRow" role="toolbar" aria-label="Filter candidate sites"></div>
 
+  <!-- Main results table: headers here are static, rows (#siteTable) are built dynamically by js/dashboard.js from js/data.js -->
   <div class="table-wrap"><table aria-label="Candidate site screening results">
     <thead>
       <tr id="tableHead">
@@ -54,6 +59,7 @@
   </table></div>
 </main>
 
+<!-- data.js supplies the site records; dashboard.js reads them and builds statsRow/chipRow/siteTable above -->
 <script src="js/ui.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/data.js"></script>

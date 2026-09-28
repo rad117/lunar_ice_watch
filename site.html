@@ -30,6 +30,8 @@
   </div>
 </div>
 
+<!-- SITE DETAIL PAGE: reached by clicking a row in the Dashboard table or a marker on the Map.
+     js/site.js reads which site was picked (from the URL) and fills in every #id below from js/data.js. -->
 <main class="container" id="main-content">
   <a href="dashboard.html" class="back-link">&larr; back to dashboard</a>
   <section class="page-hero">
@@ -39,11 +41,13 @@
   </section>
 
   <div class="row g-3">
+    <!-- Left card: raw radar numbers for this site -->
     <div class="card col-md-6">
       <h3>Radar Metrics</h3>
       <div id="metricsBox"></div>
     </div>
 
+    <!-- Right card: pass/fail gates, flags and the hazard gauge -->
     <div class="card col-md-6">
       <h3>Gates &amp; Flags</h3>
       <p>Thermal Gate: <span class="pill" id="thermalPill"></span></p>
@@ -55,6 +59,7 @@
     </div>
   </div>
 
+  <!-- Bottom card: the final classification (e.g. ICE-SUPPORTED-HIGH) and the plain-English reasoning behind it -->
   <div class="card">
     <h3>Evidence Engine Result</h3>
     <p><span class="badge" id="classBadge" style="font-size:14px;padding:6px 14px;"></span></p>

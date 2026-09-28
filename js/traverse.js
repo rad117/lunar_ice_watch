@@ -1,6 +1,11 @@
+// Powers traverse.html: builds a straight-line route from the base station to the chosen site,
+// splits it into 5 waypoints, draws it on the canvas, and animates the rover moving along it.
+
+// Read which site to simulate from the URL (set by the dropdown below, or a "simulate traverse" link elsewhere)
 const params = new URLSearchParams(window.location.search);
 const currentSite = getSiteById(params.get("id")) || siteData[0];
 
+// ---- "Target site" dropdown (#siteSelect) ----
 const select = document.getElementById("siteSelect");
 siteData.forEach(function (s) {
   const opt = document.createElement("option");
@@ -10,13 +15,14 @@ siteData.forEach(function (s) {
   select.appendChild(opt);
 });
 
+// Reloads the page targeting the newly picked site (simplest way to rebuild the whole route)
 function changeSite(id) {
   window.location.href = "traverse.html?id=" + id;
 }
 
 const canvas = document.getElementById("traverseCanvas");
 const ctx = canvas.getContext("2d");
-const baseX = canvas.width / 2;
+const baseX = canvas.width / 2; // base station is always drawn at canvas center
 const baseY = canvas.height / 2;
 
 function toPixel(site) {
@@ -32,6 +38,7 @@ function hazardBucket(h) {
   return "High";
 }
 
+// ---- "Waypoint Plan" table (#waypointTable): 5 evenly-spaced points along the straight-line route ----
 const stepFractions = [0.2, 0.4, 0.6, 0.8, 1.0];
 const targetPixel = toPixel(currentSite);
 const totalDist = Math.round(Math.sqrt(
@@ -60,6 +67,7 @@ function waypointColor(type) {
   return "#7dd3fc";
 }
 
+// progress: 0 (at base) to 1 (arrived at target); timer drives the Play animation
 let progress = 0;
 let timer = null;
 let speed = 1;
@@ -79,6 +87,7 @@ function drawBackground() {
   }
 }
 
+// Redraws the canvas: base station, dashed route line, every waypoint dot, and the rover's current position
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBackground();
@@ -123,6 +132,7 @@ function draw() {
   ctx.stroke();
 }
 
+// Text shown in #statusText (e.g. "en route to Nav Node", "arrived at Ice Target")
 function statusForProgress(p) {
   if (p <= 0) return "rover parked at base station";
   for (let i = 0; i < waypoints.length; i++) {
@@ -133,6 +143,7 @@ function statusForProgress(p) {
   return "arrived at Ice Target";
 }
 
+// Adds the "wp-active" highlight to the current waypoint's row in the table below the canvas
 function highlightActiveRow() {
   let activeIndex = -1;
   for (let i = 0; i < waypoints.length; i++) {
@@ -148,6 +159,7 @@ function highlightActiveRow() {
   });
 }
 
+// Wired to the "Play" button: advances progress on a timer until the rover reaches the target
 function playTraverse() {
   if (timer) return;
   document.getElementById("playBtn").disabled = true;
@@ -170,6 +182,7 @@ function playTraverse() {
   }, 50);
 }
 
+// Wired to the "Reset" button: stops any running animation and puts the rover back at the base station
 function resetTraverse() {
   if (timer) {
     clearInterval(timer);
@@ -182,6 +195,7 @@ function resetTraverse() {
   document.getElementById("playBtn").disabled = false;
 }
 
+// Initial fill of the waypoint table and first draw of the map when the page loads
 let rows = "";
 waypoints.forEach(function (w, i) {
   rows += "<tr><td>" + (i + 1) + "</td><td>" + w.type + "</td><td>" + w.distance +
