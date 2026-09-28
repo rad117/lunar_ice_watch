@@ -37,11 +37,14 @@
     <p class="subtext">Simulate a route from the base station to a selected candidate site and inspect every waypoint.</p>
   </section>
 
+  <!-- Dropdown to pick which candidate site's traverse to simulate -->
   <label for="siteSelect">Target site</label>
   <select id="siteSelect" onchange="changeSite(this.value)"></select>
 
+  <!-- js/traverse.js draws the route and animates the rover icon moving along it -->
   <canvas id="traverseCanvas" width="760" height="440"></canvas>
 
+  <!-- Playback controls for the animation: Play/Reset buttons + speed slider -->
   <div class="control-row d-flex align-items-center flex-wrap gap-3 mb-3">
     <button id="playBtn" onclick="playTraverse()">Play</button>
     <button class="secondary" onclick="resetTraverse()">Reset</button>
@@ -53,6 +56,7 @@
     <span class="subtext" id="statusText">rover parked at base station</span>
   </div>
 
+  <!-- Table listing every waypoint on the route (distance, slope, hazard, boulders) -->
   <div class="card">
     <h3>Waypoint Plan</h3>
     <table>

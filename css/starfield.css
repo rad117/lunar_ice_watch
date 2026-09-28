@@ -30,6 +30,7 @@
   filter: drop-shadow(0 0 2px rgba(180, 220, 255, 0.85));
 }
 
+/* Layer 1: smallest/dimmest, drifts slowest (50s) -> looks farthest away */
 #stars {
   width: 2px;
   height: 2px;
@@ -186,6 +187,7 @@
   box-shadow: inherit;
 }
 
+/* Layer 2: mid-size stars, medium speed (100s) -> midground depth */
 #stars2 {
   width: 3px;
   height: 3px;
@@ -242,6 +244,7 @@
   box-shadow: inherit;
 }
 
+/* Layer 3: biggest/brightest stars, drifts fastest (150s) -> looks closest, most parallax movement */
 #stars3 {
   width: 4px;
   height: 4px;

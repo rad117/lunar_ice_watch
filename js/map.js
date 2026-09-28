@@ -1,6 +1,9 @@
+// Powers map.html: draws the whole orbital map (base station, radar sweep, hazard shading,
+// site markers, selection line) onto the <canvas id="mapCanvas">, and handles hover/click.
+
 const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
-const landerX = canvas.width / 2;
+const landerX = canvas.width / 2; // base station is always drawn at the canvas center
 const landerY = canvas.height / 2;
 const tooltip = document.getElementById("mapTooltip");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -10,6 +13,7 @@ let hovered = null;
 let sweepAngle = 0;
 let pulsePhase = 0;
 
+// Converts a site's 0-100 x/y percentage (in js/data.js) into actual canvas pixel coordinates
 function toPixel(site) {
   return {
     px: (site.x / 100) * canvas.width,
@@ -17,12 +21,14 @@ function toPixel(site) {
   };
 }
 
+// Green/yellow/red translucent glow drawn under each site marker, sized by that site's hazard score
 function hazardFillColor(h) {
   if (h < 30) return "rgba(74, 222, 128, 0.18)";
   if (h < 50) return "rgba(251, 191, 36, 0.18)";
   return "rgba(248, 113, 113, 0.22)";
 }
 
+// Draws the rotating radar "sweep" wedge that fans out from the base station (purely decorative)
 function drawSweep(angle) {
   const maxR = 300;
   const width = Math.PI / 5;
@@ -40,6 +46,8 @@ function drawSweep(angle) {
   ctx.restore();
 }
 
+// The main render function: clears and redraws the entire map every frame (rings, sweep, hazard
+// glow, base station, every site marker + label, and the dashed line to the selected site)
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -106,6 +114,7 @@ function draw() {
   }
 }
 
+// Given a mouse position (canvas pixels), finds the nearest site marker within click/hover range
 function findSiteNear(mx, my) {
   let closest = null;
   let closestDist = 18;
@@ -121,6 +130,7 @@ function findSiteNear(mx, my) {
   return closest;
 }
 
+// Clicking a marker selects it (draws the dashed line + pulsing box) and fills in the #infoCard below the map
 canvas.addEventListener("click", function (e) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -136,6 +146,7 @@ canvas.addEventListener("click", function (e) {
   }
 });
 
+// Hovering a marker shows the floating #mapTooltip with the site's name/crater/hazard/classification
 canvas.addEventListener("mousemove", function (e) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -167,6 +178,8 @@ canvas.addEventListener("mouseleave", function () {
   if (reduceMotion) draw();
 });
 
+// Builds the detail panel below the map (#infoCard) for the clicked site, with links to
+// the full Site Detail page and to the Traverse simulation for that site
 function showInfo(site) {
   const dist = Math.round(Math.sqrt(
     Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2)
@@ -205,6 +218,7 @@ function showInfo(site) {
   );
 }
 
+// Kick off the animation loop (radar sweep rotation + selection pulse), unless the user prefers reduced motion
 if (reduceMotion) {
   draw();
 } else {
