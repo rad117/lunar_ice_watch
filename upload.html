@@ -41,6 +41,7 @@
     <label for="siteName">Site name</label>
     <input type="text" id="siteName" placeholder="e.g. Site B1">
 
+    <!-- Drag-and-drop area; clicking/dropping fills the hidden #fileInput. Handled in js/upload.js -->
     <label>Data file</label>
     <div class="dropzone" id="dropzone">
       <div class="dz-title">Drag a data file here, or click to browse</div>
@@ -51,6 +52,7 @@
 
     <button onclick="startUpload()">Run Analysis</button>
 
+    <!-- Fake "processing" checklist: js/upload.js checks these off one by one to simulate analysis running -->
     <ul class="checklist" id="checklist">
       <li data-stage="read"><span class="step-icon"></span>Reading file</li>
       <li data-stage="radar"><span class="step-icon"></span>Computing radar metrics</li>

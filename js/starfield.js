@@ -1,3 +1,5 @@
+// Injects the animated background stars (css/starfield.css draws the actual dots) behind everything on every page,
+// and makes the 3 depth layers drift slightly with the mouse for a parallax effect.
 (function () {
   var field = document.querySelector(".starfield");
   if (!field) {

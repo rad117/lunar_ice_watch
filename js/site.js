@@ -1,9 +1,14 @@
+// Powers site.html (the "Candidate Evidence" detail page). Reads ?id=... from the URL
+// (set by dashboard.js/map.js when a site is clicked) and fills in every panel on the page.
+
+// Page title + subtitle at the top
 const params = new URLSearchParams(window.location.search);
 const site = getSiteById(params.get("id")) || siteData[0];
 
 document.getElementById("siteTitle").textContent = site.label;
 document.getElementById("siteSub").textContent = site.crater;
 
+// ---- "Radar Metrics" card: builds one animated bar per metric (#metricsBox) ----
 const metrics = [
   { name: "Pv", val: site.pv },
   { name: "CPR", val: site.cpr },
@@ -30,6 +35,7 @@ requestAnimationFrame(function () {
   });
 });
 
+// ---- "Gates & Flags" card: thermal gate pill + alt-explanation flag pill + boulder count ----
 const thermalPill = document.getElementById("thermalPill");
 thermalPill.textContent = site.thermalGate.toUpperCase();
 thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : "fail");
@@ -42,6 +48,7 @@ document.getElementById("altNoteText").textContent = site.altNote;
 
 document.getElementById("boulderText").textContent = site.boulderCount;
 
+// The circular hazard gauge (an SVG ring whose stroke-dasharray is animated to "fill up" to the hazard %)
 const gaugeColor = hazardLevelColor(site.terrainHazard);
 const gaugeRadius = 30;
 const gaugeCircumference = 2 * Math.PI * gaugeRadius;
@@ -59,6 +66,7 @@ requestAnimationFrame(function () {
   });
 });
 
+// ---- "Evidence Engine Result" card: final classification badge, tier, rationale text, and the link to the Traverse page ----
 const badge = document.getElementById("classBadge");
 badge.textContent = site.classification;
 badge.className = "badge " + classificationClass(site.classification);

@@ -1,3 +1,5 @@
+// Custom glowing star cursor + trailing sparkles, visible on every page (replaces the normal mouse pointer).
+// Skips itself on touch devices and when the user has reduced-motion enabled.
 (function () {
   var canUse = window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches;

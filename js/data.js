@@ -1,3 +1,6 @@
+// Shared "database" for the whole prototype (fake data, not a real backend).
+// Loaded on Dashboard, Map, Traverse and Site Detail pages — they all read from this same array.
+// x/y are 0-100 percentage coordinates plotted onto the map canvas in js/map.js.
 const siteData = [
   {
     id: "s1",
@@ -79,6 +82,7 @@ const siteData = [
   }
 ];
 
+// Looks up one site's record; used by site.html, map.html and traverse.html to show details for the picked site
 function getSiteById(id) {
   return siteData.find(function (s) { return s.id === id; });
 }
@@ -91,6 +95,8 @@ function escapeHtml(str) {
   });
 }
 
+// These three helpers turn a classification string (e.g. "ICE-SUPPORTED-HIGH") into
+// the matching hex color / CSS badge class used on the Dashboard table and Site Detail badge
 function classColor(classification) {
   if (classification === "ICE-SUPPORTED-HIGH") return "#4ade80";
   if (classification === "ICE-SUPPORTED-MODERATE") return "#60a5fa";
@@ -105,12 +111,15 @@ function classificationClass(classification) {
   return "badge--unlikely";
 }
 
+// Colors the hazard gauge/legend green/yellow/red by terrain hazard score
 function hazardLevelColor(h) {
   if (h < 30) return "#4ade80";
   if (h < 50) return "#fbbf24";
   return "#f87171";
 }
 
+// On page load, merges in any sites the user "uploaded" via upload.html (js/upload.js saves them
+// to localStorage under "liw_extra_sites"), so new uploads show up in the Dashboard/Map/Traverse
 (function loadExtraSites() {
   try {
     const raw = localStorage.getItem("liw_extra_sites");
