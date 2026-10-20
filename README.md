@@ -1,17 +1,28 @@
 # Lunar Ice Watch
 
-A browser-based prototype for screening candidate lunar south-pole sites for
-water ice, using simulated thermal, radar and terrain "evidence". Everything
-runs client-side (no backend/server) — data lives in JS files and the
-browser's `localStorage`.
+A prototype for screening candidate lunar south-pole sites for water ice from
+radar, thermal and terrain evidence. A small Node/Express server stores the sites in
+MongoDB and classifies uploaded observations; the pages are plain HTML/JS.
 
 ## Running it
 
-No build step. Open `index.html` in a browser, or serve the folder locally:
+```
+npm install
+npm start          # http://localhost:3000
+npm test           # checks the classification rules
+```
 
-```
-npx serve .
-```
+With no setup, `npm start` runs an embedded MongoDB and keeps its data in
+`server/.data` (the first run downloads the MongoDB binary). To use your own
+database (e.g. Atlas), set `MONGODB_URI` first. The six demo sites are seeded
+from `server/seed.json` when the database is empty.
+
+## Uploading data
+
+`upload.html` takes a CSV (template download on the page). Required columns:
+`cpr`, `thermalTemp`, `terrainHazard`; optional: `label, crater, x, y, pv, serd,
+tRatio, altFlag, boulderCount`. Each row becomes a site, classified by
+`server/classify.js`.
 
 ## Pages -> what they do
 
