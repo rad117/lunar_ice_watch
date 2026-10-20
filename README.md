@@ -17,6 +17,14 @@ With no setup, `npm start` runs an embedded MongoDB and keeps its data in
 database (e.g. Atlas), set `MONGODB_URI` first. The six demo sites are seeded
 from `server/seed.json` when the database is empty.
 
+## What is real and what is simulated
+
+The six demo sites correspond to real south-pole craters. Their coordinates, diameters and
+(where found) Diviner annual maximum temperatures are in the `published` field of
+`server/seed.json`, each with a citation. Radar (CPR, Pv, SERD, T-ratio), terrain hazard and
+boulder counts are **simulated**: no per-site values for them have been published. Delete
+`server/.data` to re-seed after changing `seed.json`.
+
 ## Uploading data
 
 `upload.html` takes a CSV (template download on the page). Required columns:

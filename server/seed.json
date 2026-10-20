@@ -17,7 +17,13 @@
     "boulderCount": 4,
     "classification": "ICE-SUPPORTED-HIGH",
     "tier": "STRONG_SUPPORT",
-    "rationale": "High CPR combined with a passed thermal gate and low terrain hazard. No competing explanation found for the radar anomaly."
+    "rationale": "High CPR combined with a passed thermal gate and low terrain hazard. No competing explanation found for the radar anomaly.",
+    "published": {
+      "lat": -84.5,
+      "lon": -46.5,
+      "tmaxK": "109.8",
+      "source": "LRO-LAMP cold trap study, Magana et al. 2023 (J. Geophys. Res. Planets), region of interest annual maximum"
+    }
   },
   {
     "id": "s2",
@@ -37,7 +43,14 @@
     "boulderCount": 11,
     "classification": "INCONCLUSIVE",
     "tier": "NONE",
-    "rationale": "Passed the thermal gate but the alternative-explanation flag is raised. Radar signal alone is not enough to confirm ice."
+    "rationale": "Passed the thermal gate but the alternative-explanation flag is raised. Radar signal alone is not enough to confirm ice.",
+    "published": {
+      "lat": -87.3,
+      "lon": 77.0,
+      "diameterKm": 42.48,
+      "tmaxK": "85-95",
+      "source": "Hayne et al. 2015 (Icarus), Diviner annual maximum FWHM; coordinates per Wikipedia"
+    }
   },
   {
     "id": "s3",
@@ -57,7 +70,14 @@
     "boulderCount": 7,
     "classification": "ICE-UNLIKELY",
     "tier": "NONE",
-    "rationale": "Region is not cold enough to sustain surface ice. Thermal gate failure overrides any radar signal."
+    "rationale": "Region is not cold enough to sustain surface ice. Thermal gate failure overrides any radar signal.",
+    "published": {
+      "lat": -88.1,
+      "lon": 44.9,
+      "diameterKm": 50.9,
+      "tmaxK": "70-95",
+      "source": "Hayne et al. 2015 (Icarus), Diviner annual maximum FWHM; coordinates per Wikipedia"
+    }
   },
   {
     "id": "s4",
@@ -77,7 +97,14 @@
     "boulderCount": 9,
     "classification": "ICE-SUPPORTED-MODERATE",
     "tier": "STRONG_SUPPORT",
-    "rationale": "Moderate radar and thermal evidence align. Terrain hazard is on the higher side so confidence is not maximal."
+    "rationale": "Moderate radar and thermal evidence align. Terrain hazard is on the higher side so confidence is not maximal.",
+    "published": {
+      "lat": -86.9,
+      "lon": -4.0,
+      "diameterKm": 51.4,
+      "tmaxK": "60-80",
+      "source": "Hayne et al. 2015 (Icarus), Diviner annual maximum FWHM; coordinates per Wikipedia"
+    }
   },
   {
     "id": "s5",
@@ -117,6 +144,12 @@
     "boulderCount": 3,
     "classification": "ICE-SUPPORTED-HIGH",
     "tier": "PROOF",
-    "rationale": "Strongest candidate in the set. Passed thermal gate, low hazard, high CPR, and no alternative explanation."
+    "rationale": "Strongest candidate in the set. Passed thermal gate, low hazard, high CPR, and no alternative explanation.",
+    "published": {
+      "lat": -88.5,
+      "lon": -152.0,
+      "diameterKm": 35,
+      "source": "Coordinates per Wikipedia; no published temperature found"
+    }
   }
 ]

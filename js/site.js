@@ -39,7 +39,12 @@ requestAnimationFrame(function () {
 const thermalPill = document.getElementById("thermalPill");
 thermalPill.textContent = site.thermalGate.toUpperCase();
 thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : "fail");
-document.getElementById("thermalTempText").textContent = "measured temp: " + site.thermalTemp + " K";
+document.getElementById("thermalTempText").textContent = "measured temp: " + site.thermalTemp + " K (simulated)";
+if (site.published) {
+  const pub = site.published;
+  document.getElementById("thermalTempText").textContent += " | published: " + pub.lat + ", " + pub.lon + " deg" +
+    (pub.tmaxK ? ", annual max " + pub.tmaxK + " K" : "") + " (" + pub.source + ")";
+}
 
 const altPill = document.getElementById("altPill");
 altPill.textContent = site.altFlag ? "FLAGGED" : "CLEAR";

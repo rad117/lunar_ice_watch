@@ -13,7 +13,8 @@ const Site = mongoose.model("Site", new mongoose.Schema({
   thermalGate: String, thermalTemp: Number,
   altFlag: Boolean, altNote: String,
   terrainHazard: Number, boulderCount: Number,
-  classification: String, tier: String, rationale: String
+  classification: String, tier: String, rationale: String,
+  published: mongoose.Schema.Types.Mixed // sourced real-world facts (lat/lon, Tmax, citation); other metrics are simulated
 }, { versionKey: false, timestamps: { createdAt: "createdAt", updatedAt: false } }));
 
 async function connect() {
