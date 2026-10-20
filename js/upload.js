@@ -1,5 +1,5 @@
-// Powers upload.html: the drag-and-drop zone, the fake "run analysis" pipeline, and generating
-// a brand-new (randomized) site record that gets classified and added to siteData.
+// Powers upload.html: the drag-and-drop zone, the "run analysis" pipeline, and generating
+// rows parsed from an uploaded CSV, which the server (server/classify.js) classifies and stores in MongoDB.
 
 // ---- Drag-and-drop file picker (#dropzone) ----
 const dropzone = document.getElementById("dropzone");
@@ -36,72 +36,36 @@ dropzone.addEventListener("drop", function (e) {
   }
 });
 
-// ---- Fake "evidence engine": same pass/fail rules used to classify uploaded sites as on the demo dataset ----
-function classifyNewSite(m) {
-  if (m.thermalGate === "fail") {
-    return { classification: "ICE-UNLIKELY", tier: "NONE", rationale: "Region is not cold enough to sustain surface ice. Thermal gate failure overrides any radar signal." };
-  }
-  if (m.altFlag) {
-    return { classification: "INCONCLUSIVE", tier: "NONE", rationale: "Passed the thermal gate but the alternative-explanation flag is raised. Radar signal alone is not enough to confirm ice." };
-  }
-  if (m.cpr >= 1.2 && m.terrainHazard < 30) {
-    return { classification: "ICE-SUPPORTED-HIGH", tier: "STRONG_SUPPORT", rationale: "High CPR combined with a passed thermal gate and low terrain hazard. No competing explanation found for the radar anomaly." };
-  }
-  if (m.cpr >= 0.9) {
-    return { classification: "ICE-SUPPORTED-MODERATE", tier: "STRONG_SUPPORT", rationale: "Moderate radar and thermal evidence align. Terrain hazard is on the higher side so confidence is not maximal." };
-  }
-  return { classification: "INCONCLUSIVE", tier: "NONE", rationale: "Radar signal is weak. Thermal gate passed but evidence is not strong enough for a confident call." };
+// Columns the CSV must have; the rest are optional and get defaults on the server
+const REQUIRED_COLS = ["cpr", "thermalTemp", "terrainHazard"];
+const TEMPLATE_CSV =
+  "label,crater,x,y,pv,cpr,serd,tRatio,thermalTemp,altFlag,terrainHazard,boulderCount\n" +
+  "Site B1,Near Shackleton rim,40,50,0.6,1.3,0.2,0.5,-235,false,22,4\n";
+
+// Minimal CSV parse (no quoted commas): header row -> array of {column: value} objects
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
+  const head = lines.shift().split(",").map(function (h) { return h.trim(); });
+  REQUIRED_COLS.forEach(function (c) {
+    if (head.indexOf(c) < 0) throw new Error("CSV is missing required column: " + c);
+  });
+  return lines.map(function (l) {
+    const cells = l.split(",");
+    const row = {};
+    head.forEach(function (h, i) { row[h] = (cells[i] || "").trim(); });
+    return row;
+  });
 }
 
-// Invents random radar/thermal readings for the "uploaded" file and builds a full site record from them
-function synthesizeSite(name) {
-  const cpr = +(0.6 + Math.random() * 1.0).toFixed(2);
-  const terrainHazard = Math.round(15 + Math.random() * 55);
-  const thermalTemp = Math.round(-260 + Math.random() * 130);
-  const metrics = {
-    cpr: cpr,
-    terrainHazard: terrainHazard,
-    thermalGate: thermalTemp < -190 ? "pass" : "fail",
-    altFlag: Math.random() < 0.25
-  };
-  const result = classifyNewSite(metrics);
-  const id = "u" + Date.now();
-
-  return {
-    id: id,
-    label: name,
-    crater: "Newly surveyed region",
-    x: Math.round(10 + Math.random() * 80),
-    y: Math.round(10 + Math.random() * 80),
-    pv: +(0.2 + Math.random() * 0.6).toFixed(2),
-    cpr: cpr,
-    serd: +(0.15 + Math.random() * 0.45).toFixed(2),
-    tRatio: +(0.2 + Math.random() * 0.5).toFixed(2),
-    thermalGate: metrics.thermalGate,
-    thermalTemp: thermalTemp,
-    altFlag: metrics.altFlag,
-    altNote: metrics.altFlag ? "Adjacent terrain feature may explain part of the signal" : "No competing terrain explanation identified",
-    terrainHazard: terrainHazard,
-    boulderCount: Math.round(terrainHazard / 5),
-    classification: result.classification,
-    tier: result.tier,
-    rationale: result.rationale
-  };
+// "Download template" link on upload.html
+function downloadTemplate() {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([TEMPLATE_CSV], { type: "text/csv" }));
+  a.download = "lunar_ice_watch_template.csv";
+  a.click();
 }
 
-// Saves the new site to localStorage so it's still there next time any page loads js/data.js
-function persistSite(site) {
-  let extra = [];
-  try {
-    extra = JSON.parse(localStorage.getItem("liw_extra_sites") || "[]");
-  } catch (e) {
-    extra = [];
-  }
-  extra.push(site);
-  localStorage.setItem("liw_extra_sites", JSON.stringify(extra));
-}
-
-// ---- Simulated processing checklist (#checklist) — purely visual, no real analysis happens ----
+// ---- Processing checklist (#checklist): steps through the stages while the upload is sent ----
 function setStage(stageName, state) {
   const li = document.querySelector('#checklist li[data-stage="' + stageName + '"]');
   li.classList.remove("active", "done");
@@ -114,30 +78,47 @@ function wait(ms) {
   });
 }
 
-// Runs when the "Run Analysis" button is clicked: steps through the checklist with a short delay
-// per stage (so it *looks* like real processing), then generates and saves the new site
+// Runs when "Run Analysis" is clicked: parses the CSV, steps through the checklist, then POSTs the
+// rows to /api/sites where the server classifies and saves them
 async function startUpload() {
   const status = document.getElementById("statusText");
   const nameInput = document.getElementById("siteName");
   const name = nameInput.value.trim() || "Site " + Math.floor(Math.random() * 900 + 100);
+  const file = fileInput.files[0];
+  if (!file) { showToast("Choose a CSV file first", "error"); return; }
 
   document.querySelectorAll("#checklist li").forEach(function (li) {
     li.classList.remove("active", "done");
   });
 
   const stages = ["read", "radar", "thermal", "evidence"];
-  for (let i = 0; i < stages.length; i++) {
-    setStage(stages[i], "active");
-    status.textContent = document.querySelector('#checklist li[data-stage="' + stages[i] + '"]').textContent + "...";
-    await wait(500);
-    setStage(stages[i], "done");
+  let sites;
+  try {
+    for (let i = 0; i < stages.length; i++) {
+      setStage(stages[i], "active");
+      status.textContent = document.querySelector('#checklist li[data-stage="' + stages[i] + '"]').textContent + "...";
+      if (i === 0) var rows = parseCsv(await file.text());
+      if (i === 3) {
+        const res = await fetch("/api/sites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name, rows: rows })
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || "Upload failed");
+        sites = body;
+      }
+      await wait(300);
+      setStage(stages[i], "done");
+    }
+  } catch (e) {
+    status.textContent = e.message;
+    showToast(e.message, "error");
+    return;
   }
+  sites.forEach(function (site) { siteData.push(site); });
 
-  const site = synthesizeSite(name);
-  siteData.push(site);
-  persistSite(site);
-
-  status.textContent = "analysis complete - " + site.label + " added to dashboard as " + site.classification;
-  showToast(site.label + " added to the dashboard (" + site.classification + ")", "success");
+  status.textContent = "analysis complete - " + sites.length + " site(s) added to dashboard";
+  showToast(sites.length + " site(s) added to the dashboard", "success");
   nameInput.value = "";
 }

@@ -45,10 +45,10 @@
     <label>Data file</label>
     <div class="dropzone" id="dropzone">
       <div class="dz-title">Drag a data file here, or click to browse</div>
-      <div class="dz-sub">Accepts radar / thermal pass exports</div>
+      <div class="dz-sub">CSV only. <a href="#" onclick="event.stopPropagation(); downloadTemplate(); return false;">Download template</a></div>
       <div class="dz-file" id="dzFile"></div>
     </div>
-    <input type="file" id="fileInput" style="display:none">
+    <input type="file" id="fileInput" accept=".csv" style="display:none">
 
     <button onclick="startUpload()">Run Analysis</button>
 

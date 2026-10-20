@@ -1,0 +1,15 @@
+{
+  "name": "lunar-ice-watch",
+  "private": true,
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node server/classify.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  },
+  "optionalDependencies": {
+    "mongodb-memory-server": "^10.1.4"
+  }
+}
