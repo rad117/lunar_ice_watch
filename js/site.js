@@ -39,7 +39,7 @@ requestAnimationFrame(function () {
 const thermalPill = document.getElementById("thermalPill");
 thermalPill.textContent = site.thermalGate.toUpperCase();
 thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : "fail");
-document.getElementById("thermalTempText").textContent = "measured temp: " + site.thermalTemp + " K (simulated)";
+document.getElementById("thermalTempText").textContent = "measured temp: " + site.thermalTemp + " °C (simulated)";
 if (site.published) {
   const pub = site.published;
   document.getElementById("thermalTempText").textContent += " | published: " + pub.lat + ", " + pub.lon + " deg" +
