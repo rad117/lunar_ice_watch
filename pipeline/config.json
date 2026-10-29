@@ -1,6 +1,15 @@
 {
   "moon_radius_m": 1737400,
   "note": "Coordinates are planetocentric lat/lon (east-positive) as recalled from the USGS Gazetteer of Planetary Nomenclature / Wikipedia. They were NOT re-checked against the Gazetteer by the pipeline author: verify each before trusting results (see README).",
+  "sha256_note": "Trust-on-first-use pins: computed from the files as first downloaded on 2026-10-30 (the sources publish no checksums). A mismatch means the file changed upstream or was tampered with; fetch deletes it.",
+  "sha256": {
+    "polar_south_80_summer_max-float.tif": "ba4a1b6275402d6b0c1000ceb0208ad63d37665afaeb902ab6f108c67c0a0c67",
+    "polar_south_80_summer_avg-float.tif": "0be252e5fbaec7a12adf2e7ea04f2ade0ceefb3a6995f6ac68157e3a87d0b6b0",
+    "polar_south_80_winter_avg-float.tif": "5f1fb5149a426d5749938111b57f5710b0522e874c8cad6ba36fca23682e6f85",
+    "polar_south_80_winter_max.grd": "6ffa5c0a7f61d4631c73e8708679a5f5aeb10698688fda66091f2229b563814f",
+    "LDEM_80S_80M.LBL": "107c7558cbf8832e4119d3c8c2b1b272623344275c85378a9b0e03c22876eb33",
+    "LDEM_80S_80M.IMG": "e6591eeea35402ca5e124ca00f5bf0774381a2d4fa919144b455d82b8ff65fdc"
+  },
   "sites": [
     { "siteId": "s7", "name": "Shackleton", "region": "Shackleton crater floor", "lat": -89.69, "lon": 133.4, "diameter_km": 21, "window_km": 4,
       "coord_note": "Gazetteer gives 89.9S 0E, which lies on the rim next to the pole; the floor is not there. Centre here = centroid of Diviner annual-max <110 K pixels within 15 km of the pole (checked: also near the deepest LOLA DEM point, -89.63 / 118.8E). Verify against a published crater centre." },

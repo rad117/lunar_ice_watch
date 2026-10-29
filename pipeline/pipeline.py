@@ -8,6 +8,7 @@ Every number written comes from a raster, or is null. Nothing is estimated or fi
 All geometry is done in Moon south polar stereographic metres (sphere R = 1737.4 km), never an Earth CRS.
 """
 import datetime
+import hashlib
 import glob
 import json
 import os
@@ -34,7 +35,7 @@ MOON_GEO = CRS.from_proj4(f"+proj=longlat +R={R} +no_defs")
 MOON_POLAR = CRS.from_proj4(f"+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +x_0=0 +y_0=0 +R={R} +units=m +no_defs")
 TO_POLAR = Transformer.from_crs(MOON_GEO, MOON_POLAR, always_xy=True)
 
-DIVINER_BASE = "http://luna1.diviner.ucla.edu/~jpierre/diviner/level4_polar/additional_maps/"
+DIVINER_BASE = "https://luna1.diviner.ucla.edu/~jpierre/diviner/level4_polar/additional_maps/"
 DIVINER = {  # name -> file
     "summer_max": "polar_south_80_summer_max-float.tif",
     "winter_max": "polar_south_80_winter_max-float.tif",  # derived by fetch() from the published .grd, see derive_winter_max()
@@ -59,17 +60,33 @@ OPTIONAL = {
 }
 
 
+def verify_checksum(path):
+    """Check a downloaded file against the pinned SHA-256 in config.json before anything parses it; delete it on mismatch."""
+    want = CFG["sha256"].get(os.path.basename(path))
+    if not want:
+        return
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    if h.hexdigest() != want:
+        os.remove(path)
+        sys.exit(f"Checksum mismatch for {os.path.basename(path)}: file deleted. It changed upstream or was tampered with; "
+                 "re-check the source, then update config.json sha256 if the change is legitimate.")
+
+
 def fetch():
     jobs = [(DIVINER_BASE + f, os.path.join(DATA, "diviner", f)) for k, f in DIVINER.items() if k != "winter_max"]
     jobs.append((DIVINER_BASE + "polar_south_80_winter_max.grd", os.path.join(DATA, "diviner", "polar_south_80_winter_max.grd")))
     jobs += [(LOLA_BASE + f, os.path.join(DATA, "lola", f)) for f in LOLA]
     for url, dest in jobs:
-        if os.path.exists(dest) and os.path.getsize(dest) > 0:
+        if not (os.path.exists(dest) and os.path.getsize(dest) > 0):
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            print("downloading", url)
+            urllib.request.urlretrieve(url, dest)
+        else:
             print("have", os.path.relpath(dest, HERE))
-            continue
-        os.makedirs(os.path.dirname(dest), exist_ok=True)
-        print("downloading", url)
-        urllib.request.urlretrieve(url, dest)
+        verify_checksum(dest)
     derive_winter_max()
     print("\nMANUAL datasets (not fetched; the matching feature stays null until you add them) - see README:")
     for key, d in OPTIONAL.items():
@@ -259,7 +276,7 @@ def load_env():
         for line in open(p, encoding="utf-8"):
             if "=" in line and not line.lstrip().startswith("#"):
                 k, v = line.strip().split("=", 1)
-                os.environ.setdefault(k, v)
+                os.environ.setdefault(k.strip(), v.strip().strip("\"'"))
 
 
 def write_mongo(results):
@@ -273,9 +290,17 @@ def write_mongo(results):
     ops = []
     for r in results:
         cfg = next(c for c in CFG["sites"] if c["siteId"] == r["siteId"])
+        old = sites.find_one({"_id": r["siteId"]}) or {}
         base = {"features." + k: v for k, v in r["features"].items() if r["featureProvenance"][k] == "raster"}
         base.update({"featureProvenance." + k: p for k, p in r["featureProvenance"].items() if p})
-        base["location"] = {"type": "Point", "coordinates": [r["lon"], r["lat"]]}
+        # A value this pipeline wrote earlier but cannot compute now must not linger: null it. Simulated/seed values are left alone.
+        for k, v in r["features"].items():
+            if v is None and old.get("featureProvenance", {}).get(k) == "raster":
+                base["features." + k], base["featureProvenance." + k] = None, None
+        # The analysis centre is stored separately; `location` (which the published citation refers to) is only filled when absent.
+        base["pipelineCenter"] = {"type": "Point", "coordinates": [r["lon"], r["lat"]]}
+        if not old.get("location"):
+            base["location"] = base["pipelineCenter"]
         base["boundary"] = r["boundary"]
         base["pipelineRunAt"] = now()
         ops.append(UpdateOne({"_id": r["siteId"]}, {"$set": base, "$pull": {"evidence": {"pipeline": True}}}))

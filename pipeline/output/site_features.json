@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-29T20:20:42+00:00",
+ "generatedAt": "2026-10-29T20:23:31+00:00",
  "sites": [
   {
    "siteId": "s7",
@@ -39,7 +39,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 860 px within 4 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -47,7 +47,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 7853 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -617,7 +617,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 21805 px within 20 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -625,7 +625,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 196279 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LCROSS impact at Cabeus",
@@ -634,7 +634,7 @@
      "provenance": "published",
      "citation": "Colaprete, A. et al. (2010) Detection of water in the LCROSS ejecta plume. Science 330, 463-468. doi:10.1126/science.1186986",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -1204,7 +1204,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 7849 px within 12 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -1212,7 +1212,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 70662 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:41+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -1782,7 +1782,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 5450 px within 10 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -1790,7 +1790,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 49068 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -2360,7 +2360,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 7839 px within 12 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -2368,7 +2368,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 70658 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -2938,7 +2938,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 34056 px within 25 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -2946,7 +2946,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 306685 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {
@@ -3516,7 +3516,7 @@
      "citation": "Williams, J.-P. et al. (2019) Seasonal polar temperatures on the Moon. J. Geophys. Res. Planets 124, 2505-2521. doi:10.1029/2019JE006028",
      "note": "Median over 3490 px within 8 km of the site centre. maxTempK = median of max(summer max, winter max); meanTempK = median of the mean of the summer and winter average maps; pctBelow110K = % of pixels whose annual maximum is below 110 K.",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     },
     {
      "source": "LRO LOLA polar DEM LDEM_80S_80M",
@@ -3524,7 +3524,7 @@
      "citation": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
      "note": "Median over 31407 px. slopeDeg = median slope at 80 m baseline; roughness = median local standard deviation of slope in a 5x5 window (about 400 m).",
      "pipeline": true,
-     "processedAt": "2026-10-29T20:20:42+00:00"
+     "processedAt": "2026-10-29T20:23:31+00:00"
     }
    ],
    "boundary": {

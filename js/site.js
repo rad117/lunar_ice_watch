@@ -79,7 +79,7 @@ badge.className = "badge " + classificationClass(site.classification);
 badge.insertAdjacentHTML("afterend", provBadge(site.provenance));
 
 document.getElementById("tierText").textContent = site.tier;
-document.getElementById("rationaleText").textContent = site.rationale;
+document.getElementById("rationaleText").textContent = site.rationale + " (Classification still uses the simulated screening inputs above, not the measured features; the trained model comes later.)";
 document.getElementById("traverseLink").href = "traverse.html?id=" + site.id;
 
 // ---- "Measured Features" card: every value from the sites collection with where it came from (null = not available yet) ----

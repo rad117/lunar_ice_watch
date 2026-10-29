@@ -36,6 +36,11 @@ and (later) a real ML model. Phases 1-3 are done; phases 4 and 5 are not started
 - A second, read-only reviewer agent audited the work. Its findings were fixed: `pipeline/data/` gitignored (rasters are hundreds of MB),
   front-end null-safety for pipeline-only sites (map position now comes from the real lat/lon), NaN guard in `siteDoc.js`, hard-coded "(simulated)" temperature text.
 
+- Second review round fixed: seed `location` is no longer overwritten (the pipeline centre is stored as `pipelineCenter`, so the published citation still matches its coordinates);
+  stale raster values are nulled when a re-run cannot compute them; `.env` quotes are stripped; the site page says classification still uses the simulated inputs.
+- Downloads use HTTPS and are checked against pinned SHA-256 values in `pipeline/config.json` (trust-on-first-use; a mismatch deletes the file).
+- Known caveat from the reviewer: Cabeus (214 K) and Amundsen (217 K) medians are high because their 20/25 km windows cover large partly-sunlit floors and the centres are unverified; `pctBelow110K` (10 % / 4 %) is the better cold-trap indicator for them.
+
 ## Tests
 - `npm test` (classification rules), `node scripts/smoke.js` (API + DB + rate-limit burst), `cd pipeline && python -m unittest test_pipeline` (CRS, slope, roughness, null handling).
 - Browser-checked against an in-memory MongoDB seeded and then updated by the pipeline: all pages load with no JS errors.
