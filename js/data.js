@@ -1,18 +1,61 @@
-// Shared site list for the whole prototype, loaded from the MongoDB-backed API (server/index.js).
-// Loaded on Dashboard, Map, Traverse and Site Detail pages — they all read from this same array.
-// x/y are 0-100 percentage coordinates plotted onto the map canvas in js/map.js.
-// ponytail: synchronous XHR keeps every page script unchanged; switch to fetch + per-page init if blocking ever matters.
-const siteData = (function () {
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/sites", false);
-    xhr.send();
-    if (xhr.status === 200) return JSON.parse(xhr.responseText);
-  } catch (e) { /* fall through */ }
-  document.addEventListener("DOMContentLoaded", function () {
-    showToast("Can't reach the server - run `npm start` and open http://localhost:3000", "error");
+// Shared site list for the whole prototype, loaded from the MongoDB-backed API (api/sites).
+// A page opts in with <script src="js/data.js" data-page="js/foo.js">: data.js fetches the sites, shows a
+// loading / error banner meanwhile, then loads the page script, which can use `siteData` as before.
+// The API returns the sites-collection schema; flattenSite() maps it to the flat shape the pages use.
+const siteData = [];
+
+function flattenSite(d) {
+  const pubEv = (d.evidence || []).find(function (e) { return e.provenance === "published"; });
+  const coords = d.location && d.location.coordinates;
+  return Object.assign({}, d.legacy, {
+    id: d._id, label: d.name, crater: d.region, cpr: d.features.cpr,
+    classification: d.prediction.label, tier: d.prediction.tier, rationale: d.prediction.rationale,
+    provenance: d.provenance, evidence: d.evidence || [],
+    published: pubEv && coords ? { lat: coords[1], lon: coords[0], tmaxK: pubEv.data && pubEv.data.tmaxK, source: pubEv.citation } : null
   });
-  return [];
+}
+
+// Small "simulated / published / raster" badge; provenance comes from the database, never hardcoded in pages.
+function provBadge(p) {
+  return '<span class="prov prov--' + escapeHtml(p) + '" title="Data provenance: ' + escapeHtml(p) + '">' + escapeHtml(p) + '</span>';
+}
+
+(function () {
+  const pageScript = document.currentScript && document.currentScript.dataset.page;
+  if (!pageScript) return;
+
+  function load() {
+    const main = document.getElementById("main-content");
+    const banner = document.createElement("p");
+    banner.className = "subtext";
+    banner.setAttribute("role", "status");
+    banner.textContent = "Loading sites...";
+    main.prepend(banner);
+
+    fetch("/api/sites").then(function (r) {
+      if (!r.ok) throw new Error("API returned " + r.status);
+      return r.json();
+    }).then(function (docs) {
+      docs.forEach(function (d) { siteData.push(flattenSite(d)); });
+      banner.remove();
+      const note = document.createElement("p");
+      note.className = "small-note";
+      note.textContent = "Screening estimates, not scientific confirmation of lunar ice.";
+      main.append(note);
+      const el = document.createElement("script");
+      el.src = pageScript;
+      document.body.appendChild(el);
+    }).catch(function (e) {
+      banner.textContent = "Could not load sites (" + e.message + "). ";
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "secondary";
+      retry.textContent = "Retry";
+      retry.addEventListener("click", function () { banner.remove(); load(); });
+      banner.append(retry);
+    });
+  }
+  document.addEventListener("DOMContentLoaded", load);
 })();
 
 // Looks up one site's record; used by site.html, map.html and traverse.html to show details for the picked site

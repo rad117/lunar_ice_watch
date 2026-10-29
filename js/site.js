@@ -75,6 +75,7 @@ requestAnimationFrame(function () {
 const badge = document.getElementById("classBadge");
 badge.textContent = site.classification;
 badge.className = "badge " + classificationClass(site.classification);
+badge.insertAdjacentHTML("afterend", provBadge(site.provenance));
 
 document.getElementById("tierText").textContent = site.tier;
 document.getElementById("rationaleText").textContent = site.rationale;

@@ -190,3 +190,9 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   .home-hero-fade { background: linear-gradient(180deg, transparent 0%, #05070c 92%); }
   .home-hero-moon { flex-basis: 320px; min-height: 320px; }
 }
+
+/* Data provenance badge (simulated / published / raster) */
+.prov { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+.prov--simulated { color: var(--warn, #fbbf24); }
+.prov--published { color: #60a5fa; }
+.prov--raster { color: var(--ok, #4ade80); }

@@ -6,16 +6,23 @@ MongoDB and classifies uploaded observations; the pages are plain HTML/JS.
 
 ## Running it
 
+Sites live in MongoDB Atlas (free M0 tier) and are served by Vercel functions in `api/`.
+
 ```
 npm install
-npm start          # http://localhost:3000
-npm test           # checks the classification rules
+cp .env.example .env     # then put your MONGODB_URI in it
+npm run seed             # loads the demo sites (add -- --reset to wipe first)
+npx vercel dev           # http://localhost:3000 (first run asks you to log in / link the project)
+npm test                 # classification rules
+node scripts/smoke.js    # API check against a throwaway in-memory MongoDB (no Atlas needed)
 ```
 
-With no setup, `npm start` runs an embedded MongoDB and keeps its data in
-`server/.data` (the first run downloads the MongoDB binary). To use your own
-database (e.g. Atlas), set `MONGODB_URI` first. The six demo sites are seeded
-from `server/seed.json` when the database is empty.
+On Vercel, set `MONGODB_URI` (and optionally `MONGODB_DB`) under Project > Settings >
+Environment Variables, then redeploy. Run `npm run seed` once against the Atlas database.
+
+API: `GET /api/sites`, `GET /api/sites/:id`, `GET /api/sites/near?lat=&lon=&km=`,
+`POST /api/upload`, `GET /api/routes`. Every stored value carries a `provenance`
+(`simulated` / `published` / `raster`), shown as a badge in the UI.
 
 ## What is real and what is simulated
 

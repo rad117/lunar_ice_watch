@@ -1,7 +1,7 @@
 // Run with `npm test`. Checks the rules reproduce the six hand-labelled demo sites.
 const assert = require("assert");
 const { classify, buildSite } = require("./classify");
-const seed = require("./seed.json");
+const seed = require("../../scripts/seed.json");
 
 seed.forEach(function (s) {
   assert.strictEqual(classify(s).classification, s.classification, s.label);

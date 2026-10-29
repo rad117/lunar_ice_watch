@@ -116,7 +116,7 @@ async function startUpload() {
     showToast(e.message, "error");
     return;
   }
-  sites.forEach(function (site) { siteData.push(site); });
+  sites.forEach(function (site) { siteData.push(flattenSite(site)); });
 
   status.textContent = "analysis complete - " + sites.length + " site(s) added to dashboard";
   showToast(sites.length + " site(s) added to the dashboard", "success");

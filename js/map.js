@@ -194,6 +194,7 @@ function showInfo(site) {
   badge.className = "badge " + classificationClass(site.classification);
   badge.textContent = site.classification;
   classP.appendChild(badge);
+  classP.insertAdjacentHTML("beforeend", provBadge(site.provenance));
 
   const hazardP = document.createElement("p");
   hazardP.className = "subtext";
