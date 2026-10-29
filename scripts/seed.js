@@ -16,7 +16,7 @@ async function seed(reset) {
   }));
   await sites.createIndex({ location: "2dsphere" });
   await sites.createIndex({ createdAt: 1 });
-  await db.collection("users").createIndex({ email: 1 }, { unique: true });
+  await db.collection("rateLimits").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection("routes").createIndex({ siteId: 1, createdAt: -1 });
   console.log("seeded " + (res.upsertedCount + res.modifiedCount) + " sites");
   await client.close();

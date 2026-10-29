@@ -28,7 +28,7 @@ function buildSite(row, i, fallbackName) {
   const altFlag = /^(true|1|yes)$/i.test(String(row.altFlag || ""));
   const thermalGate = thermalTemp < -190 ? "pass" : "fail";
   return Object.assign({
-    id: "u" + Date.now() + "_" + i,
+    id: "u" + Date.now() + "_" + require("crypto").randomBytes(3).toString("hex") + "_" + i,
     label: String(row.label || fallbackName + (i ? " #" + (i + 1) : "")).slice(0, 80),
     crater: String(row.crater || "Newly surveyed region").slice(0, 80),
     x: num("x", 50), y: num("y", 50),

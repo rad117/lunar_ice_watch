@@ -8,8 +8,6 @@
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",
-    "bcryptjs": "^3.0.3",
-    "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.7.0"
   },
   "devDependencies": {

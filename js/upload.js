@@ -105,7 +105,6 @@ async function startUpload() {
           body: JSON.stringify({ name: name, filename: file.name, csv: text })
         });
         const body = await res.json();
-        if (res.status === 401) { location.href = "login.html?next=upload.html"; return; }
         if (!res.ok) throw new Error(body.error || "Upload failed");
         sites = body;
       }

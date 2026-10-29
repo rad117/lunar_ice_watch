@@ -17,14 +17,15 @@ npm test                 # classification rules
 node scripts/smoke.js    # API check against a throwaway in-memory MongoDB (no Atlas needed)
 ```
 
-On Vercel, set `MONGODB_URI`, `JWT_SECRET` and `BLOB_READ_WRITE_TOKEN` (see `.env.example`) under
+On Vercel, set `MONGODB_URI` and `BLOB_READ_WRITE_TOKEN` (see `.env.example`) under
 Project > Settings > Environment Variables, then redeploy. The Blob token appears when you create a
 Blob store under Project > Storage and connect it to the project. Run `npm run seed` once against Atlas.
 
 API: `GET /api/sites`, `GET /api/sites/:id`, `GET /api/sites/near?lat=&lon=&km=`,
-`POST /api/auth/{register,login,logout}`, `GET /api/auth/me`, and, signed-in only, `POST /api/upload`
-and `GET|POST /api/routes`. Sessions are a JWT in an httpOnly SameSite=Lax cookie; passwords are bcrypt-hashed.
-Uploads are limited to 1 MB `.csv` files, 20 per user per hour; the file is stored in Vercel Blob and
+`POST /api/upload` and `GET|POST /api/routes`. There is no sign-in, so writes are open to anyone who
+can reach the site; they are guarded by size/type checks and a per-client hourly limit (20 uploads, 60 saved routes;
+the client is a hashed IP, never stored raw).
+Uploads are limited to 1 MB `.csv` files; the file is stored in Vercel Blob and
 MongoDB keeps only its URL plus the per-row observations. Every stored value carries a `provenance`
 (`simulated` / `published` / `raster`), shown as a badge in the UI.
 
