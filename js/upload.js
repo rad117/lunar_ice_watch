@@ -97,14 +97,15 @@ async function startUpload() {
     for (let i = 0; i < stages.length; i++) {
       setStage(stages[i], "active");
       status.textContent = document.querySelector('#checklist li[data-stage="' + stages[i] + '"]').textContent + "...";
-      if (i === 0) var rows = parseCsv(await file.text());
+      if (i === 0) { var text = await file.text(); parseCsv(text); } // client-side check only; the server validates again
       if (i === 3) {
-        const res = await fetch("/api/sites", {
+        const res = await fetch("/api/upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, rows: rows })
+          body: JSON.stringify({ name: name, filename: file.name, csv: text })
         });
         const body = await res.json();
+        if (res.status === 401) { location.href = "login.html?next=upload.html"; return; }
         if (!res.ok) throw new Error(body.error || "Upload failed");
         sites = body;
       }

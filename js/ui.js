@@ -54,6 +54,28 @@ function animateCount(el, target, opts) {
 
 document.addEventListener("DOMContentLoaded", setActiveNav);
 
+// Adds "Sign in" or "Sign out (email)" to the navbar, depending on the session cookie
+document.addEventListener("DOMContentLoaded", function () {
+  const links = document.querySelector(".navbar .links");
+  if (!links) return;
+  fetch("/api/auth/me").then(function (r) { return r.json(); }).then(function (user) {
+    const a = document.createElement("a");
+    if (user) {
+      a.href = "#";
+      a.textContent = "Sign out (" + user.email + ")";
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        fetch("/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).then(function () { location.reload(); });
+      });
+    } else {
+      a.href = "login.html";
+      a.textContent = "Sign in";
+      if (location.pathname.endsWith("login.html")) a.classList.add("active");
+    }
+    links.insertBefore(a, links.querySelector(".theme-toggle"));
+  }).catch(function () { /* signed-out look is fine if the API is down */ });
+});
+
 // Reads the saved preference and shows/hides the ambient corner moon + starfield background accordingly
 function applyMoonMode() {
   const enabled = localStorage.getItem("liw_moon_mode") !== "off";

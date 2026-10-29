@@ -16,7 +16,7 @@ module.exports = route(["GET"], async function (req, res) {
     return res.status(400).json({ error: "lat (-90..90), lon (-180..180) and km (0..5000) are required numbers" });
   }
   const sites = await (await db()).collection("sites")
-    .find({ location: { $geoWithin: { $centerSphere: [[lon, lat], km / MOON_RADIUS_KM] } } }).toArray();
+    .find({ location: { $geoWithin: { $centerSphere: [[lon, lat], km / MOON_RADIUS_KM] } } }, { projection: { ownerId: 0 } }).toArray();
   sites.forEach(function (s) { s.distanceKm = Math.round(distKm([lon, lat], s.location.coordinates) * 10) / 10; });
   res.json(sites.sort(function (a, b) { return a.distanceKm - b.distanceKm; }));
 });
