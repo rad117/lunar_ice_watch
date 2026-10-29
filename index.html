@@ -24,7 +24,7 @@
 <body class="home-page">
 <a class="skip-link" href="#main-content">Skip to content</a>
 
-<!-- TOP NAVBAR: the black bar with the logo + Home/Dashboard/Upload/Map/Traverse/Login links, present on every page -->
+<!-- TOP NAVBAR: the black bar with the logo + Home/Dashboard/Upload/Map/Traverse links, present on every page -->
 <div class="navbar" role="navigation" aria-label="Primary navigation">
   <div class="brand"><span class="brand-moon" aria-hidden="true">☾</span><span class="dot" aria-hidden="true"></span>LUNAR ICE WATCH</div>
   <div class="links d-flex align-items-center flex-wrap gap-1">
@@ -35,7 +35,6 @@
     <a href="traverse.html">Traverse</a>
     <!-- Moonlight/day theme switch button; toggleMoonMode() lives in js/ui.js -->
     <button class="theme-toggle" type="button" onclick="toggleMoonMode()" aria-label="Toggle moonlight interface mode">☾ Moonlight</button>
-    <a href="login.html">Login</a>
   </div>
 </div>
 
@@ -107,12 +106,10 @@
 </main>
 <!-- Scripts loaded at the end so the HTML above renders first:
      ui.js       -> theme toggle button + small shared UI helpers
-     nav.js      -> highlights/handles the top navbar
      starfield.js -> the animated background stars
      cursor.js   -> the custom glowing cursor effect
      moon3d.js   -> the interactive 3D moon in the hero section (ES module, uses three.js) -->
 <script src="js/ui.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/starfield.js"></script>
 <script src="js/cursor.js"></script>
 <script type="module" src="js/moon3d.js"></script>

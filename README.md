@@ -37,7 +37,6 @@ tRatio, altFlag, boulderCount`. Each row becomes a site, classified by
 | File             | What it is                                                                 |
 |------------------|-----------------------------------------------------------------------------|
 | `index.html`     | Homepage: hero banner with the interactive 3D moon, "Mission Briefing" info section |
-| `login.html`     | Demo login form (any non-empty username is accepted)                       |
 | `dashboard.html` | Table of every candidate site, with stat tiles and filter chips             |
 | `site.html`      | Detail view for one site: radar metrics, thermal/flag gates, hazard gauge, final classification |
 | `map.html`       | Canvas map plotting every site around the base station, with hazard shading |
@@ -46,7 +45,7 @@ tRatio, altFlag, boulderCount`. Each row becomes a site, classified by
 | `info.html`      | Redirect stub -> `index.html#about`                                        |
 
 Every inner page shares the same top navbar (`Home / Dashboard / Upload / Map
-/ Traverse / Logout`) and the same background (starfield + ambient moon).
+/ Traverse`) and the same background (starfield + ambient moon).
 
 ## Folder structure
 
@@ -60,7 +59,6 @@ css/
 js/
   data.js        the site "database" (fake data) + helper functions read by every page
   ui.js          shared helpers: navbar highlighting, toasts, moonlight toggle
-  nav.js         logout()
   starfield.js   injects and animates the background stars
   cursor.js      the custom glowing cursor + sparkle trail
   moon3d.js      the interactive 3D moon in the homepage hero (three.js)

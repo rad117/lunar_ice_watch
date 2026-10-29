@@ -16,7 +16,6 @@
 <body>
 
 <a class="skip-link" href="#main-content">Skip to content</a>
-<!-- Same top navbar as index.html, but "Logout" replaces "Login" since this is a logged-in page -->
 <div class="navbar" role="navigation" aria-label="Primary navigation">
   <div class="brand"><span class="brand-moon" aria-hidden="true">☾</span><span class="dot" aria-hidden="true"></span>LUNAR ICE WATCH</div>
   <div class="links d-flex align-items-center flex-wrap gap-1">
@@ -26,7 +25,6 @@
     <a href="traverse.html">Traverse</a>
     <a href="index.html#about">About</a>
     <button class="theme-toggle" type="button" onclick="toggleMoonMode()" aria-label="Toggle moonlight interface mode" title="Toggle moonlight mode">☾ Moonlight</button>
-    <a href="#" onclick="logout(); return false;">Logout</a>
   </div>
 </div>
 
@@ -61,7 +59,6 @@
 
 <!-- data.js supplies the site records; dashboard.js reads them and builds statsRow/chipRow/siteTable above -->
 <script src="js/ui.js"></script>
-<script src="js/nav.js"></script>
 <script src="js/data.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/starfield.js"></script>
