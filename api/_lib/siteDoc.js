@@ -19,10 +19,11 @@ function siteDoc(s, createdAt) {
     name: s.label,
     region: s.crater,
     features: {
-      maxTempK: Math.round((s.thermalTemp + 273.15) * 100) / 100, meanTempK: null, pctBelow110K: null,
+      maxTempK: Number.isFinite(s.thermalTemp) ? Math.round((s.thermalTemp + 273.15) * 100) / 100 : null, meanTempK: null, pctBelow110K: null,
       cpr: s.cpr, slopeDeg: null, roughness: null, illumFraction: null, neutronSuppression: null
     },
     prediction: { iceProb: null, label: s.classification, tier: s.tier, rationale: s.rationale, modelVersion: "rules-v0", updatedAt: createdAt },
+    featureProvenance: { maxTempK: "simulated", cpr: "simulated" }, // every other feature is null until the pipeline fills it
     evidence,
     // Screening inputs with no column in the target schema yet; all simulated until the pipeline (phase 3) replaces them.
     legacy: {

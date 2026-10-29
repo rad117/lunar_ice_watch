@@ -46,7 +46,7 @@ const totalDist = Math.round(Math.sqrt(
 ) * 3);
 
 const waypoints = stepFractions.map(function (frac, i) {
-  const type = i === 4 ? "Ice Target" : (i === 2 && currentSite.terrainHazard >= 40 ? "Hazard Zone" : (i === 0 ? "Entry Point" : "Nav Node"));
+  const type = i === 4 ? "Ice Target" : (i === 2 && (currentSite.terrainHazard || 0) >= 40 ? "Hazard Zone" : (i === 0 ? "Entry Point" : "Nav Node"));
   const prevFrac = i === 0 ? 0 : stepFractions[i - 1];
   return {
     px: baseX + (targetPixel.px - baseX) * frac,
@@ -55,9 +55,9 @@ const waypoints = stepFractions.map(function (frac, i) {
     fracFrom: prevFrac,
     fracTo: frac,
     distance: Math.round(totalDist * (frac - prevFrac)),
-    slope: Math.round((currentSite.terrainHazard / 100) * 30 + i * 2),
-    hazard: hazardBucket(currentSite.terrainHazard * (0.5 + 0.5 * frac)),
-    boulders: Math.round(currentSite.boulderCount * frac)
+    slope: Math.round(((currentSite.terrainHazard || 0) / 100) * 30 + i * 2),
+    hazard: hazardBucket((currentSite.terrainHazard || 0) * (0.5 + 0.5 * frac)),
+    boulders: Math.round((currentSite.boulderCount || 0) * frac)
   };
 });
 

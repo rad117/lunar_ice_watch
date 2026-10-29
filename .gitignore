@@ -3,3 +3,7 @@ node_modules
 server/.data
 .env
 .playwright-mcp
+pipeline/data/
+__pycache__/
+.venv/
+*.pyc

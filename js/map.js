@@ -62,8 +62,8 @@ function draw() {
 
   siteData.forEach(function (site) {
     const p = toPixel(site);
-    const radius = 14 + (site.terrainHazard / 100) * 32;
-    ctx.fillStyle = hazardFillColor(site.terrainHazard);
+    const radius = 14 + ((site.terrainHazard || 0) / 100) * 32;
+    ctx.fillStyle = hazardFillColor(site.terrainHazard || 0);
     ctx.beginPath();
     ctx.arc(p.px, p.py, radius, 0, Math.PI * 2);
     ctx.fill();
@@ -161,7 +161,7 @@ canvas.addEventListener("mousemove", function (e) {
     if (closest) {
       const p = toPixel(closest);
       tooltip.innerHTML = '<span class="t-name">' + escapeHtml(closest.label) + '</span> &middot; ' + escapeHtml(closest.crater) +
-        '<br>hazard ' + closest.terrainHazard + '% &middot; ' + closest.classification;
+        '<br>hazard ' + (closest.terrainHazard == null ? "n/a" : closest.terrainHazard + "%") + ' &middot; ' + closest.classification;
       tooltip.style.left = (p.px / canvas.width * 100) + "%";
       tooltip.style.top = (p.py / canvas.height * 100) + "%";
       tooltip.classList.add("visible");
@@ -198,7 +198,7 @@ function showInfo(site) {
 
   const hazardP = document.createElement("p");
   hazardP.className = "subtext";
-  hazardP.textContent = "Terrain hazard: " + site.terrainHazard + "% | Boulder count (optical): " + site.boulderCount;
+  hazardP.textContent = "Terrain hazard: " + (site.terrainHazard == null ? "n/a" : site.terrainHazard + "%") + " | Boulder count (optical): " + (site.boulderCount == null ? "n/a" : site.boulderCount);
 
   const distP = document.createElement("p");
   distP.className = "subtext";

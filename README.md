@@ -29,6 +29,12 @@ Uploads are limited to 1 MB `.csv` files; the file is stored in Vercel Blob and
 MongoDB keeps only its URL plus the per-row observations. Every stored value carries a `provenance`
 (`simulated` / `published` / `raster`), shown as a badge in the UI.
 
+## Real data pipeline
+
+`pipeline/` (Python) computes temperature, slope and roughness for each site from real LRO Diviner and LOLA rasters and
+writes them to MongoDB with `provenance: "raster"`. See `pipeline/README.md` for setup and for the datasets you must download
+by hand. `CHANGELOG.md` lists everything that changed and what is still simulated.
+
 ## What is real and what is simulated
 
 The six demo sites correspond to real south-pole craters. Their coordinates, diameters and

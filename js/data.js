@@ -4,12 +4,23 @@
 // The API returns the sites-collection schema; flattenSite() maps it to the flat shape the pages use.
 const siteData = [];
 
+// Map-canvas position (0-100 %) from a real lat/lon: south polar stereographic on a 1737.4 km sphere, 300 km = 40 %.
+function polarPercent(lat, lon) {
+  const rho = 2 * 1737.4 * Math.tan((90 + lat) * Math.PI / 360);
+  const l = lon * Math.PI / 180;
+  return { x: 50 + 40 * rho * Math.sin(l) / 300, y: 50 - 40 * rho * Math.cos(l) / 300 };
+}
+
 function flattenSite(d) {
   const pubEv = (d.evidence || []).find(function (e) { return e.provenance === "published"; });
   const coords = d.location && d.location.coordinates;
-  return Object.assign({}, d.legacy, {
-    id: d._id, label: d.name, crater: d.region, cpr: d.features.cpr,
-    classification: d.prediction.label, tier: d.prediction.tier, rationale: d.prediction.rationale,
+  const legacy = Object.assign({}, d.legacy);
+  if (legacy.x == null && coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; }
+  const pred = d.prediction || {};
+  return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
+    id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
+    features: d.features || {}, featureProvenance: d.featureProvenance || {},
+    classification: pred.label || "INCONCLUSIVE", tier: pred.tier || "NONE", rationale: pred.rationale || "",
     provenance: d.provenance, evidence: d.evidence || [],
     published: pubEv && coords ? { lat: coords[1], lon: coords[0], tmaxK: pubEv.data && pubEv.data.tmaxK, source: pubEv.citation } : null
   });
@@ -17,6 +28,7 @@ function flattenSite(d) {
 
 // Small "simulated / published / raster" badge; provenance comes from the database, never hardcoded in pages.
 function provBadge(p) {
+  if (!p) return "";
   return '<span class="prov prov--' + escapeHtml(p) + '" title="Data provenance: ' + escapeHtml(p) + '">' + escapeHtml(p) + '</span>';
 }
 

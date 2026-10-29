@@ -196,3 +196,4 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
 .prov--simulated { color: var(--warn, #fbbf24); }
 .prov--published { color: #60a5fa; }
 .prov--raster { color: var(--ok, #4ade80); }
+.prov--mixed { color: #c4b5fd; }

@@ -75,8 +75,8 @@ function renderTable() {
     html += '<tr class="site-row" tabindex="0" role="link" aria-label="Open ' + escapeHtml(s.label) + '" data-site-id="' + s.id + '">' +
       '<td>' + escapeHtml(s.label) + '</td>' +
       '<td>' + escapeHtml(s.crater) + '</td>' +
-      '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + s.thermalGate.toUpperCase() + '</span></td>' +
-      '<td>' + s.terrainHazard + '%</td>' +
+      '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + (s.thermalGate ? s.thermalGate.toUpperCase() : "N/A") + '</span></td>' +
+      '<td>' + (s.terrainHazard == null ? "n/a" : s.terrainHazard + "%") + '</td>' +
       '<td><span class="badge ' + classificationClass(s.classification) + '">' + s.classification + '</span>' + provBadge(s.provenance) + '</td>' +
       '</tr>';
   });
