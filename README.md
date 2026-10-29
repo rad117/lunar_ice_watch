@@ -24,7 +24,7 @@ Blob store under Project > Storage and connect it to the project. Run `npm run s
 API: `GET /api/sites`, `GET /api/sites/:id`, `GET /api/sites/near?lat=&lon=&km=`,
 `POST /api/upload` and `GET|POST /api/routes`. There is no sign-in, so writes are open to anyone who
 can reach the site; they are guarded by size/type checks and a per-client hourly limit (20 uploads, 60 saved routes;
-the client is a hashed IP, never stored raw).
+the client is an HMAC-hashed IP used only as an hourly rate-limit key; no IP or hash is kept on uploads).
 Uploads are limited to 1 MB `.csv` files; the file is stored in Vercel Blob and
 MongoDB keeps only its URL plus the per-row observations. Every stored value carries a `provenance`
 (`simulated` / `published` / `raster`), shown as a badge in the UI.

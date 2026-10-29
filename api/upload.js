@@ -46,7 +46,7 @@ module.exports = route(["POST"], async function (req, res) {
   const fileUrl = await store("uploads/" + String(filename).replace(/[^\w.-]/g, "_").slice(-80), csv, "text/csv");
   await d.collection("sites").insertMany(docs);
   await d.collection("observations").insertMany(docs.map(function (s, i) {
-    return { clientId: client, siteId: s._id, rowIndex: i, instrument: "csv", acquiredAt: null, fileUrl, extractedFeatures: s.features, prediction: s.prediction, createdAt: now };
+    return { siteId: s._id, rowIndex: i, instrument: "csv", acquiredAt: null, fileUrl, extractedFeatures: s.features, prediction: s.prediction, createdAt: now };
   }));
   res.status(201).json(docs);
 });

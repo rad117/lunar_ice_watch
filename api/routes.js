@@ -13,7 +13,7 @@ module.exports = route(["GET", "POST"], async function (req, res) {
   const routes = d.collection("routes");
   if (req.method === "GET") {
     const q = req.query.siteId ? { siteId: String(req.query.siteId) } : {};
-    return res.json(await routes.find(q).sort({ createdAt: -1 }).limit(100).toArray());
+    return res.json(await routes.find(q, { projection: { userId: 0 } }).sort({ createdAt: -1 }).limit(100).toArray());
   }
   await limit(d, "route:" + clientId(req), 60);
   const b = req.body || {};

@@ -24,11 +24,12 @@ route.httpError = function (status, message) {
   return Object.assign(new Error(message), { status });
 };
 
-// Hashed client IP, used only for rate limiting (the raw address is never stored)
+// Keyed hash of the client IP, used only as a rate-limit key that expires within hours. HMAC with a server-side
+// secret (IPv4 is too small a space for a plain hash). Falls back to MONGODB_URI as the key so no new env var is required.
 route.clientId = function (req) {
   const h = req.headers || {};
   const ip = String(h["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
-  return crypto.createHash("sha256").update(ip).digest("hex").slice(0, 16);
+  return crypto.createHmac("sha256", process.env.IP_HASH_KEY || process.env.MONGODB_URI || "dev").update(ip).digest("hex").slice(0, 16);
 };
 
 module.exports = route;
