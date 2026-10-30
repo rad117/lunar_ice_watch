@@ -228,6 +228,53 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 
 ---
 
+## 8c. How to run the demo (step by step)
+
+The demo runs the whole site on your own computer. It needs no accounts, no Atlas and no Vercel.
+
+**You need:** Node.js installed (any recent version) and an internet connection the first time.
+
+**One-time setup** (in the project folder):
+```
+npm install
+```
+
+**Start it:**
+```
+npm run demo
+```
+- The first run downloads a small MongoDB program (about a minute). Later runs start in seconds.
+- Wait for these lines: `pipeline data loaded: { sites: 7, routes: 6 }` and `Lunar Ice Watch demo: http://localhost:3000`.
+- Open **http://localhost:3000** in your browser.
+- Stop it with **Ctrl+C**.
+
+**What it does:** starts a temporary database in memory, loads the 6 demo sites, adds the real Diviner/LOLA results (7 sites in total, including Shackleton) and the 6 planned routes, then serves the website and the API.
+
+**A 5-minute tour to show your teacher**
+1. **Dashboard** (`/dashboard.html`): 7 sites with their classifications and a provenance badge on each (real / mixed / simulated).
+2. **Site page:** click Shoemaker or Haworth. The "Measured Features" card shows real values tagged RASTER, "not available yet" for the missing radar and neutron data, and the screening score with its coverage.
+3. **Map:** hover a site for the tooltip and click it for the detail panel.
+4. **Traverse:** pick a site such as Cabeus, press **Play**, and watch the rover follow the green route while the waypoint table highlights the current leg.
+5. **Upload:** click "Download template", change a value or two, upload it, and see a new site appear on the dashboard. Try a bad value such as `1.2abc` to show that it is rejected with a clear message.
+
+**What works and what doesn't**
+- Everything works, including uploads, because the temporary database accepts writes.
+- The data **resets every time you stop it**, so uploaded sites disappear. The uploaded CSV file itself is not stored (there is no file storage in the demo), only its rows.
+- The live site (`lunar-ice-watch.vercel.app`) shows the same data read-only, because no database is connected to it yet.
+
+**If something goes wrong**
+| Problem | Fix |
+|---|---|
+| `EADDRINUSE` / port 3000 already in use | Use another port. PowerShell: `$env:PORT=3001; npm run demo`. Command Prompt: `set PORT=3001 && npm run demo`. Then open `http://localhost:3001` |
+| Stuck on the first run | It is downloading MongoDB. Check your internet and wait, or run it again |
+| `Cannot find module` | Run `npm install` first |
+| Windows asks about firewall access | Allow it; it only serves your own computer |
+| Pages say "Could not load sites" | The demo is not running. Start it again and refresh |
+
+To try the "no database" mode that the live site uses, run `npm run demo -- --snapshot` instead. It serves the saved data read-only, and uploads show the "switched off" message.
+
+---
+
 ## 9. Likely questions from a teacher
 
 **Why MongoDB?** Flexible documents (missing measurements are natural), built-in geospatial index, free cloud tier.
