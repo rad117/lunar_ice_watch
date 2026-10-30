@@ -50,6 +50,13 @@ and (later) a real ML model. Phases 1-5 have a first version (phase 4 is a heuri
 - The base is a **placeholder** (Connecting Ridge area, recalled, unverified); the 10x cost penalty above 15 deg is a planner choice. Routes ignore illumination, communications and rover dynamics.
 - Traverse page draws the planned path and a summary card; its waypoint table is still the old simulated straight line.
 
+## Snapshot mode and local demo (no database needed)
+- With `MONGODB_URI` unset (e.g. a Vercel project that has no database connected yet) the API answers read-only from `api/_lib/snapshot.json`
+  (seed sites + real pipeline results + routes, built by `npm run snapshot`) and sends `x-data-source: snapshot`. Writes (`/api/upload`, `POST /api/routes`) return 503 with a clear message.
+  Pages show a note that they are showing saved data. If `MONGODB_URI` is set and the database fails, that is still a real error (not hidden).
+- `npm run demo` starts an in-memory MongoDB with the same data so uploads work locally; `npm run demo -- --snapshot` serves in snapshot mode.
+- Added an inline favicon to every page (removes the `/favicon.ico` 404).
+
 ## Tests
 - `npm test` (classification rules), `node scripts/smoke.js` (API + DB + rate-limit burst), `cd pipeline && python -m unittest test_pipeline` (CRS, slope, roughness, null handling).
 - Browser-checked against an in-memory MongoDB seeded and then updated by the pipeline: all pages load with no JS errors.

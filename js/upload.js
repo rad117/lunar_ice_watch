@@ -119,3 +119,8 @@ async function startUpload() {
   showToast(sites.length + " site(s) added to the dashboard", "success");
   nameInput.value = "";
 }
+
+// Say so up front when this deployment has no database (the API then serves saved read-only data and refuses uploads).
+fetch("/api/routes?siteId=none").then(function (r) {
+  if (r.headers.get("x-data-source") === "snapshot") document.getElementById("statusText").textContent = "Uploads are switched off on this deployment (no database connected). Use npm run demo locally to try them.";
+}).catch(function () {});

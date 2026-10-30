@@ -60,15 +60,18 @@ function provNode(p) {
     banner.textContent = "Loading sites...";
     main.prepend(banner);
 
+    let snapshot = false; // true when the server answered from its saved snapshot (no database connected)
     fetch("/api/sites").then(function (r) {
       if (!r.ok) throw new Error("API returned " + r.status);
+      snapshot = r.headers.get("x-data-source") === "snapshot";
       return r.json();
     }).then(function (docs) {
       docs.forEach(function (d) { siteData.push(flattenSite(d)); });
       banner.remove();
       const note = document.createElement("p");
       note.className = "small-note";
-      note.textContent = "Screening estimates, not scientific confirmation of lunar ice.";
+      note.textContent = "Screening estimates, not scientific confirmation of lunar ice." +
+        (snapshot ? " Showing a saved snapshot of the data (read-only): no database is connected, so uploads are switched off." : "");
       main.append(note);
       const el = document.createElement("script");
       el.src = pageScript;
