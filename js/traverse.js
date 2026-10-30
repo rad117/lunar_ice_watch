@@ -224,7 +224,7 @@ fetch("/api/routes?siteId=" + encodeURIComponent(currentSite.id)).then(function 
   const card = document.createElement("div");
   card.className = "card";
   card.innerHTML = "<h3>Planned route (LOLA terrain)</h3>" + (plannedRoute
-    ? '<p class="subtext">' + plannedRoute.distanceKm + " km, steepest cell " + plannedRoute.maxSlopeDeg + "&deg;, difficulty <strong>" + escapeHtml(plannedRoute.difficulty) +
+    ? '<p class="subtext">' + Number(plannedRoute.distanceKm) + " km, steepest cell " + Number(plannedRoute.maxSlopeDeg) + "&deg;, difficulty <strong>" + escapeHtml(plannedRoute.difficulty) +
       '</strong> (green line). A* over the 80 m LOLA slope from a placeholder base, not a rover-qualified plan.</p>'
     : '<p class="subtext">No planned route for this site (none computed yet, or the crater walls exceed the rover slope limit).</p>');
   document.querySelector("main .card:last-of-type").after(card);
