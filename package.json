@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vercel dev",
     "seed": "node scripts/seed.js",
+    "demo": "node scripts/demo.js",
     "test": "node api/_lib/classify.test.js && node api/_lib/score.test.js"
   },
   "dependencies": {
