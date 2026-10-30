@@ -19,7 +19,7 @@ function flattenSite(d) {
   const pred = d.prediction || {};
   return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
     id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
-    features: d.features || {}, featureProvenance: d.featureProvenance || {},
+    screening: d.screening || null, features: d.features || {}, featureProvenance: d.featureProvenance || {},
     classification: pred.label || "INCONCLUSIVE", tier: pred.tier || "NONE", rationale: pred.rationale || "",
     provenance: d.provenance, evidence: d.evidence || [],
     published: pubEv && coords ? { lat: coords[1], lon: coords[0], tmaxK: pubEv.data && pubEv.data.tmaxK, source: pubEv.citation } : null

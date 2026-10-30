@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vercel dev",
     "seed": "node scripts/seed.js",
-    "test": "node api/_lib/classify.test.js"
+    "test": "node api/_lib/classify.test.js && node api/_lib/score.test.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",
