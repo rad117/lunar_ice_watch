@@ -105,11 +105,12 @@ def plan(site, base_xy, src):
     xy = LineString([to_xy(r, c) for r, c in path]).simplify(cell / 2)
     pts = list(xy.coords)
     worst = max(sl[r, c] for r, c in path)
+    slopes = [round(float(sl[to_rc(*q)]), 1) for q in pts]  # slope of the planning cell under each vertex
     return dict(
         siteId=site["siteId"], name=site["name"],
         start=list(FROM_POLAR.transform(*pts[0])), end=list(FROM_POLAR.transform(*pts[-1])),
         distanceKm=round(sum(math.dist(p, q) for p, q in zip(pts, pts[1:])) / 1000, 1),
-        maxSlopeDeg=round(float(worst), 1),
+        maxSlopeDeg=round(float(worst), 1), slopes=slopes,
         difficulty="Easy" if worst < ROVER["easy_deg"] else "Moderate" if worst < ROVER["moderate_deg"] else "Hard",
         path={"type": "LineString", "coordinates": [[round(v, 5) for v in FROM_POLAR.transform(*p)] for p in pts]},
     )
