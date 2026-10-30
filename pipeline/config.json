@@ -1,0 +1,37 @@
+{
+  "moon_radius_m": 1737400,
+  "note": "Coordinates are planetocentric lat/lon (east-positive) as recalled from the USGS Gazetteer of Planetary Nomenclature / Wikipedia. They were NOT re-checked against the Gazetteer by the pipeline author: verify each before trusting results (see README).",
+  "sha256_note": "Trust-on-first-use pins: computed from the files as first downloaded on 2026-10-30 (the sources publish no checksums). A mismatch means the file changed upstream or was tampered with; fetch deletes it.",
+  "sha256": {
+    "polar_south_80_summer_max-float.tif": "ba4a1b6275402d6b0c1000ceb0208ad63d37665afaeb902ab6f108c67c0a0c67",
+    "polar_south_80_summer_avg-float.tif": "0be252e5fbaec7a12adf2e7ea04f2ade0ceefb3a6995f6ac68157e3a87d0b6b0",
+    "polar_south_80_winter_avg-float.tif": "5f1fb5149a426d5749938111b57f5710b0522e874c8cad6ba36fca23682e6f85",
+    "polar_south_80_winter_max.grd": "6ffa5c0a7f61d4631c73e8708679a5f5aeb10698688fda66091f2229b563814f",
+    "LDEM_80S_80M.LBL": "107c7558cbf8832e4119d3c8c2b1b272623344275c85378a9b0e03c22876eb33",
+    "LDEM_80S_80M.IMG": "e6591eeea35402ca5e124ca00f5bf0774381a2d4fa919144b455d82b8ff65fdc"
+  },
+  "sites": [
+    { "siteId": "s7", "name": "Shackleton", "region": "Shackleton crater floor", "lat": -89.69, "lon": 133.4, "diameter_km": 21, "window_km": 4,
+      "coord_note": "Gazetteer gives 89.9S 0E, which lies on the rim next to the pole; the floor is not there. Centre here = centroid of Diviner annual-max <110 K pixels within 15 km of the pole (checked: also near the deepest LOLA DEM point, -89.63 / 118.8E). Verify against a published crater centre." },
+    { "siteId": "s1", "name": "Cabeus", "region": "Cabeus crater floor", "lat": -84.9, "lon": -35.5, "diameter_km": 98, "window_km": 20 },
+    { "siteId": "s3", "name": "Shoemaker", "region": "Shoemaker crater floor", "lat": -88.1, "lon": 44.9, "diameter_km": 51, "window_km": 12 },
+    { "siteId": "s2", "name": "Faustini", "region": "Faustini crater floor", "lat": -87.3, "lon": 77.0, "diameter_km": 39, "window_km": 10 },
+    { "siteId": "s4", "name": "Haworth", "region": "Haworth crater floor", "lat": -87.5, "lon": -5.0, "diameter_km": 51, "window_km": 12 },
+    { "siteId": "s5", "name": "Amundsen", "region": "Amundsen crater floor", "lat": -84.5, "lon": 82.8, "diameter_km": 105, "window_km": 25 },
+    { "siteId": "s6", "name": "Sverdrup", "region": "Sverdrup crater floor", "lat": -88.5, "lon": -152.0, "diameter_km": 35, "window_km": 8 }
+  ],
+  "published_ice_evidence": [
+    {
+      "siteId": "s1",
+      "source": "LCROSS impact at Cabeus",
+      "note": "Water ice detected in the ejecta plume of the LCROSS impact in Cabeus.",
+      "citation": "Colaprete, A. et al. (2010) Detection of water in the LCROSS ejecta plume. Science 330, 463-468. doi:10.1126/science.1186986"
+    }
+  ],
+  "published_pending_user_verification": [
+    "LCROSS water abundance in the Cabeus plume (I recall about 5.6 +/- 2.9 wt%) - not stored until you confirm in Colaprete et al. 2010.",
+    "Li et al. 2018 PNAS 115, 8907 (doi:10.1073/pnas.1802345115), M3 surface-ice detections in polar shadowed regions - which of these seven craters host a detection must be read from the paper's table; none stored."
+  ],
+  "base": {"name": "Connecting Ridge area (placeholder)", "lat": -89.45, "lon": -137.3, "note": "Approximate Artemis-region ridge position recalled from memory, NOT verified and not checked for illumination or slope. Replace with a real landing/base site."},
+  "rover": {"block": 4, "operational_deg": 15, "extended_deg": 25, "max_slope_deg": 30, "note": "Tiers follow NASA's published VIPER figures: drives up to ~15 deg generally, 25-30 deg 'when necessary' with more slipping and slower travel (science.nasa.gov/mission/viper/lunar-operations). Planner: <=15 Easy, <=25 Moderate, <=30 Hard, >30 impassable. Cost multiplier 1+(slope/15)^2, plus 10 above 15 deg (the penalty size is a planner choice, not sourced). Planning grid = 4 x 80 m cells using block-max slope, so it is conservative versus a rover's wheel-scale slope."}
+}

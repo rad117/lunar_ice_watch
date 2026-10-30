@@ -1,94 +1,97 @@
-// Shared "database" for the whole prototype (fake data, not a real backend).
-// Loaded on Dashboard, Map, Traverse and Site Detail pages — they all read from this same array.
-// x/y are 0-100 percentage coordinates plotted onto the map canvas in js/map.js.
-const siteData = [
-  {
-    id: "s1",
-    label: "Site A1",
-    crater: "Near Cabeus rim",
-    x: 32, y: 40,
-    pv: 0.71, cpr: 1.42, serd: 0.18, tRatio: 0.62,
-    thermalGate: "pass", thermalTemp: -238,
-    altFlag: false, altNote: "No fresh crater ejecta nearby",
-    terrainHazard: 22, boulderCount: 4,
-    classification: "ICE-SUPPORTED-HIGH",
-    tier: "STRONG_SUPPORT",
-    rationale: "High CPR combined with a passed thermal gate and low terrain hazard. No competing explanation found for the radar anomaly."
-  },
-  {
-    id: "s2",
-    label: "Site A2",
-    crater: "Faustini floor",
-    x: 55, y: 25,
-    pv: 0.34, cpr: 0.88, serd: 0.41, tRatio: 0.35,
-    thermalGate: "pass", thermalTemp: -221,
-    altFlag: true, altNote: "Adjacent to a young crater, ejecta blanket may explain roughness",
-    terrainHazard: 48, boulderCount: 11,
-    classification: "INCONCLUSIVE",
-    tier: "NONE",
-    rationale: "Passed the thermal gate but the alternative-explanation flag is raised. Radar signal alone is not enough to confirm ice."
-  },
-  {
-    id: "s3",
-    label: "Site A3",
-    crater: "Shoemaker basin",
-    x: 68, y: 58,
-    pv: 0.19, cpr: 0.61, serd: 0.55, tRatio: 0.21,
-    thermalGate: "fail", thermalTemp: -142,
-    altFlag: false, altNote: "No unusual terrain features",
-    terrainHazard: 35, boulderCount: 7,
-    classification: "ICE-UNLIKELY",
-    tier: "NONE",
-    rationale: "Region is not cold enough to sustain surface ice. Thermal gate failure overrides any radar signal."
-  },
-  {
-    id: "s4",
-    label: "Site A4",
-    crater: "Haworth wall",
-    x: 20, y: 65,
-    pv: 0.58, cpr: 1.15, serd: 0.22, tRatio: 0.49,
-    thermalGate: "pass", thermalTemp: -230,
-    altFlag: false, altNote: "Terrain is smooth, no ejecta signature",
-    terrainHazard: 40, boulderCount: 9,
-    classification: "ICE-SUPPORTED-MODERATE",
-    tier: "STRONG_SUPPORT",
-    rationale: "Moderate radar and thermal evidence align. Terrain hazard is on the higher side so confidence is not maximal."
-  },
-  {
-    id: "s5",
-    label: "Site A5",
-    crater: "Amundsen crater",
-    x: 78, y: 33,
-    pv: 0.25, cpr: 0.7, serd: 0.6, tRatio: 0.3,
-    thermalGate: "fail", thermalTemp: -160,
-    altFlag: true, altNote: "Ejecta blanket overlaps candidate zone",
-    terrainHazard: 61, boulderCount: 14,
-    classification: "ICE-UNLIKELY",
-    tier: "NONE",
-    rationale: "Failed thermal gate and a raised alternative-explanation flag. Radar anomaly most likely explained by terrain."
-  },
-  {
-    id: "s6",
-    label: "Site A6",
-    crater: "Sverdrup ridge",
-    x: 44, y: 78,
-    pv: 0.66, cpr: 1.3, serd: 0.16, tRatio: 0.58,
-    thermalGate: "pass", thermalTemp: -242,
-    altFlag: false, altNote: "No competing terrain explanation identified",
-    terrainHazard: 18, boulderCount: 3,
-    classification: "ICE-SUPPORTED-HIGH",
-    tier: "PROOF",
-    rationale: "Strongest candidate in the set. Passed thermal gate, low hazard, high CPR, and no alternative explanation."
+// Shared site list for the whole prototype, loaded from the MongoDB-backed API (api/sites).
+// A page opts in with <script src="js/data.js" data-page="js/foo.js">: data.js fetches the sites, shows a
+// loading / error banner meanwhile, then loads the page script, which can use `siteData` as before.
+// The API returns the sites-collection schema; flattenSite() maps it to the flat shape the pages use.
+const siteData = [];
+
+// Map-canvas position (0-100 %) from a real lat/lon: south polar stereographic on a 1737.4 km sphere, 300 km = 40 %.
+function polarPercent(lat, lon) {
+  const rho = 2 * 1737.4 * Math.tan((90 + lat) * Math.PI / 360);
+  const l = lon * Math.PI / 180;
+  return { x: 50 + 40 * rho * Math.sin(l) / 300, y: 50 - 40 * rho * Math.cos(l) / 300 };
+}
+
+function flattenSite(d) {
+  const pubEv = (d.evidence || []).find(function (e) { return e.provenance === "published"; });
+  const coords = d.location && d.location.coordinates;
+  const legacy = Object.assign({}, d.legacy);
+  let fromCoords = false; // true when x/y come from the real lat/lon (so map distances are real km, not the demo's made-up units)
+  if (legacy.x == null && coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; }
+  const pred = d.prediction || {};
+  return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
+    id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
+    screening: d.screening || null, posFromCoords: fromCoords, features: d.features || {}, featureProvenance: d.featureProvenance || {},
+    classification: pred.label || "INCONCLUSIVE", tier: pred.tier || "NONE", rationale: pred.rationale || "",
+    provenance: d.provenance, evidence: d.evidence || [],
+    published: pubEv && coords ? { lat: coords[1], lon: coords[0], tmaxK: pubEv.data && pubEv.data.tmaxK, source: pubEv.citation } : null
+  });
+}
+
+// h("p", {class: "subtext"}, "text", node, ...) builds elements without HTML strings, so text can never be parsed as markup.
+// Attribute keys: class, style, or any other attribute name; null/false children are skipped.
+function h(tag, attrs, ...kids) {
+  const NS = { svg: 1, circle: 1 };
+  const e = NS[tag] ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
+  Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+  kids.forEach(function (c) { if (c != null && c !== false) e.append(c); }); // strings become text nodes
+  return e;
+}
+
+// Small "simulated / published / raster" badge; provenance comes from the database, never hardcoded in pages.
+function provBadge(p) {
+  if (!p) return "";
+  return '<span class="prov prov--' + escapeHtml(p) + '" title="Data provenance: ' + escapeHtml(p) + '">' + escapeHtml(p) + '</span>';
+}
+
+// Same badge as a DOM node (no HTML string); use where the surrounding element is built with h().
+function provNode(p) {
+  return p ? h("span", { class: "prov prov--" + p, title: "Data provenance: " + p }, p) : null;
+}
+
+(function () {
+  const pageScript = document.currentScript && document.currentScript.dataset.page;
+  if (!pageScript) return;
+
+  function load() {
+    const main = document.getElementById("main-content");
+    const banner = document.createElement("p");
+    banner.className = "subtext";
+    banner.setAttribute("role", "status");
+    banner.textContent = "Loading sites...";
+    main.prepend(banner);
+
+    fetch("/api/sites").then(function (r) {
+      if (!r.ok) throw new Error("API returned " + r.status);
+      return r.json();
+    }).then(function (docs) {
+      docs.forEach(function (d) { siteData.push(flattenSite(d)); });
+      banner.remove();
+      const note = document.createElement("p");
+      note.className = "small-note";
+      note.textContent = "Screening estimates, not scientific confirmation of lunar ice.";
+      main.append(note);
+      const el = document.createElement("script");
+      el.src = pageScript;
+      document.body.appendChild(el);
+    }).catch(function (e) {
+      banner.textContent = "Could not load sites (" + e.message + "). ";
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "secondary";
+      retry.textContent = "Retry";
+      retry.addEventListener("click", function () { banner.remove(); load(); });
+      banner.append(retry);
+    });
   }
-];
+  document.addEventListener("DOMContentLoaded", load);
+})();
 
 // Looks up one site's record; used by site.html, map.html and traverse.html to show details for the picked site
 function getSiteById(id) {
   return siteData.find(function (s) { return s.id === id; });
 }
 
-// Site labels can come from the free-text "Site name" field on the Upload
-// page (stored in localStorage), so escape before interpolating into HTML.
+// Site labels can come from uploaded CSVs / the "Site name" field, so escape before interpolating into HTML.
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -117,20 +120,3 @@ function hazardLevelColor(h) {
   if (h < 50) return "#fbbf24";
   return "#f87171";
 }
-
-// On page load, merges in any sites the user "uploaded" via upload.html (js/upload.js saves them
-// to localStorage under "liw_extra_sites"), so new uploads show up in the Dashboard/Map/Traverse
-(function loadExtraSites() {
-  try {
-    const raw = localStorage.getItem("liw_extra_sites");
-    if (!raw) return;
-    const extra = JSON.parse(raw);
-    if (Array.isArray(extra)) {
-      extra.forEach(function (s) {
-        if (s && s.id && !getSiteById(s.id)) siteData.push(s);
-      });
-    }
-  } catch (e) {
-    /* ignore malformed local storage */
-  }
-})();

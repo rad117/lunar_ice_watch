@@ -4,7 +4,7 @@
    not replace, the existing system. */
 
 /* ---------- display type on headings ---------- */
-h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .login-box h1, .home-bottom-cta h2 {
+h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .home-bottom-cta h2 {
   font-family: var(--font-display);
 }
 .home-hero h1 { letter-spacing: -0.03em; }
@@ -48,7 +48,7 @@ h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .login-box h1, .home-
 .badge.badge--unlikely { color: var(--bad); background: rgba(251, 113, 133, 0.12) !important; border-color: rgba(251, 113, 133, 0.32); }
 
 /* ---------- glass polish ---------- */
-.card, .stat-card, .home-card, .home-section-card, .page-hero, .login-box, .toast, .workflow-step {
+.card, .stat-card, .home-card, .home-section-card, .page-hero, .toast, .workflow-step {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: var(--glass-border);
@@ -91,6 +91,8 @@ button:hover:not(:disabled), .home-cta:hover {
 html.has-custom-cursor, html.has-custom-cursor * {
   cursor: none !important;
 }
+html.has-custom-cursor .hero-moon3d, html.has-custom-cursor .hero-moon3d * { cursor: grab !important; }
+html.has-custom-cursor .hero-moon3d:active, html.has-custom-cursor .hero-moon3d:active * { cursor: grabbing !important; }
 html.has-custom-cursor input, html.has-custom-cursor textarea {
   cursor: text !important;
 }
@@ -190,3 +192,10 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   .home-hero-fade { background: linear-gradient(180deg, transparent 0%, #05070c 92%); }
   .home-hero-moon { flex-basis: 320px; min-height: 320px; }
 }
+
+/* Data provenance badge (simulated / published / raster) */
+.prov { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
+.prov--simulated { color: var(--warn, #fbbf24); }
+.prov--published { color: #60a5fa; }
+.prov--raster { color: var(--ok, #4ade80); }
+.prov--mixed { color: #c4b5fd; }

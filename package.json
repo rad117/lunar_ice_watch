@@ -1,0 +1,16 @@
+{
+  "name": "lunar-ice-watch",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "seed": "node scripts/seed.js",
+    "test": "node api/_lib/classify.test.js && node api/_lib/score.test.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.2",
+    "mongodb": "^7.7.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0"
+  }
+}

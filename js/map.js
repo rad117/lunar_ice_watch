@@ -62,8 +62,8 @@ function draw() {
 
   siteData.forEach(function (site) {
     const p = toPixel(site);
-    const radius = 14 + (site.terrainHazard / 100) * 32;
-    ctx.fillStyle = hazardFillColor(site.terrainHazard);
+    const radius = 14 + ((site.terrainHazard || 0) / 100) * 32;
+    ctx.fillStyle = hazardFillColor(site.terrainHazard || 0);
     ctx.beginPath();
     ctx.arc(p.px, p.py, radius, 0, Math.PI * 2);
     ctx.fill();
@@ -160,8 +160,9 @@ canvas.addEventListener("mousemove", function (e) {
     canvas.style.cursor = closest ? "pointer" : "default";
     if (closest) {
       const p = toPixel(closest);
-      tooltip.innerHTML = '<span class="t-name">' + closest.label + '</span> &middot; ' + closest.crater +
-        '<br>hazard ' + closest.terrainHazard + '% &middot; ' + closest.classification;
+      tooltip.replaceChildren(
+        h("span", { class: "t-name" }, closest.label), " \u00b7 " + closest.crater, h("br"),
+        "hazard " + (closest.terrainHazard == null ? "n/a" : closest.terrainHazard + "%") + " \u00b7 " + closest.classification);
       tooltip.style.left = (p.px / canvas.width * 100) + "%";
       tooltip.style.top = (p.py / canvas.height * 100) + "%";
       tooltip.classList.add("visible");
@@ -181,9 +182,9 @@ canvas.addEventListener("mouseleave", function () {
 // Builds the detail panel below the map (#infoCard) for the clicked site, with links to
 // the full Site Detail page and to the Traverse simulation for that site
 function showInfo(site) {
-  const dist = Math.round(Math.sqrt(
-    Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2)
-  ) * 3);
+  const offset = Math.sqrt(Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2));
+  // sites placed from real coordinates: 300 km = 40 map % (see polarPercent); demo sites keep the old made-up scale
+  const distText = site.posFromCoords ? Math.round(offset / 40 * 300) + " km" : Math.round(offset * 3) + " m";
 
   const heading = document.createElement("h3");
   heading.textContent = site.label + " - " + site.crater;
@@ -194,14 +195,15 @@ function showInfo(site) {
   badge.className = "badge " + classificationClass(site.classification);
   badge.textContent = site.classification;
   classP.appendChild(badge);
+  classP.insertAdjacentHTML("beforeend", provBadge(site.provenance));
 
   const hazardP = document.createElement("p");
   hazardP.className = "subtext";
-  hazardP.textContent = "Terrain hazard: " + site.terrainHazard + "% | Boulder count (optical): " + site.boulderCount;
+  hazardP.textContent = "Terrain hazard: " + (site.terrainHazard == null ? "n/a" : site.terrainHazard + "%") + " | Boulder count (optical): " + (site.boulderCount == null ? "n/a" : site.boulderCount);
 
   const distP = document.createElement("p");
   distP.className = "subtext";
-  distP.textContent = "Estimated distance from base station: " + dist + " m";
+  distP.textContent = "Estimated distance from base station: " + distText;
 
   const evidenceLink = document.createElement("a");
   evidenceLink.className = "back-link";
