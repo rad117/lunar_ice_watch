@@ -2,6 +2,7 @@ const db = require("./_lib/db");
 const route = require("./_lib/http");
 const limit = require("./_lib/limit");
 const store = require("./_lib/blob");
+const snap = require("./_lib/snapshot");
 const { parseCsv } = require("./_lib/csv");
 const { buildSite } = require("./_lib/classify");
 const { siteDoc } = require("./_lib/siteDoc");
@@ -16,6 +17,7 @@ const MAX_UPLOADS_PER_HOUR = 20;
 // Each row is classified, becomes a site, and gets an observation.
 // ponytail: file travels inside the JSON body (Vercel caps bodies at ~4.5 MB); switch to client-direct Blob upload for big GeoTIFFs (phase 4).
 module.exports = route(["POST"], async function (req, res) {
+  if (snap.active()) snap.needsDb();
   const d = await db();
   const client = clientId(req);
   await limit(d, "upload:" + client, MAX_UPLOADS_PER_HOUR);

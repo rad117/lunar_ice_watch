@@ -1,6 +1,7 @@
 const db = require("../_lib/db");
 const route = require("../_lib/http");
 const { MOON_RADIUS_KM } = require("../_lib/siteDoc");
+const snap = require("../_lib/snapshot");
 
 const rad = Math.PI / 180;
 function distKm(a, b) {
@@ -15,8 +16,14 @@ module.exports = route(["GET"], async function (req, res) {
   if (![lat, lon, km].every(Number.isFinite) || Math.abs(lat) > 90 || Math.abs(lon) > 180 || km <= 0 || km > 5000) {
     return res.status(400).json({ error: "lat (-90..90), lon (-180..180) and km (0..5000) are required numbers" });
   }
-  const sites = await (await db()).collection("sites")
-    .find({ location: { $geoWithin: { $centerSphere: [[lon, lat], km / MOON_RADIUS_KM] } } }, { projection: { ownerId: 0 } }).toArray();
+  let sites;
+  if (snap.active()) {
+    snap.mark(res);
+    sites = snap.data().sites.filter(function (s) { return s.location && distKm([lon, lat], s.location.coordinates) <= km; }).map(function (s) { return Object.assign({}, s); });
+  } else {
+    sites = await (await db()).collection("sites")
+      .find({ location: { $geoWithin: { $centerSphere: [[lon, lat], km / MOON_RADIUS_KM] } } }, { projection: { ownerId: 0 } }).toArray();
+  }
   sites.forEach(function (s) { s.distanceKm = Math.round(distKm([lon, lat], s.location.coordinates) * 10) / 10; });
   res.json(sites.sort(function (a, b) { return a.distanceKm - b.distanceKm; }));
 });

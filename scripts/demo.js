@@ -2,6 +2,7 @@
 // Starts an in-memory MongoDB (first run downloads a MongoDB binary), seeds the sites, loads the real pipeline
 // results (pipeline/output/*.json, written by pipeline.py / route.py) and serves the pages plus the /api functions.
 // Data lives only while this runs; uploads are accepted but the CSV file itself is not stored (no Blob).
+// `npm run demo -- --snapshot` skips MongoDB and serves the API from api/_lib/snapshot.json (what Vercel does with no MONGODB_URI).
 const http = require("http"), fs = require("fs"), path = require("path");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
@@ -39,14 +40,18 @@ async function loadPipelineResults(db) {
   return { sites: feats.length, routes: routes.length };
 }
 
-(async function () {
-  const mongod = await MongoMemoryServer.create();
-  process.env.MONGODB_URI = mongod.getUri();
-  process.env.BLOB_READ_WRITE_TOKEN = "demo";
-  require.cache[require.resolve("../api/_lib/blob")] = { id: "blob", loaded: true, exports: async function (p) { return "demo://" + p; } };
-  await require("./seed")(true);
-  const db = await require("../api/_lib/db")();
-  console.log("pipeline data loaded:", await loadPipelineResults(db));
+module.exports = { loadPipelineResults };
+
+if (require.main === module) (async function () {
+  if (!process.argv.includes("--snapshot")) {
+    const mongod = await MongoMemoryServer.create();
+    process.env.MONGODB_URI = mongod.getUri();
+    process.env.BLOB_READ_WRITE_TOKEN = "demo";
+    require.cache[require.resolve("../api/_lib/blob")] = { id: "blob", loaded: true, exports: async function (p) { return "demo://" + p; } };
+    await require("./seed")(true);
+    const db = await require("../api/_lib/db")();
+    console.log("pipeline data loaded:", await loadPipelineResults(db));
+  }
 
   http.createServer(function (req, res) {
     const u = new URL(req.url, "http://localhost");

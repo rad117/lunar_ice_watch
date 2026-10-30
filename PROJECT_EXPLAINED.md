@@ -221,6 +221,13 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 
 ---
 
+## 8b. Running without a database (demo and snapshot mode)
+
+- `npm run demo` starts a temporary in-memory MongoDB on your computer, loads the 7 sites and 6 routes, and serves the whole site at `http://localhost:3000`. Uploads work; data resets when you stop it.
+- If the deployed site has **no database connected** (no `MONGODB_URI`), the API serves a saved **snapshot** of the same data (`api/_lib/snapshot.json`, made with `npm run snapshot`). The pages work read-only and say so; uploads are switched off with a clear message. As soon as a real `MONGODB_URI` is added, the site uses the database automatically.
+
+---
+
 ## 9. Likely questions from a teacher
 
 **Why MongoDB?** Flexible documents (missing measurements are natural), built-in geospatial index, free cloud tier.
@@ -232,6 +239,8 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 **How do you know the data is real?** Each value carries a provenance tag; downloads are checked against pinned SHA-256 fingerprints; the pipeline cites each dataset; the numbers match published ranges.
 
 **Why not train a machine-learning model?** No labelled examples of "ice / no ice" to learn from; 7 sites is far too few. A transparent formula with documented sources is more honest.
+
+**What if the database is down or not connected?** With no `MONGODB_URI` the site serves a saved read-only snapshot of the real data (labelled as such). If a database is configured but fails, the error is shown, not hidden.
 
 **Why did you remove login?** It's a mini-project; real authentication was built, then removed on request. Open endpoints are guarded with size limits and rate limits instead.
 
