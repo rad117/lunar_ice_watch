@@ -42,18 +42,11 @@ const TEMPLATE_CSV =
   "label,crater,x,y,pv,cpr,serd,tRatio,thermalTemp,altFlag,terrainHazard,boulderCount\n" +
   "Site B1,Near Shackleton rim,40,50,0.6,1.3,0.2,0.5,-235,false,22,4\n";
 
-// Minimal CSV parse (no quoted commas): header row -> array of {column: value} objects
-function parseCsv(text) {
-  const lines = text.split(/\r?\n/).filter(function (l) { return l.trim(); });
-  const head = lines.shift().split(",").map(function (h) { return h.trim(); });
+// Quick client-side check of the header only; the server (api/_lib/csv.js) does the real parsing and validation.
+function checkCsvHeader(text) {
+  const head = text.replace(/^\uFEFF/, "").split(/\r?\n/)[0].split(",").map(function (h) { return h.trim().replace(/^"|"$/g, ""); });
   REQUIRED_COLS.forEach(function (c) {
     if (head.indexOf(c) < 0) throw new Error("CSV is missing required column: " + c);
-  });
-  return lines.map(function (l) {
-    const cells = l.split(",");
-    const row = {};
-    head.forEach(function (h, i) { row[h] = (cells[i] || "").trim(); });
-    return row;
   });
 }
 
@@ -97,13 +90,17 @@ async function startUpload() {
     for (let i = 0; i < stages.length; i++) {
       setStage(stages[i], "active");
       status.textContent = document.querySelector('#checklist li[data-stage="' + stages[i] + '"]').textContent + "...";
-      if (i === 0) { var text = await file.text(); parseCsv(text); } // client-side check only; the server validates again
+      if (i === 0) { var text = await file.text(); checkCsvHeader(text); } // client-side check only; the server validates again
       if (i === 3) {
+        const ctl = new AbortController();
+        const timer = setTimeout(function () { ctl.abort(); }, 30000);
         const res = await fetch("/api/upload", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name, filename: file.name, csv: text })
-        });
+          body: JSON.stringify({ name: name, filename: file.name, csv: text }),
+          signal: ctl.signal
+        }).catch(function (e) { throw new Error(e.name === "AbortError" ? "The server did not answer within 30 s. Try again." : e.message); })
+          .finally(function () { clearTimeout(timer); });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error || "Upload failed");
         sites = body;

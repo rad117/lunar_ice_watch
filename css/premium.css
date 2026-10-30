@@ -91,6 +91,8 @@ button:hover:not(:disabled), .home-cta:hover {
 html.has-custom-cursor, html.has-custom-cursor * {
   cursor: none !important;
 }
+html.has-custom-cursor .hero-moon3d, html.has-custom-cursor .hero-moon3d * { cursor: grab !important; }
+html.has-custom-cursor .hero-moon3d:active, html.has-custom-cursor .hero-moon3d:active * { cursor: grabbing !important; }
 html.has-custom-cursor input, html.has-custom-cursor textarea {
   cursor: text !important;
 }

@@ -44,9 +44,15 @@ module.exports = route(["POST"], async function (req, res) {
   }
 
   const fileUrl = await store("uploads/" + String(filename).replace(/[^\w.-]/g, "_").slice(-80), csv, "text/csv");
-  await d.collection("sites").insertMany(docs);
-  await d.collection("observations").insertMany(docs.map(function (s, i) {
-    return { siteId: s._id, rowIndex: i, instrument: "csv", acquiredAt: null, fileUrl, extractedFeatures: s.features, prediction: s.prediction, createdAt: now };
-  }));
+  const ids = docs.map(function (s) { return s._id; });
+  try {
+    await d.collection("sites").insertMany(docs);
+    await d.collection("observations").insertMany(docs.map(function (s, i) {
+      return { siteId: s._id, rowIndex: i, instrument: "csv", acquiredAt: null, fileUrl, extractedFeatures: s.features, prediction: s.prediction, createdAt: now };
+    }));
+  } catch (e) { // no half-saved uploads (a multi-document transaction needs a replica set; this is the cheap equivalent)
+    await Promise.all([d.collection("sites").deleteMany({ _id: { $in: ids } }), d.collection("observations").deleteMany({ siteId: { $in: ids } })]).catch(function () {});
+    throw e;
+  }
   res.status(201).json(docs);
 });

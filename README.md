@@ -59,11 +59,11 @@ tRatio, altFlag, boulderCount`. Each row becomes a site, classified by
 | `site.html`      | Detail view for one site: radar metrics, thermal/flag gates, hazard gauge, final classification |
 | `map.html`       | Canvas map plotting every site around the base station, with hazard shading |
 | `traverse.html`  | Animates a simulated rover route from the base station to a chosen site    |
-| `upload.html`    | "Uploads" a new observation: fakes an analysis pipeline and adds a randomly generated site |
+| `upload.html`    | Upload a CSV of measurements (max 1 MB / 500 rows); the server validates, classifies and stores each row as a site |
 | `info.html`      | Redirect stub -> `index.html#about`                                        |
 
 Every inner page shares the same top navbar (`Home / Dashboard / Upload / Map
-/ Traverse`) and the same background (starfield + ambient moon).
+/ Traverse / About`; a page links to the others) and the same background (starfield + ambient moon).
 
 ## Folder structure
 
@@ -75,7 +75,7 @@ css/
   starfield.css  the animated background star layers
 
 js/
-  data.js        the site "database" (fake data) + helper functions read by every page
+  data.js        loads the sites from `/api/sites` + helper functions read by every page
   ui.js          shared helpers: navbar highlighting, toasts, moonlight toggle
   starfield.js   injects and animates the background stars
   cursor.js      the custom glowing cursor + sparkle trail
@@ -84,7 +84,7 @@ js/
   site.js        fills in the Site Detail page from the URL's ?id=
   map.js         draws the Map page's canvas and handles clicks/hover
   traverse.js    builds and animates the Traverse page's rover route
-  upload.js      the Upload page's dropzone + fake analysis pipeline
+  upload.js      the Upload page's dropzone + progress checklist + POST to `/api/upload`
   vendor/three/  third-party three.js library (not part of this project's own code)
 
 img/
@@ -93,7 +93,7 @@ img/
 
 ## How a candidate site is classified
 
-`js/data.js` seeds 6 example sites; `js/upload.js` can generate more. Each
+The 6 example sites live in `scripts/seed.json` (loaded into MongoDB with `npm run seed`); uploaded CSV rows add more. Each
 site is classified from three signals:
 
 - **Thermal gate** (pass/fail) — is the site cold enough?
@@ -102,8 +102,8 @@ site is classified from three signals:
 
 Failing the thermal gate always means `ICE-UNLIKELY`. Otherwise a flagged
 site is `INCONCLUSIVE`, and CPR strength decides `ICE-SUPPORTED-HIGH` vs
-`ICE-SUPPORTED-MODERATE` vs `INCONCLUSIVE`. The same rules live in
-`classifyNewSite()` in `js/upload.js` for newly generated sites.
+`ICE-SUPPORTED-MODERATE` vs `INCONCLUSIVE`. The same rules run on the server in
+`api/_lib/classify.js`, so clients cannot choose a classification.
 
 **Prototype disclaimer:** all data, classifications and rover traverses are
 simulated locally for demonstration — this is not real lunar science.
