@@ -44,6 +44,16 @@ class PipelineTests(unittest.TestCase):
         for s in p.CFG["sites"]:
             self.assertTrue(-90 <= s["lat"] <= -80, s["name"])
 
+    def test_partial_coverage_is_rejected(self):
+        a = np.ones((10, 10))
+        inside = np.ones((10, 10), bool)
+        self.assertEqual(p.median_in(a, inside)[0], 1.0)             # window fully covered
+        self.assertIsNone(p.median_in(a, inside, full=400)[0])       # circle would hold 400 px, only 100 exist
+
+    def test_annual_max_is_nan_if_one_season_missing(self):
+        s, w = np.array([100.0, np.nan]), np.array([np.nan, 90.0])
+        self.assertTrue(np.isnan(np.maximum(s, w)).all())
+
     def test_astar_goes_through_the_gap_and_respects_blocks(self):
         import route
         g = np.zeros((7, 7))

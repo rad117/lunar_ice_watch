@@ -15,11 +15,12 @@ function flattenSite(d) {
   const pubEv = (d.evidence || []).find(function (e) { return e.provenance === "published"; });
   const coords = d.location && d.location.coordinates;
   const legacy = Object.assign({}, d.legacy);
-  if (legacy.x == null && coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; }
+  let fromCoords = false; // true when x/y come from the real lat/lon (so map distances are real km, not the demo's made-up units)
+  if (legacy.x == null && coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; }
   const pred = d.prediction || {};
   return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
     id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
-    screening: d.screening || null, features: d.features || {}, featureProvenance: d.featureProvenance || {},
+    screening: d.screening || null, posFromCoords: fromCoords, features: d.features || {}, featureProvenance: d.featureProvenance || {},
     classification: pred.label || "INCONCLUSIVE", tier: pred.tier || "NONE", rationale: pred.rationale || "",
     provenance: d.provenance, evidence: d.evidence || [],
     published: pubEv && coords ? { lat: coords[1], lon: coords[0], tmaxK: pubEv.data && pubEv.data.tmaxK, source: pubEv.citation } : null

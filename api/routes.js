@@ -3,7 +3,7 @@ const route = require("./_lib/http");
 const limit = require("./_lib/limit");
 
 const { httpError, clientId } = route;
-const isPoint = function (p) { return Array.isArray(p) && p.length === 2 && p.every(Number.isFinite); };
+const isPoint = function (p) { return Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && Math.abs(p[0]) <= 180 && Math.abs(p[1]) <= 90; }; // [lon, lat]
 
 // GET /api/routes[?siteId=s1] -> saved routes, newest first.
 // POST { siteId, start, end, distanceKm, difficulty, path } -> save one (60 per client per hour).

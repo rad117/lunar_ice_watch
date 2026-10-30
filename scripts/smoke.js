@@ -59,6 +59,7 @@ function call(handler, req) {
   // ---- routes ----
   const rt = { siteId: "s1", start: [0, -89], end: [-46.5, -84.5], distanceKm: 12.5, difficulty: "Medium", path: { type: "LineString", coordinates: [[0, -89], [-46.5, -84.5]] } };
   assert.strictEqual((await post("routes", Object.assign({}, rt, { path: { type: "Point" } }))).code, 400);
+  assert.strictEqual((await post("routes", Object.assign({}, rt, { start: [300, 200] }))).code, 400); // outside lon/lat range
   assert.strictEqual((await post("routes", rt)).code, 201);
   assert.strictEqual((await call(api("routes"), { query: { siteId: "s1" } })).body.length, 1);
 

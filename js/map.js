@@ -161,7 +161,7 @@ canvas.addEventListener("mousemove", function (e) {
     if (closest) {
       const p = toPixel(closest);
       tooltip.innerHTML = '<span class="t-name">' + escapeHtml(closest.label) + '</span> &middot; ' + escapeHtml(closest.crater) +
-        '<br>hazard ' + (closest.terrainHazard == null ? "n/a" : closest.terrainHazard + "%") + ' &middot; ' + closest.classification;
+        '<br>hazard ' + (closest.terrainHazard == null ? "n/a" : escapeHtml(closest.terrainHazard) + "%") + ' &middot; ' + escapeHtml(closest.classification);
       tooltip.style.left = (p.px / canvas.width * 100) + "%";
       tooltip.style.top = (p.py / canvas.height * 100) + "%";
       tooltip.classList.add("visible");
@@ -181,9 +181,9 @@ canvas.addEventListener("mouseleave", function () {
 // Builds the detail panel below the map (#infoCard) for the clicked site, with links to
 // the full Site Detail page and to the Traverse simulation for that site
 function showInfo(site) {
-  const dist = Math.round(Math.sqrt(
-    Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2)
-  ) * 3);
+  const offset = Math.sqrt(Math.pow(site.x - 50, 2) + Math.pow(site.y - 50, 2));
+  // sites placed from real coordinates: 300 km = 40 map % (see polarPercent); demo sites keep the old made-up scale
+  const distText = site.posFromCoords ? Math.round(offset / 40 * 300) + " km" : Math.round(offset * 3) + " m";
 
   const heading = document.createElement("h3");
   heading.textContent = site.label + " - " + site.crater;
@@ -202,7 +202,7 @@ function showInfo(site) {
 
   const distP = document.createElement("p");
   distP.className = "subtext";
-  distP.textContent = "Estimated distance from base station: " + dist + " m";
+  distP.textContent = "Estimated distance from base station: " + distText;
 
   const evidenceLink = document.createElement("a");
   evidenceLink.className = "back-link";

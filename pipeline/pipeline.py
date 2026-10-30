@@ -108,8 +108,10 @@ def derive_winter_max():
         m = ~np.isnan(a)
         assert np.corrcoef(a[m], b[m])[0, 1] > 0.8, "winter_max.grd looks flipped"
         prof = ref.profile
-    with rasterio.open(out, "w", **prof) as dst:
+    tmp = out + ".part"  # write then rename, so an interrupted run never leaves a half-written file at `out`
+    with rasterio.open(tmp, "w", **prof) as dst:
         dst.write(a.astype(prof["dtype"]), 1)
+    os.replace(tmp, out)
     print("derived", os.path.relpath(out, HERE))
 
 
@@ -153,11 +155,12 @@ def masked(src, circle, pad=0.0):
     return a, inside, tf
 
 
-def median_in(a, inside, min_valid=0.5):
-    """Median of valid pixels inside the circle, or None if too little of the window has data."""
+def median_in(a, inside, min_valid=0.5, full=None):
+    """Median of valid pixels inside the circle, or None if too little of the circle has data.
+    `full` = pixels the whole circle would hold; pass it so a raster that only covers part of the circle is rejected."""
     v = a[inside]
     ok = v[~np.isnan(v)]
-    if v.size == 0 or ok.size / v.size < min_valid:
+    if v.size == 0 or ok.size / max(v.size, full or 0) < min_valid:
         return None, int(ok.size)
     return float(np.median(ok)), int(ok.size)
 
@@ -189,17 +192,17 @@ def compute_site(site):
     # Diviner: annual maximum = max(summer max, winter max); mean = average of the two seasonal averages
     dv = {k: os.path.join(DATA, "diviner", f) for k, f in DIVINER.items()}
     if all(os.path.exists(p) for p in dv.values()):
-        arr = {}
+        arr, tfs = {}, {}
         for k, p in dv.items():
             with open_polar(p) as s:
-                arr[k], inside, tf = masked(s, circle)
-        shape = {a.shape for a in arr.values()}
-        if len(shape) != 1:
-            raise RuntimeError("Diviner rasters are not on the same grid")
-        tmax = np.fmax(arr["summer_max"], arr["winter_max"])
+                arr[k], inside, tfs[k] = masked(s, circle)
+                full = circle.area / abs(s.transform.a * s.transform.e)
+        if len({a.shape for a in arr.values()}) != 1 or len(set(tfs.values())) != 1:
+            raise RuntimeError("Diviner rasters are not on the same grid (shape or transform differ)")
+        tmax = np.maximum(arr["summer_max"], arr["winter_max"])  # NaN if either season is missing: no half-known maximum
         tavg = (arr["summer_avg"] + arr["winter_avg"]) / 2
-        feats["maxTempK"], n = median_in(tmax, inside)
-        feats["meanTempK"], _ = median_in(tavg, inside)
+        feats["maxTempK"], n = median_in(tmax, inside, full=full)
+        feats["meanTempK"], _ = median_in(tavg, inside, full=full)
         valid = tmax[inside][~np.isnan(tmax[inside])]
         if feats["maxTempK"] is not None:
             feats["pctBelow110K"] = float(100.0 * np.mean(valid < 110.0))
@@ -224,8 +227,8 @@ def compute_site(site):
         sl = slope_deg(z, cell)
         ro = roughness_deg(sl)
         # keep only pixels inside the circle (the pad ring is dropped by the circle mask itself)
-        feats["slopeDeg"], n = median_in(np.where(np.isnan(z), np.nan, sl), inside)
-        feats["roughness"], _ = median_in(np.where(np.isnan(z), np.nan, ro), inside)
+        feats["slopeDeg"], n = median_in(np.where(np.isnan(z), np.nan, sl), inside, full=circle.area / cell ** 2)
+        feats["roughness"], _ = median_in(np.where(np.isnan(z), np.nan, ro), inside, full=circle.area / cell ** 2)
         if feats["slopeDeg"] is not None:
             prov["slopeDeg"] = prov["roughness"] = "raster"
             evidence.append(dict(source="LRO LOLA polar DEM LDEM_80S_80M", provenance="raster", citation=CITE["lola"],
@@ -241,7 +244,7 @@ def compute_site(site):
             continue
         with open_polar(found[0]) as s:
             a, inside, _ = masked(s, circle)
-        v, n = median_in(d["scale"](a), inside)
+        v, n = median_in(d["scale"](a), inside, full=circle.area / abs(s.transform.a * s.transform.e))
         if v is not None:
             feats[key], prov[key] = v, "raster"
             evidence.append(dict(source=d["name"] + " (" + os.path.basename(found[0]) + ")", provenance="raster", citation=None,
@@ -279,7 +282,7 @@ def load_env():
                 os.environ.setdefault(k.strip(), v.strip().strip("\"'"))
 
 
-def write_mongo(results):
+def write_mongo(results, started):
     from pymongo import GEOSPHERE, MongoClient, UpdateOne
     load_env()
     if not os.environ.get("MONGODB_URI"):
@@ -302,9 +305,11 @@ def write_mongo(results):
         if not old.get("location"):
             base["location"] = base["pipelineCenter"]
         base["boundary"] = r["boundary"]
-        base["pipelineRunAt"] = now()
-        ops.append(UpdateOne({"_id": r["siteId"]}, {"$set": base, "$pull": {"evidence": {"pipeline": True}}}))
-        ops.append(UpdateOne({"_id": r["siteId"]}, {"$push": {"evidence": {"$each": r["evidence"]}}}))
+        # A run that started earlier than the one already stored must not overwrite it, even if it finishes writing last.
+        base["pipelineRunAt"] = started
+        ops.append(UpdateOne({"_id": r["siteId"], "pipelineRunAt": {"$not": {"$gt": started}}},
+                             {"$set": base, "$pull": {"evidence": {"pipeline": True}}}))
+        ops.append(UpdateOne({"_id": r["siteId"], "pipelineRunAt": started}, {"$push": {"evidence": {"$each": r["evidence"]}}}))
     # Brand-new sites (not in the seed) get a minimal document; the other fields stay null until a model/pipeline run fills them.
     for r in results:
         if sites.count_documents({"_id": r["siteId"]}) == 0:
@@ -329,6 +334,7 @@ def main(argv):
         sys.exit(__doc__)
     if argv[1] == "fetch":
         return fetch()
+    started = datetime.datetime.now(datetime.timezone.utc)
     results = [compute_site(s) for s in CFG["sites"]]
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump({"generatedAt": now(), "sites": results}, open(OUT, "w"), indent=1)
@@ -339,7 +345,7 @@ def main(argv):
             print("   missing:", m)
     print("wrote", os.path.relpath(OUT, HERE))
     if "--write" in argv:
-        write_mongo(results)
+        write_mongo(results, started)
 
 
 if __name__ == "__main__":

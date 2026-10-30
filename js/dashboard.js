@@ -72,12 +72,12 @@ function renderTable() {
 
   let html = "";
   rows.forEach(function (s) {
-    html += '<tr class="site-row" tabindex="0" role="link" aria-label="Open ' + escapeHtml(s.label) + '" data-site-id="' + s.id + '">' +
+    html += '<tr class="site-row" tabindex="0" role="link" aria-label="Open ' + escapeHtml(s.label) + '" data-site-id="' + escapeHtml(s.id) + '">' +
       '<td>' + escapeHtml(s.label) + '</td>' +
       '<td>' + escapeHtml(s.crater) + '</td>' +
-      '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + (s.thermalGate ? s.thermalGate.toUpperCase() : "N/A") + '</span></td>' +
-      '<td>' + (s.terrainHazard == null ? "n/a" : s.terrainHazard + "%") + '</td>' +
-      '<td><span class="badge ' + classificationClass(s.classification) + '">' + s.classification + '</span>' + provBadge(s.provenance) + '</td>' +
+      '<td><span class="pill ' + (s.thermalGate === "pass" ? "pass" : "fail") + '">' + (s.thermalGate ? escapeHtml(s.thermalGate.toUpperCase()) : "N/A") + '</span></td>' +
+      '<td>' + (s.terrainHazard == null ? "n/a" : escapeHtml(s.terrainHazard) + "%") + '</td>' +
+      '<td><span class="badge ' + classificationClass(s.classification) + '">' + escapeHtml(s.classification) + '</span>' + provBadge(s.provenance) + '</td>' +
       '</tr>';
   });
   document.getElementById("siteTable").innerHTML = html ||

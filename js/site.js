@@ -93,6 +93,6 @@ featureCard.className = "card";
 featureCard.innerHTML = "<h3>Measured Features</h3>" + featureRows.map(function (r) {
   const v = site.features[r[0]];
   return '<p class="subtext">' + r[1] + ": " + (v == null ? "not available yet" : Number(v).toFixed(2) + provBadge(site.featureProvenance[r[0]])) + "</p>";
-}).join("") + (site.screening && site.screening.score != null ? '<p class="subtext">Screening score: <strong>' + site.screening.score.toFixed(2) + "</strong> (0-1, from " + site.screening.used.join(", ") + "; " + Math.round(site.screening.coverage * 100) + '% of inputs available). A hand-weighted heuristic, not a trained model.</p>' : "") + (site.evidence.length ? '<p class="subtext">Sources: ' + site.evidence.map(function (e) { return escapeHtml(e.source); }).join("; ") + "</p>" : "");
+}).join("") + (site.screening && site.screening.score != null ? '<p class="subtext">Screening score: <strong>' + site.screening.score.toFixed(2) + "</strong> (0-1, from " + escapeHtml(site.screening.used.join(", ")) + "; " + Math.round(site.screening.coverage * 100) + '% of inputs available). A hand-weighted heuristic, not a trained model.</p>' : "") + (site.evidence.length ? '<p class="subtext">Sources: ' + site.evidence.map(function (e) { return escapeHtml(e.source); }).join("; ") + "</p>" : "");
 const cards = document.querySelectorAll("main .card");
 cards[cards.length - 1].before(featureCard);
