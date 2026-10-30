@@ -1,7 +1,7 @@
 # Changelog - everything changed in this session
 
 Branch `remove-login`. The aim: replace hard-coded and simulated data with a MongoDB-backed system, a real data pipeline
-and (later) a real ML model. Phases 1-3 are done; phases 4 and 5 are not started.
+and (later) a real ML model. Phases 1-5 have a first version (phase 4 is a heuristic score, not a trained model).
 
 ## Phase 1 - MongoDB backend (Vercel serverless)
 - Removed the Express + Mongoose server (`server/`) and `mongodb-memory-server` as a runtime dependency. It could not run on Vercel.
@@ -40,6 +40,15 @@ and (later) a real ML model. Phases 1-3 are done; phases 4 and 5 are not started
   stale raster values are nulled when a re-run cannot compute them; `.env` quotes are stripped; the site page says classification still uses the simulated inputs.
 - Downloads use HTTPS and are checked against pinned SHA-256 values in `pipeline/config.json` (trust-on-first-use; a mismatch deletes the file).
 - Known caveat from the reviewer: Cabeus (214 K) and Amundsen (217 K) medians are high because their 20/25 km windows cover large partly-sunlit floors and the centres are unverified; `pctBelow110K` (10 % / 4 %) is the better cold-trap indicator for them.
+
+## Phase 4 - Screening score
+- `api/_lib/score.js`: hand-weighted 0-1 score from measured features; missing or simulated inputs skipped, weights renormalised, `coverage` reported. Returned as `screening` by `/api/sites`; shown on the site page. No trained model (no labelled data).
+
+## Phase 5 - Traverse planner
+- `pipeline/route.py`: A* over the LOLA 80 m slope (320 m planning cells, block-max slope, steps cost more on steeper ground, > 30 deg impassable) from `config.json -> base` to each site centre. `python route.py [--write]` -> `pipeline/output/routes.json` / MongoDB `routes` (`planner: "astar-lola-v1"`).
+- Result: 6 of 7 sites get a route (33-211 km; all but Sverdrup rate "Hard", 20-26 deg steepest cell). Shackleton has none: its walls exceed the slope limit.
+- The base is a **placeholder** (Connecting Ridge area, recalled, unverified); slope limits are illustrative. Routes ignore illumination, communications and rover dynamics.
+- Traverse page draws the planned path and a summary card; its waypoint table is still the old simulated straight line.
 
 ## Tests
 - `npm test` (classification rules), `node scripts/smoke.js` (API + DB + rate-limit burst), `cd pipeline && python -m unittest test_pipeline` (CRS, slope, roughness, null handling).

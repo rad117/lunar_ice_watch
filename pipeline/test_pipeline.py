@@ -44,6 +44,16 @@ class PipelineTests(unittest.TestCase):
         for s in p.CFG["sites"]:
             self.assertTrue(-90 <= s["lat"] <= -80, s["name"])
 
+    def test_astar_goes_through_the_gap_and_respects_blocks(self):
+        import route
+        g = np.zeros((7, 7))
+        g[:, 3] = 45.0          # steep wall across the grid...
+        g[5, 3] = 5.0           # ...with one gap
+        path = route.astar(g, (0, 0), (0, 6), 1.0, 30)
+        self.assertIn((5, 3), path)
+        g[5, 3] = 45.0
+        self.assertIsNone(route.astar(g, (0, 0), (0, 6), 1.0, 30))
+
 
 if __name__ == "__main__":
     unittest.main()

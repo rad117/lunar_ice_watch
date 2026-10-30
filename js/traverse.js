@@ -67,6 +67,8 @@ function waypointColor(type) {
   return "#7dd3fc";
 }
 
+let plannedRoute = null;
+
 // progress: 0 (at base) to 1 (arrived at target); timer drives the Play animation
 let progress = 0;
 let timer = null;
@@ -120,6 +122,17 @@ function draw() {
     ctx.font = "11px Consolas";
     ctx.fillText(String(i + 1), w.px + 8, w.py - 8);
   });
+
+  if (plannedRoute) {  // real A* path over LOLA slope (pipeline/route.py), same polar-percent mapping as the site dots
+    ctx.strokeStyle = "#4ade80";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    plannedRoute.path.coordinates.forEach(function (c, i) {
+      const p = polarPercent(c[1], c[0]);
+      ctx[i ? "lineTo" : "moveTo"]((p.x / 100) * canvas.width, (p.y / 100) * canvas.height);
+    });
+    ctx.stroke();
+  }
 
   const rx = baseX + (targetPixel.px - baseX) * progress;
   const ry = baseY + (targetPixel.py - baseY) * progress;
@@ -204,3 +217,16 @@ waypoints.forEach(function (w, i) {
 document.getElementById("waypointTable").innerHTML = rows;
 
 draw();
+
+// Planned route card: loaded after the first draw so the page never waits on it. The waypoint table above is still the simulated straight line.
+fetch("/api/routes?siteId=" + encodeURIComponent(currentSite.id)).then(function (r) { return r.ok ? r.json() : []; }).then(function (routes) {
+  plannedRoute = routes.find(function (r) { return r.planner === "astar-lola-v1"; }) || null;
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = "<h3>Planned route (LOLA terrain)</h3>" + (plannedRoute
+    ? '<p class="subtext">' + plannedRoute.distanceKm + " km, steepest cell " + plannedRoute.maxSlopeDeg + "&deg;, difficulty <strong>" + escapeHtml(plannedRoute.difficulty) +
+      '</strong> (green line). A* over the 80 m LOLA slope from a placeholder base, not a rover-qualified plan.</p>'
+    : '<p class="subtext">No planned route for this site (none computed yet, or the crater walls exceed the rover slope limit).</p>');
+  document.querySelector("main .card:last-of-type").after(card);
+  draw();
+}).catch(function () {});

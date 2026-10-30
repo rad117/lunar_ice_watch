@@ -31,5 +31,7 @@
   "published_pending_user_verification": [
     "LCROSS water abundance in the Cabeus plume (I recall about 5.6 +/- 2.9 wt%) - not stored until you confirm in Colaprete et al. 2010.",
     "Li et al. 2018 PNAS 115, 8907 (doi:10.1073/pnas.1802345115), M3 surface-ice detections in polar shadowed regions - which of these seven craters host a detection must be read from the paper's table; none stored."
-  ]
+  ],
+  "base": {"name": "Connecting Ridge area (placeholder)", "lat": -89.45, "lon": -137.3, "note": "Approximate Artemis-region ridge position recalled from memory, NOT verified and not checked for illumination or slope. Replace with a real landing/base site."},
+  "rover": {"block": 4, "max_slope_deg": 30, "easy_deg": 10, "moderate_deg": 20, "note": "Planning grid = 4 x 80 m = 320 m cells using the block-maximum slope (conservative). Slope above max_slope_deg is impassable; steeper ground costs more. These limits are illustrative, not a specific rover's spec."}
 }
