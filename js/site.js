@@ -58,12 +58,13 @@ const hazard = site.terrainHazard == null ? 0 : site.terrainHazard;
 const gaugeColor = hazardLevelColor(hazard);
 const gaugeRadius = 30;
 const gaugeCircumference = 2 * Math.PI * gaugeRadius;
-document.getElementById("hazardGauge").innerHTML =
-  '<svg width="76" height="76" viewBox="0 0 76 76">' +
-  '<circle class="gauge-track" cx="38" cy="38" r="' + gaugeRadius + '"></circle>' +
-  '<circle class="gauge-fill" id="gaugeFill" cx="38" cy="38" r="' + gaugeRadius + '" stroke="' + gaugeColor + '"></circle>' +
-  '</svg>' +
-  '<div class="gauge-label"><span class="big" style="color:' + gaugeColor + '">' + (site.terrainHazard == null ? "n/a" : hazard + "%") + '</span><span class="small">Terrain hazard</span></div>';
+document.getElementById("hazardGauge").replaceChildren(
+  h("svg", { width: 76, height: 76, viewBox: "0 0 76 76" },
+    h("circle", { class: "gauge-track", cx: 38, cy: 38, r: gaugeRadius }),
+    h("circle", { class: "gauge-fill", id: "gaugeFill", cx: 38, cy: 38, r: gaugeRadius, stroke: gaugeColor })),
+  h("div", { class: "gauge-label" },
+    h("span", { class: "big", style: "color:" + gaugeColor }, site.terrainHazard == null ? "n/a" : hazard + "%"),
+    h("span", { class: "small" }, "Terrain hazard")));
 
 requestAnimationFrame(function () {
   requestAnimationFrame(function () {
@@ -90,9 +91,16 @@ const featureRows = [
 ];
 const featureCard = document.createElement("div");
 featureCard.className = "card";
-featureCard.innerHTML = "<h3>Measured Features</h3>" + featureRows.map(function (r) {
+const sc = site.screening;
+featureCard.append(h("h3", null, "Measured Features"));
+featureRows.forEach(function (r) {
   const v = site.features[r[0]];
-  return '<p class="subtext">' + r[1] + ": " + (v == null ? "not available yet" : Number(v).toFixed(2) + provBadge(site.featureProvenance[r[0]])) + "</p>";
-}).join("") + (site.screening && site.screening.score != null ? '<p class="subtext">Screening score: <strong>' + site.screening.score.toFixed(2) + "</strong> (0-1, from " + escapeHtml(site.screening.used.join(", ")) + "; " + Math.round(site.screening.coverage * 100) + '% of inputs available). A hand-weighted heuristic, not a trained model.</p>' : "") + (site.evidence.length ? '<p class="subtext">Sources: ' + site.evidence.map(function (e) { return escapeHtml(e.source); }).join("; ") + "</p>" : "");
+  featureCard.append(h("p", { class: "subtext" }, r[1] + ": " + (v == null ? "not available yet" : Number(v).toFixed(2)), v == null ? null : provNode(site.featureProvenance[r[0]])));
+});
+if (sc && sc.score != null) {
+  featureCard.append(h("p", { class: "subtext" }, "Screening score: ", h("strong", null, sc.score.toFixed(2)),
+    " (0-1, from " + sc.used.join(", ") + "; " + Math.round(sc.coverage * 100) + "% of inputs available). A heuristic with equal weights, not a trained model."));
+}
+if (site.evidence.length) featureCard.append(h("p", { class: "subtext" }, "Sources: " + site.evidence.map(function (e) { return e.source; }).join("; ")));
 const cards = document.querySelectorAll("main .card");
 cards[cards.length - 1].before(featureCard);

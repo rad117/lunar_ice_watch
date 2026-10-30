@@ -27,10 +27,25 @@ function flattenSite(d) {
   });
 }
 
+// h("p", {class: "subtext"}, "text", node, ...) builds elements without HTML strings, so text can never be parsed as markup.
+// Attribute keys: class, style, or any other attribute name; null/false children are skipped.
+function h(tag, attrs, ...kids) {
+  const NS = { svg: 1, circle: 1 };
+  const e = NS[tag] ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
+  Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+  kids.forEach(function (c) { if (c != null && c !== false) e.append(c); }); // strings become text nodes
+  return e;
+}
+
 // Small "simulated / published / raster" badge; provenance comes from the database, never hardcoded in pages.
 function provBadge(p) {
   if (!p) return "";
   return '<span class="prov prov--' + escapeHtml(p) + '" title="Data provenance: ' + escapeHtml(p) + '">' + escapeHtml(p) + '</span>';
+}
+
+// Same badge as a DOM node (no HTML string); use where the surrounding element is built with h().
+function provNode(p) {
+  return p ? h("span", { class: "prov prov--" + p, title: "Data provenance: " + p }, p) : null;
 }
 
 (function () {

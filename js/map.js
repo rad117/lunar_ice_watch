@@ -160,8 +160,9 @@ canvas.addEventListener("mousemove", function (e) {
     canvas.style.cursor = closest ? "pointer" : "default";
     if (closest) {
       const p = toPixel(closest);
-      tooltip.innerHTML = '<span class="t-name">' + escapeHtml(closest.label) + '</span> &middot; ' + escapeHtml(closest.crater) +
-        '<br>hazard ' + (closest.terrainHazard == null ? "n/a" : escapeHtml(closest.terrainHazard) + "%") + ' &middot; ' + escapeHtml(closest.classification);
+      tooltip.replaceChildren(
+        h("span", { class: "t-name" }, closest.label), " \u00b7 " + closest.crater, h("br"),
+        "hazard " + (closest.terrainHazard == null ? "n/a" : closest.terrainHazard + "%") + " \u00b7 " + closest.classification);
       tooltip.style.left = (p.px / canvas.width * 100) + "%";
       tooltip.style.top = (p.py / canvas.height * 100) + "%";
       tooltip.classList.add("visible");

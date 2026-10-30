@@ -276,10 +276,10 @@ fetch("/api/routes?siteId=" + encodeURIComponent(currentSite.id)).then(function 
   } else if (plannedRoute) { routePts = null; }
   const card = document.createElement("div");
   card.className = "card";
-  card.innerHTML = "<h3>Planned route (LOLA terrain)</h3>" + (plannedRoute
-    ? '<p class="subtext">' + Number(plannedRoute.distanceKm) + " km, steepest cell " + Number(plannedRoute.maxSlopeDeg) + "&deg;, difficulty <strong>" + escapeHtml(plannedRoute.difficulty) +
-      '</strong> (green line). The waypoint table and rover follow this route (boulders: no data). A* over the 80 m LOLA slope from a placeholder base, not a rover-qualified plan.</p>'
-    : '<p class="subtext">No planned route for this site (none computed yet, or the crater walls exceed the rover slope limit).</p>');
+  card.append(h("h3", null, "Planned route (LOLA terrain)"), plannedRoute
+    ? h("p", { class: "subtext" }, Number(plannedRoute.distanceKm) + " km, steepest cell " + Number(plannedRoute.maxSlopeDeg) + "\u00b0, difficulty ", h("strong", null, plannedRoute.difficulty),
+        " (green line). The waypoint table and rover follow this route (boulders: no data). A* over the 80 m LOLA slope from a placeholder base, not a rover-qualified plan.")
+    : h("p", { class: "subtext" }, "No planned route for this site (none computed yet, or the crater walls exceed the rover slope limit)."));
   document.querySelector("main .card:last-of-type").after(card);
   draw();
 }).catch(function () {});
