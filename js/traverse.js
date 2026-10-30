@@ -78,6 +78,7 @@ function legKm(a, b) {
   return 2 * 1737.4 * Math.asin(Math.sqrt(h));
 }
 
+// Hazard tiers follow VIPER: <=15 deg operational (Low), <=25 extended (Medium), above that slip risk (High).
 // 5 waypoints at equal distances along the real route; slope = steepest planning cell in each leg (from the pipeline), hazard from that slope.
 // Boulder counts are not measured by any dataset yet, so they show "n/a".
 function buildPlanned(route) {
@@ -91,7 +92,7 @@ function buildPlanned(route) {
     let idx = co.length - 1;
     for (let i = prevIdx; i < co.length; i++) if (cumKm[i] / total >= frac - 1e-9) { idx = i; break; }
     const worst = sl ? Math.max.apply(null, sl.slice(prevIdx, idx + 1)) : null;
-    const hazard = worst == null ? "n/a" : worst < 10 ? "Low" : worst < 20 ? "Medium" : "High";
+    const hazard = worst == null ? "n/a" : worst <= 15 ? "Low" : worst <= 25 ? "Medium" : "High";
     const w = {
       px: routePts[idx].px, py: routePts[idx].py,
       type: k === 4 ? "Ice Target" : hazard === "High" ? "Hazard Zone" : k === 0 ? "Entry Point" : "Nav Node",

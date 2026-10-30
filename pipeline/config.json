@@ -33,5 +33,5 @@
     "Li et al. 2018 PNAS 115, 8907 (doi:10.1073/pnas.1802345115), M3 surface-ice detections in polar shadowed regions - which of these seven craters host a detection must be read from the paper's table; none stored."
   ],
   "base": {"name": "Connecting Ridge area (placeholder)", "lat": -89.45, "lon": -137.3, "note": "Approximate Artemis-region ridge position recalled from memory, NOT verified and not checked for illumination or slope. Replace with a real landing/base site."},
-  "rover": {"block": 4, "max_slope_deg": 30, "easy_deg": 10, "moderate_deg": 20, "note": "Planning grid = 4 x 80 m = 320 m cells using the block-maximum slope (conservative). Slope above max_slope_deg is impassable; steeper ground costs more. These limits are illustrative, not a specific rover's spec."}
+  "rover": {"block": 4, "operational_deg": 15, "extended_deg": 25, "max_slope_deg": 30, "note": "Tiers follow NASA's published VIPER figures: drives up to ~15 deg generally, 25-30 deg 'when necessary' with more slipping and slower travel (science.nasa.gov/mission/viper/lunar-operations). Planner: <=15 Easy, <=25 Moderate, <=30 Hard, >30 impassable. Cost multiplier 1+(slope/15)^2, plus 10 above 15 deg (the penalty size is a planner choice, not sourced). Planning grid = 4 x 80 m cells using block-max slope, so it is conservative versus a rover's wheel-scale slope."}
 }

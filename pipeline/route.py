@@ -3,7 +3,7 @@
     python route.py            plan all sites, write output/routes.json
     python route.py --write    also replace this planner's routes in MongoDB
 
-Cost per step = distance * (1 + (slope/10)^2); slope > rover.max_slope_deg or no data = impassable.
+Cost per step = distance * (1 + (slope/15)^2 [+10 above 15 deg]); slope > rover.max_slope_deg or no data = impassable. Tiers: see config.json rover.note.
 Slope is the block-maximum on a coarser grid, so routes are conservative.
 """
 import heapq
@@ -30,7 +30,7 @@ def block_max(a, b):
     return np.where(np.isnan(blocks).any(axis=(1, 3)), np.nan, blocks.max(axis=(1, 3)))  # any gap -> no data
 
 
-def astar(slope, start, goal, cell, max_slope):
+def astar(slope, start, goal, cell, max_slope, soft=15.0):
     """Cheapest 8-connected path (list of (row, col)) or None. NaN / too-steep cells are blocked."""
     rows, cols = slope.shape
     blocked = np.isnan(slope) | (slope > max_slope)
@@ -59,7 +59,8 @@ def astar(slope, start, goal, cell, max_slope):
             if not (0 <= nr < rows and 0 <= nc < cols) or bl[nr][nc]:
                 continue
             step = cell * (1.41421356 if dr and dc else 1.0)
-            nd = dist[cur] + step * (1 + (((s[r][c] + s[nr][nc]) / 2) / 10) ** 2)
+            m = (s[r][c] + s[nr][nc]) / 2
+            nd = dist[cur] + step * (1 + (m / soft) ** 2 + (10 if m > soft else 0))
             if nd < dist.get((nr, nc), 1e30):
                 dist[(nr, nc)] = nd
                 prev[(nr, nc)] = cur
@@ -99,7 +100,7 @@ def plan(site, base_xy, src):
         return tf.c + (c + 0.5) * cell, tf.f - (r + 0.5) * cell
 
     start, goal = nearest_open(sl, to_rc(*base_xy), ROVER["max_slope_deg"]), nearest_open(sl, to_rc(sx, sy), ROVER["max_slope_deg"])
-    path = start and goal and astar(sl, start, goal, cell, ROVER["max_slope_deg"])
+    path = start and goal and astar(sl, start, goal, cell, ROVER["max_slope_deg"], ROVER["operational_deg"])
     if not path:
         return dict(siteId=site["siteId"], name=site["name"], error="no route under the rover slope limit (crater walls steeper than rover.max_slope_deg, or no LOLA data)")
     xy = LineString([to_xy(r, c) for r, c in path]).simplify(cell / 2)
@@ -111,7 +112,7 @@ def plan(site, base_xy, src):
         start=list(FROM_POLAR.transform(*pts[0])), end=list(FROM_POLAR.transform(*pts[-1])),
         distanceKm=round(sum(math.dist(p, q) for p, q in zip(pts, pts[1:])) / 1000, 1),
         maxSlopeDeg=round(float(worst), 1), slopes=slopes,
-        difficulty="Easy" if worst < ROVER["easy_deg"] else "Moderate" if worst < ROVER["moderate_deg"] else "Hard",
+        difficulty="Easy" if worst <= ROVER["operational_deg"] else "Moderate" if worst <= ROVER["extended_deg"] else "Hard",
         path={"type": "LineString", "coordinates": [[round(v, 5) for v in FROM_POLAR.transform(*p)] for p in pts]},
     )
 

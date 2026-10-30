@@ -42,12 +42,12 @@ and (later) a real ML model. Phases 1-5 have a first version (phase 4 is a heuri
 - Known caveat from the reviewer: Cabeus (214 K) and Amundsen (217 K) medians are high because their 20/25 km windows cover large partly-sunlit floors and the centres are unverified; `pctBelow110K` (10 % / 4 %) is the better cold-trap indicator for them.
 
 ## Phase 4 - Screening score
-- `api/_lib/score.js`: hand-weighted 0-1 score from measured features; missing or simulated inputs skipped, weights renormalised, `coverage` reported. Returned as `screening` by `/api/sites`; shown on the site page. No trained model (no labelled data).
+- `api/_lib/score.js`: 0-1 score (`score-v2`): equal-weight mean of terms grounded in the literature (110 K cold-trap threshold and sublimation rates; CPR 1 as the dry-surface level); slope removed (not an ice-stability input); sources and unsourced choices listed in the file header. Missing or simulated inputs skipped, `coverage` reported. Returned as `screening` by `/api/sites`; shown on the site page. No trained model (no labelled data).
 
 ## Phase 5 - Traverse planner
-- `pipeline/route.py`: A* over the LOLA 80 m slope (320 m planning cells, block-max slope, steps cost more on steeper ground, > 30 deg impassable) from `config.json -> base` to each site centre. `python route.py [--write]` -> `pipeline/output/routes.json` / MongoDB `routes` (`planner: "astar-lola-v1"`).
-- Result: 6 of 7 sites get a route (33-211 km; all but Sverdrup rate "Hard", 20-26 deg steepest cell). Shackleton has none: its walls exceed the slope limit.
-- The base is a **placeholder** (Connecting Ridge area, recalled, unverified); slope limits are illustrative. Routes ignore illumination, communications and rover dynamics.
+- `pipeline/route.py`: A* over the LOLA 80 m slope (320 m planning cells, block-max slope; tiers from NASA's VIPER figures: <= 15 deg Easy, <= 25 Moderate, <= 30 Hard, > 30 impassable) from `config.json -> base` to each site centre. `python route.py [--write]` -> `pipeline/output/routes.json` / MongoDB `routes` (`planner: "astar-lola-v1"`).
+- Result: 6 of 7 sites get a route (53-206 km; five Moderate at 16-19 deg, Faustini Hard at 26 deg). Shackleton has none: its walls exceed the slope limit.
+- The base is a **placeholder** (Connecting Ridge area, recalled, unverified); the 10x cost penalty above 15 deg is a planner choice. Routes ignore illumination, communications and rover dynamics.
 - Traverse page draws the planned path and a summary card; its waypoint table is still the old simulated straight line.
 
 ## Tests
