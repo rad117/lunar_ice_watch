@@ -32,6 +32,17 @@ function toPixel(site) {
   };
 }
 
+// Draws canvas text with a translucent backing rect so labels stay legible when the base station
+// and a waypoint land close together (mirrors the same helper in js/map.js).
+function drawLabel(text, x, y, color) {
+  ctx.font = "11px Consolas";
+  const w = ctx.measureText(text).width;
+  ctx.fillStyle = "rgba(5, 8, 16, 0.72)";
+  ctx.fillRect(x - 4, y - 12, w + 8, 16);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
 function hazardBucket(h) {
   if (h < 30) return "Low";
   if (h < 50) return "Medium";
@@ -143,9 +154,7 @@ function draw() {
   ctx.beginPath();
   ctx.arc(bx, by, 7, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#a8b0c0";
-  ctx.font = "11px Consolas";
-  ctx.fillText("base station", bx + 12, by + 4);
+  drawLabel("base station", bx + 12, by + 20, "#a8b0c0");
 
   if (!routePts) {
   ctx.setLineDash([6, 4]);
@@ -165,9 +174,7 @@ function draw() {
     ctx.beginPath();
     ctx.arc(w.px, w.py, w.type === "Ice Target" ? 9 : 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#e6e9ef";
-    ctx.font = "11px Consolas";
-    ctx.fillText(String(i + 1), w.px + 8, w.py - 8);
+    drawLabel(String(i + 1), w.px + 8, w.py - 8, "#e6e9ef");
   });
 
   if (plannedRoute) {  // real A* path over LOLA slope (pipeline/route.py), same polar-percent mapping as the site dots
@@ -258,7 +265,7 @@ function resetTraverse() {
 function renderTable() {
   let rows = "";
   waypoints.forEach(function (w, i) {
-    rows += "<tr><td>" + (i + 1) + "</td><td>" + w.type + "</td><td>" + w.distance +
+    rows += "<tr><td>" + (i + 1) + "</td><td>" + w.type + "</td><td>" + w.distance.toLocaleString() +
       "</td><td>" + w.slope + "</td><td>" + w.hazard + "</td><td>" + w.boulders + "</td></tr>";
   });
   document.getElementById("waypointTable").innerHTML = rows;

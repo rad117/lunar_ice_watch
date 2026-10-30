@@ -38,7 +38,7 @@ requestAnimationFrame(function () {
 // ---- "Gates & Flags" card: thermal gate pill + alt-explanation flag pill + boulder count ----
 const thermalPill = document.getElementById("thermalPill");
 thermalPill.textContent = site.thermalGate ? site.thermalGate.toUpperCase() : "N/A";
-thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : "fail");
+thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : site.thermalGate === "fail" ? "fail" : "unknown");
 document.getElementById("thermalTempText").textContent = site.thermalTemp == null ? "gate temperature: n/a" : "gate temperature: " + site.thermalTemp + " °C (simulated placeholder; see Measured Features below)";
 if (site.published) {
   const pub = site.published;

@@ -21,6 +21,17 @@ function toPixel(site) {
   };
 }
 
+// Draws canvas text with a translucent backing rect so labels stay legible where markers sit close
+// together (e.g. a site located right at the base station, like Shackleton).
+function drawLabel(text, x, y, color) {
+  ctx.font = "11px 'JetBrains Mono', Consolas, monospace";
+  const w = ctx.measureText(text).width;
+  ctx.fillStyle = "rgba(5, 8, 16, 0.72)";
+  ctx.fillRect(x - 4, y - 12, w + 8, 16);
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
 // Green/yellow/red translucent glow drawn under each site marker, sized by that site's hazard score
 function hazardFillColor(h) {
   if (h < 30) return "rgba(74, 222, 128, 0.18)";
@@ -73,9 +84,7 @@ function draw() {
   ctx.beginPath();
   ctx.arc(landerX, landerY, 6, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#a8b0c0";
-  ctx.font = "11px 'JetBrains Mono', Consolas, monospace";
-  ctx.fillText("base station", landerX + 10, landerY + 4);
+  drawLabel("base station", landerX + 10, landerY + 20, "#a8b0c0");
 
   siteData.forEach(function (site) {
     const p = toPixel(site);
@@ -90,9 +99,7 @@ function draw() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = isHovered ? "#ffffff" : "#e6e9ef";
-    ctx.font = "11px 'JetBrains Mono', Consolas, monospace";
-    ctx.fillText(site.label, p.px + 10, p.py - 8);
+    drawLabel(site.label, p.px + 10, p.py - 8, isHovered ? "#ffffff" : "#e6e9ef");
   });
 
   if (selected) {

@@ -395,6 +395,11 @@ tr.wp-active td {
   color: var(--ok);
 }
 
+.pill.unknown {
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--text-dim);
+}
+
 /* ---- SITE DETAIL: the circular hazard gauge (#hazardGauge, an SVG ring) ---- */
 .gauge-wrap {
   display: flex;
