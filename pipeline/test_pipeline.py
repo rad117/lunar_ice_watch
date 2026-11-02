@@ -1,5 +1,8 @@
 """Run: python -m unittest test_pipeline  (from pipeline/). Checks the maths and the CRS; needs no downloaded data."""
+import os
+import tempfile
 import unittest
+from unittest import mock
 
 import numpy as np
 
@@ -62,6 +65,32 @@ class PipelineTests(unittest.TestCase):
         self.assertIn((5, 3), path)
         g[5, 3] = 45.0
         self.assertIsNone(route.astar(g, (0, 0), (0, 6), 1.0, 30))
+
+    def test_site_window_is_a_circle_of_the_right_size(self):
+        site = p.CFG["sites"][0]
+        (x, y), circle = p.site_geometry(site)
+        r = site["window_km"] * 1000.0
+        self.assertAlmostEqual(circle.area / (np.pi * r * r), 1.0, delta=0.01)
+        self.assertAlmostEqual(circle.centroid.x, x, delta=1)
+
+    def test_compute_with_no_data_keeps_saved_results(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "site_features.json")
+            with open(out, "w") as f:
+                f.write("saved results")
+            with mock.patch.object(p, "DATA", d), mock.patch.object(p, "OUT", out):
+                with self.assertRaises(SystemExit):
+                    p.main(["pipeline.py", "compute"])
+            with open(out) as f:
+                self.assertEqual(f.read(), "saved results")
+
+    def test_route_with_no_data_stops_with_a_clear_message(self):
+        import route
+        with tempfile.TemporaryDirectory() as d:
+            with mock.patch.object(route, "DATA", d):
+                with self.assertRaises(SystemExit) as stop:
+                    route.main(["route.py"])
+        self.assertIn("fetch", str(stop.exception))
 
 
 if __name__ == "__main__":

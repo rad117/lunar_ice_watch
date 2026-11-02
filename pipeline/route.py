@@ -137,7 +137,10 @@ def main(argv):
     base = CFG["base"]
     bx, by = TO_POLAR.transform(base["lon"], base["lat"])
     routes = []
-    with open_polar(os.path.join(DATA, "lola", "LDEM_80S_80M.LBL")) as src:
+    lola = os.path.join(DATA, "lola", "LDEM_80S_80M.LBL")
+    if not os.path.exists(lola):
+        sys.exit("No LOLA data found in pipeline/data. Run `python pipeline.py fetch` first. Saved routes were not changed.")
+    with open_polar(lola) as src:
         for site in CFG["sites"]:
             r = plan(site, (bx, by), src)
             routes.append(r)

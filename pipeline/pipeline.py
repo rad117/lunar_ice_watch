@@ -140,7 +140,7 @@ def read_window(src, bounds, band=1):
 def site_geometry(site):
     x, y = TO_POLAR.transform(site["lon"], site["lat"])
     r = site["window_km"] * 1000.0
-    circle = gpd.GeoSeries([Point(x, y)], crs=MOON_POLAR).buffer(r, quad_segs=32).iloc[0]
+    circle = Point(x, y).buffer(r, quad_segs=32)
     return (x, y), circle
 
 
@@ -323,6 +323,8 @@ def main(argv):
         return fetch()
     started = datetime.datetime.now(datetime.timezone.utc)
     results = [compute_site(s) for s in CFG["sites"]]
+    if not any(v is not None for r in results for v in r["features"].values()):
+        sys.exit("No NASA data found in pipeline/data. Run `python pipeline.py fetch` first. Saved results were not changed.")
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump({"generatedAt": now(), "sites": results}, open(OUT, "w"), indent=1)
     for r in results:
