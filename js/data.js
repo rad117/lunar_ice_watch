@@ -16,7 +16,7 @@ function flattenSite(d) {
   const coords = d.location && d.location.coordinates;
   const legacy = Object.assign({}, d.legacy);
   let fromCoords = false; // true when x/y come from the real lat/lon (so map distances are real km, not the demo's made-up units)
-  if (legacy.x == null && coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; }
+  if (coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; } // real position wins, so every page agrees
   const pred = d.prediction || {};
   return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
     id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
@@ -48,36 +48,74 @@ function provNode(p) {
   return p ? h("span", { class: "prov prov--" + p, title: "Data provenance: " + p }, p) : null;
 }
 
+const API_TIMEOUT_MS = 12000; // a sleeping Atlas cluster and a cold function can take several seconds; past this, use the saved copy
+let usingSavedCopy = false;   // true when the API could not be reached and js/snapshot-data.js is being shown instead
+
+// GET one API path as { body, snapshot }. Anything other than a JSON success rejects, including the HTML a static server sends back.
+function apiGet(url) {
+  const ctl = new AbortController();
+  const timer = setTimeout(function () { ctl.abort(); }, API_TIMEOUT_MS);
+  return fetch(url, { signal: ctl.signal }).then(function (r) {
+    if (!r.ok) throw new Error("API returned " + r.status);
+    return r.json().then(function (body) { return { body: body, snapshot: r.headers.get("x-data-source") === "snapshot" }; });
+  }).finally(function () { clearTimeout(timer); });
+}
+
+// The same sites and routes as a plain script. It loads with no server at all: browsers refuse fetch() on a file:// page but allow <script>.
+function loadSavedCopy() {
+  if (window.LIW_SNAPSHOT) return Promise.resolve(window.LIW_SNAPSHOT);
+  return new Promise(function (resolve, reject) {
+    const el = document.createElement("script");
+    el.src = "js/snapshot-data.js";
+    el.onload = function () { resolve(window.LIW_SNAPSHOT); };
+    el.onerror = function () { reject(new Error("the saved copy of the data is missing")); };
+    document.head.appendChild(el);
+  });
+}
+
+// Planned routes for every site, from wherever the sites came from
+function loadRoutes() {
+  const saved = function () { return loadSavedCopy().then(function (s) { return s.routes; }); };
+  if (usingSavedCopy) return saved();
+  return apiGet("/api/routes").then(function (r) { return r.body; }).catch(saved);
+}
+
 (function () {
+  if (typeof document === "undefined") return; // the Node tests load this file for polarPercent / flattenSite
   const pageScript = document.currentScript && document.currentScript.dataset.page;
   if (!pageScript) return;
 
   function load() {
     const main = document.getElementById("main-content");
-    const banner = document.createElement("p");
-    banner.className = "subtext";
-    banner.setAttribute("role", "status");
-    banner.textContent = "Loading sites...";
-    main.prepend(banner);
+    const message = h("span", null, "Loading sites...");
+    const banner = h("div", { class: "load-status", role: "status" }, h("span", { class: "load-spinner", "aria-hidden": "true" }), message);
+    const hero = main.querySelector(".page-hero");
+    if (hero) hero.after(banner); else main.prepend(banner);
+    document.body.classList.add("is-loading"); // hides the empty tables and canvas until there is something to put in them
+    const slow = setTimeout(function () { message.textContent = "Waking up the database, this can take a few seconds..."; }, 4000);
 
     let snapshot = false; // true when the server answered from its saved snapshot (no database connected)
-    fetch("/api/sites").then(function (r) {
-      if (!r.ok) throw new Error("API returned " + r.status);
-      snapshot = r.headers.get("x-data-source") === "snapshot";
-      return r.json();
-    }).then(function (docs) {
-      docs.forEach(function (d) { siteData.push(flattenSite(d)); });
+    apiGet("/api/sites").catch(function () {
+      return loadSavedCopy().then(function (s) { usingSavedCopy = true; return { body: s.sites }; });
+    }).then(function (result) {
+      snapshot = !!result.snapshot;
+      result.body.forEach(function (d) { siteData.push(flattenSite(d)); });
+      clearTimeout(slow);
       banner.remove();
+      document.body.classList.remove("is-loading");
       const note = document.createElement("p");
       note.className = "small-note";
       note.textContent = "Screening estimates, not scientific confirmation of lunar ice." +
+        (usingSavedCopy ? " Showing a saved copy of the data because the live server could not be reached, so uploads are switched off." : "") +
         (snapshot ? " Showing a saved snapshot of the data (read-only): no database is connected, so uploads are switched off." : "");
       main.append(note);
       const el = document.createElement("script");
       el.src = pageScript;
       document.body.appendChild(el);
     }).catch(function (e) {
-      banner.textContent = "Could not load sites (" + e.message + "). ";
+      clearTimeout(slow);
+      message.textContent = "Could not load sites (" + e.message + "). ";
+      banner.querySelector(".load-spinner").remove();
       const retry = document.createElement("button");
       retry.type = "button";
       retry.className = "secondary";
@@ -123,3 +161,5 @@ function hazardLevelColor(h) {
   if (h < 50) return "#fbbf24";
   return "#f87171";
 }
+
+if (typeof module !== "undefined") module.exports = { polarPercent, flattenSite };

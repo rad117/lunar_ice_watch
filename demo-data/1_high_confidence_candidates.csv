@@ -1,0 +1,5 @@
+label,crater,lat,lon,pv,cpr,serd,tRatio,thermalTemp,altFlag,terrainHazard,boulderCount
+Demo Cabeus B,Cabeus crater floor,-85.3,-42.1,0.74,1.46,0.17,0.64,-241,false,18,3
+Demo Haworth C,Haworth crater floor,-87.4,-5.0,0.69,1.38,0.20,0.58,-236,false,21,5
+Demo Nobile D,Nobile crater interior,-85.2,53.5,0.66,1.31,0.21,0.55,-229,false,24,6
+Demo Slater E,Slater crater floor,-88.1,-111.0,0.72,1.27,0.19,0.61,-233,false,16,2

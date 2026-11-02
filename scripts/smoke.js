@@ -45,7 +45,8 @@ function call(handler, req) {
   assert.strictEqual(r.body[0].prediction.label, "ICE-SUPPORTED-HIGH");
   assert.strictEqual(stored.length, 1);
   assert.strictEqual((await call(api("sites/index"))).body.length, 7);
-  const obs = await (await require("../api/_lib/db")()).collection("observations").find().toArray();
+  assert.strictEqual(r.body[0].legacy.x, null); // lat/lon with no x,y: the map must use the real position, not the 50,50 default
+  const obs =await (await require("../api/_lib/db")()).collection("observations").find().toArray();
   assert.strictEqual(obs.length, 1);
   assert.strictEqual(obs[0].fileUrl, "https://blob.test/" + stored[0]);
   assert.ok(!("csv" in obs[0]) && !JSON.stringify(obs[0]).includes("1.2.3.4")); // no file body, no raw IP
@@ -62,6 +63,15 @@ function call(handler, req) {
   assert.strictEqual((await post("routes", Object.assign({}, rt, { start: [300, 200] }))).code, 400); // outside lon/lat range
   assert.strictEqual((await post("routes", rt)).code, 201);
   assert.strictEqual((await call(api("routes"), { query: { siteId: "s1" } })).body.length, 1);
+
+  // ---- reset after a demo: uploaded sites go, the original sites stay ----
+  const d = await require("../api/_lib/db")();
+  await d.collection("routes").insertOne({ siteId: "u1", path: {} });
+  await require("./reset-demo")(d);
+  const left = (await call(api("sites/index"))).body.map(function (s) { return s._id; }).sort();
+  assert.deepStrictEqual(left, ["s1", "s2", "s3", "s4", "s5", "s6"]); // this test seeds no s7; it is on the keep list too
+  assert.strictEqual(await d.collection("observations").countDocuments(), 0);
+  assert.strictEqual(await d.collection("routes").countDocuments(), 1);
 
   console.log("smoke ok");
   await mongod.stop();
