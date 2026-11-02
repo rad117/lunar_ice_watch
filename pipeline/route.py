@@ -27,7 +27,7 @@ STEPS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 def block_max(a, b):
     h, w = (a.shape[0] // b) * b, (a.shape[1] // b) * b
     blocks = a[:h, :w].reshape(h // b, b, w // b, b)
-    return np.where(np.isnan(blocks).any(axis=(1, 3)), np.nan, blocks.max(axis=(1, 3)))  # any gap -> no data
+    return np.where(np.isnan(blocks).any(axis=(1, 3)), np.nan, blocks.max(axis=(1, 3)))
 
 
 def astar(slope, start, goal, cell, max_slope, soft=15.0):
@@ -64,7 +64,7 @@ def astar(slope, start, goal, cell, max_slope, soft=15.0):
             if nd < dist.get((nr, nc), 1e30):
                 dist[(nr, nc)] = nd
                 prev[(nr, nc)] = cur
-                h = cell * math.hypot(goal[0] - nr, goal[1] - nc)  # straight line: never overestimates
+                h = cell * math.hypot(goal[0] - nr, goal[1] - nc)
                 heapq.heappush(heap, (nd + h, (nr, nc)))
     return None
 
@@ -91,7 +91,7 @@ def plan(site, base_xy, src):
     sl = block_max(slope_deg(z * 0.5, cell80), b)
     cell = cell80 * b
 
-    def to_rc(x, y):  # polar metres -> (row, col) of the coarse grid
+    def to_rc(x, y):
         col = int((x - tf.c) / cell80) // b
         row = int((tf.f - y) / cell80) // b
         return min(max(row, 0), sl.shape[0] - 1), min(max(col, 0), sl.shape[1] - 1)
@@ -106,7 +106,7 @@ def plan(site, base_xy, src):
     xy = LineString([to_xy(r, c) for r, c in path]).simplify(cell / 2)
     pts = list(xy.coords)
     worst = max(sl[r, c] for r, c in path)
-    slopes = [round(float(sl[to_rc(*q)]), 1) for q in pts]  # slope of the planning cell under each vertex
+    slopes = [round(float(sl[to_rc(*q)]), 1) for q in pts]
     return dict(
         siteId=site["siteId"], name=site["name"],
         start=list(FROM_POLAR.transform(*pts[0])), end=list(FROM_POLAR.transform(*pts[-1])),
@@ -124,7 +124,7 @@ def write_mongo(routes):
     if not os.environ.get("MONGODB_URI"):
         sys.exit("Set MONGODB_URI (environment or ../.env) to use --write")
     col = MongoClient(os.environ["MONGODB_URI"])[os.environ.get("MONGODB_DB", "lunar_ice_watch")]["routes"]
-    col.delete_many({"planner": "astar-lola-v1"})  # only this planner's routes; user-saved ones stay
+    col.delete_many({"planner": "astar-lola-v1"})
     docs = [dict(r, planner="astar-lola-v1", createdAt=datetime.datetime.now(datetime.timezone.utc)) for r in routes if "error" not in r]
     for d in docs:
         d.pop("name")

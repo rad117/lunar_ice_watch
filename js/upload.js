@@ -1,7 +1,3 @@
-// Powers upload.html: the drag-and-drop zone, the "run analysis" pipeline, and generating
-// rows parsed from an uploaded CSV, which the server (server/classify.js) classifies and stores in MongoDB.
-
-// ---- Drag-and-drop file picker (#dropzone) ----
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const dzFile = document.getElementById("dzFile");
@@ -36,13 +32,11 @@ dropzone.addEventListener("drop", function (e) {
   }
 });
 
-// Columns the CSV must have; the rest are optional and get defaults on the server
 const REQUIRED_COLS = ["cpr", "thermalTemp", "terrainHazard"];
 const TEMPLATE_CSV =
   "label,crater,x,y,pv,cpr,serd,tRatio,thermalTemp,altFlag,terrainHazard,boulderCount\n" +
   "Site B1,Near Shackleton rim,40,50,0.6,1.3,0.2,0.5,-235,false,22,4\n";
 
-// Quick client-side check of the header only; the server (api/_lib/csv.js) does the real parsing and validation.
 function checkCsvHeader(text) {
   const head = text.replace(/^\uFEFF/, "").split(/\r?\n/)[0].split(",").map(function (h) { return h.trim().replace(/^"|"$/g, ""); });
   REQUIRED_COLS.forEach(function (c) {
@@ -50,7 +44,6 @@ function checkCsvHeader(text) {
   });
 }
 
-// "Download template" link on upload.html
 function downloadTemplate() {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([TEMPLATE_CSV], { type: "text/csv" }));
@@ -58,7 +51,6 @@ function downloadTemplate() {
   a.click();
 }
 
-// ---- Processing checklist (#checklist): steps through the stages while the upload is sent ----
 function setStage(stageName, state) {
   const li = document.querySelector('#checklist li[data-stage="' + stageName + '"]');
   li.classList.remove("active", "done");
@@ -71,8 +63,6 @@ function wait(ms) {
   });
 }
 
-// Runs when "Run Analysis" is clicked: parses the CSV, steps through the checklist, then POSTs the
-// rows to /api/sites where the server classifies and saves them
 async function startUpload() {
   const status = document.getElementById("statusText");
   const nameInput = document.getElementById("siteName");
@@ -92,7 +82,7 @@ async function startUpload() {
     for (let i = 0; i < stages.length; i++) {
       setStage(stages[i], "active");
       status.textContent = document.querySelector('#checklist li[data-stage="' + stages[i] + '"]').textContent + "...";
-      if (i === 0) { var text = await file.text(); checkCsvHeader(text); } // client-side check only; the server validates again
+      if (i === 0) { var text = await file.text(); checkCsvHeader(text); }
       if (i === 3) {
         const ctl = new AbortController();
         const timer = setTimeout(function () { ctl.abort(); }, 30000);
@@ -103,7 +93,7 @@ async function startUpload() {
           signal: ctl.signal
         }).catch(function (e) { throw new Error(e.name === "AbortError" ? "The server did not answer within 30 s. Try again." : e.message); })
           .finally(function () { clearTimeout(timer); });
-        const body = await res.json().catch(function () { return {}; }); // a static server answers with HTML, not JSON
+        const body = await res.json().catch(function () { return {}; });
         if (!res.ok) throw new Error(body.error || "Uploads need the server (returned " + res.status + "). Use the live site or npm run demo.");
         sites = body;
       }
@@ -117,7 +107,6 @@ async function startUpload() {
   }
   sites.forEach(function (site) { siteData.push(flattenSite(site)); });
 
-  // Show what the evidence engine decided for each row, with a way through to the updated dashboard
   results.replaceChildren(...sites.map(function (site) {
     const label = site.prediction.label;
     return h("li", null, h("span", null, site.name + " - " + site.region), h("span", { class: "badge " + classificationClass(label) }, label));
@@ -128,7 +117,6 @@ async function startUpload() {
   nameInput.value = "";
 }
 
-// Say so up front when this page has no database behind it (a read-only deployment, or no server at all).
 const UPLOADS_OFF = "Uploads need a running server and database, so they are switched off here. Use the live site or npm run demo.";
 fetch("/api/routes?siteId=none").then(function (r) {
   if (!r.ok || r.headers.get("x-data-source") === "snapshot") document.getElementById("statusText").textContent = UPLOADS_OFF;

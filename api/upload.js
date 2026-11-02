@@ -12,10 +12,6 @@ const MAX_BYTES = 1024 * 1024;
 const MAX_ROWS = 500;
 const MAX_UPLOADS_PER_HOUR = 20;
 
-// Body: { name, filename, csv }. Open to anyone (no sign-in), so it is capped: 1 MB, 500 rows, 20 uploads per
-// client per hour. The CSV is validated and stored in Vercel Blob; MongoDB keeps only the URL + metadata.
-// Each row is classified, becomes a site, and gets an observation.
-// ponytail: file travels inside the JSON body (Vercel caps bodies at ~4.5 MB); switch to client-direct Blob upload for big GeoTIFFs (phase 4).
 module.exports = route(["POST"], async function (req, res) {
   if (snap.active()) snap.needsDb();
   const d = await db();
@@ -38,7 +34,7 @@ module.exports = route(["POST"], async function (req, res) {
       const lat = parseFloat(r.lat), lon = parseFloat(r.lon);
       if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
         flat.lat = lat; flat.lon = lon;
-        if (!r.x && !r.y) flat.x = flat.y = null; // the map then places the site from its real position instead of the 50,50 default
+        if (!r.x && !r.y) flat.x = flat.y = null;
       }
       const doc = siteDoc(flat, new Date(+now + i));
       doc.evidence.push({ source: "user CSV upload", note: "Unverified user-supplied values", acquiredAt: now, provenance: "simulated", citation: null });
@@ -55,7 +51,7 @@ module.exports = route(["POST"], async function (req, res) {
     await d.collection("observations").insertMany(docs.map(function (s, i) {
       return { siteId: s._id, rowIndex: i, instrument: "csv", acquiredAt: null, fileUrl, extractedFeatures: s.features, prediction: s.prediction, createdAt: now };
     }));
-  } catch (e) { // no half-saved uploads (a multi-document transaction needs a replica set; this is the cheap equivalent)
+  } catch (e) {
     await Promise.all([d.collection("sites").deleteMany({ _id: { $in: ids } }), d.collection("observations").deleteMany({ siteId: { $in: ids } })]).catch(function () {});
     throw e;
   }

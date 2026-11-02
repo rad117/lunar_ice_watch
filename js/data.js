@@ -1,10 +1,5 @@
-// Shared site list for the whole prototype, loaded from the MongoDB-backed API (api/sites).
-// A page opts in with <script src="js/data.js" data-page="js/foo.js">: data.js fetches the sites, shows a
-// loading / error banner meanwhile, then loads the page script, which can use `siteData` as before.
-// The API returns the sites-collection schema; flattenSite() maps it to the flat shape the pages use.
 const siteData = [];
 
-// Map-canvas position (0-100 %) from a real lat/lon: south polar stereographic on a 1737.4 km sphere, 300 km = 40 %.
 function polarPercent(lat, lon) {
   const rho = 2 * 1737.4 * Math.tan((90 + lat) * Math.PI / 360);
   const l = lon * Math.PI / 180;
@@ -15,8 +10,8 @@ function flattenSite(d) {
   const pubEv = (d.evidence || []).find(function (e) { return e.provenance === "published"; });
   const coords = d.location && d.location.coordinates;
   const legacy = Object.assign({}, d.legacy);
-  let fromCoords = false; // true when x/y come from the real lat/lon (so map distances are real km, not the demo's made-up units)
-  if (coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; } // real position wins, so every page agrees
+  let fromCoords = false;
+  if (coords) { const p = polarPercent(coords[1], coords[0]); legacy.x = p.x; legacy.y = p.y; fromCoords = true; }
   const pred = d.prediction || {};
   return Object.assign({ terrainHazard: null, boulderCount: null, thermalGate: null, thermalTemp: null, altFlag: false, altNote: "", pv: null, serd: null, tRatio: null, x: 50, y: 50 }, legacy, {
     id: d._id, label: d.name, crater: d.region, cpr: d.features ? d.features.cpr : null,
@@ -27,31 +22,26 @@ function flattenSite(d) {
   });
 }
 
-// h("p", {class: "subtext"}, "text", node, ...) builds elements without HTML strings, so text can never be parsed as markup.
-// Attribute keys: class, style, or any other attribute name; null/false children are skipped.
 function h(tag, attrs, ...kids) {
   const NS = { svg: 1, circle: 1 };
   const e = NS[tag] ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
   Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
-  kids.forEach(function (c) { if (c != null && c !== false) e.append(c); }); // strings become text nodes
+  kids.forEach(function (c) { if (c != null && c !== false) e.append(c); });
   return e;
 }
 
-// Small "simulated / published / raster" badge; provenance comes from the database, never hardcoded in pages.
 function provBadge(p) {
   if (!p) return "";
   return '<span class="prov prov--' + escapeHtml(p) + '" title="Data provenance: ' + escapeHtml(p) + '">' + escapeHtml(p) + '</span>';
 }
 
-// Same badge as a DOM node (no HTML string); use where the surrounding element is built with h().
 function provNode(p) {
   return p ? h("span", { class: "prov prov--" + p, title: "Data provenance: " + p }, p) : null;
 }
 
-const API_TIMEOUT_MS = 12000; // a sleeping Atlas cluster and a cold function can take several seconds; past this, use the saved copy
-let usingSavedCopy = false;   // true when the API could not be reached and js/snapshot-data.js is being shown instead
+const API_TIMEOUT_MS = 12000;
+let usingSavedCopy = false;
 
-// GET one API path as { body, snapshot }. Anything other than a JSON success rejects, including the HTML a static server sends back.
 function apiGet(url) {
   const ctl = new AbortController();
   const timer = setTimeout(function () { ctl.abort(); }, API_TIMEOUT_MS);
@@ -61,7 +51,6 @@ function apiGet(url) {
   }).finally(function () { clearTimeout(timer); });
 }
 
-// The same sites and routes as a plain script. It loads with no server at all: browsers refuse fetch() on a file:// page but allow <script>.
 function loadSavedCopy() {
   if (window.LIW_SNAPSHOT) return Promise.resolve(window.LIW_SNAPSHOT);
   return new Promise(function (resolve, reject) {
@@ -73,7 +62,6 @@ function loadSavedCopy() {
   });
 }
 
-// Planned routes for every site, from wherever the sites came from
 function loadRoutes() {
   const saved = function () { return loadSavedCopy().then(function (s) { return s.routes; }); };
   if (usingSavedCopy) return saved();
@@ -81,7 +69,7 @@ function loadRoutes() {
 }
 
 (function () {
-  if (typeof document === "undefined") return; // the Node tests load this file for polarPercent / flattenSite
+  if (typeof document === "undefined") return;
   const pageScript = document.currentScript && document.currentScript.dataset.page;
   if (!pageScript) return;
 
@@ -91,10 +79,10 @@ function loadRoutes() {
     const banner = h("div", { class: "load-status", role: "status" }, h("span", { class: "load-spinner", "aria-hidden": "true" }), message);
     const hero = main.querySelector(".page-hero");
     if (hero) hero.after(banner); else main.prepend(banner);
-    document.body.classList.add("is-loading"); // hides the empty tables and canvas until there is something to put in them
+    document.body.classList.add("is-loading");
     const slow = setTimeout(function () { message.textContent = "Waking up the database, this can take a few seconds..."; }, 4000);
 
-    let snapshot = false; // true when the server answered from its saved snapshot (no database connected)
+    let snapshot = false;
     apiGet("/api/sites").catch(function () {
       return loadSavedCopy().then(function (s) { usingSavedCopy = true; return { body: s.sites }; });
     }).then(function (result) {
@@ -127,20 +115,16 @@ function loadRoutes() {
   document.addEventListener("DOMContentLoaded", load);
 })();
 
-// Looks up one site's record; used by site.html, map.html and traverse.html to show details for the picked site
 function getSiteById(id) {
   return siteData.find(function (s) { return s.id === id; });
 }
 
-// Site labels can come from uploaded CSVs / the "Site name" field, so escape before interpolating into HTML.
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
 }
 
-// These three helpers turn a classification string (e.g. "ICE-SUPPORTED-HIGH") into
-// the matching hex color / CSS badge class used on the Dashboard table and Site Detail badge
 function classColor(classification) {
   if (classification === "ICE-SUPPORTED-HIGH") return "#4ade80";
   if (classification === "ICE-SUPPORTED-MODERATE") return "#60a5fa";
@@ -155,7 +139,6 @@ function classificationClass(classification) {
   return "badge--unlikely";
 }
 
-// Colors the hazard gauge/legend green/yellow/red by terrain hazard score
 function hazardLevelColor(h) {
   if (h < 30) return "#4ade80";
   if (h < 50) return "#fbbf24";

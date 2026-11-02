@@ -1,16 +1,9 @@
-/* ===== Lunar Ice Watch — premium redesign layer =====
-   Icons, glass polish, status pills, hover states, starfield, and the
-   custom cursor. Loaded after tokens.css + style.css so it can refine,
-   not replace, the existing system. */
-
-/* ---------- display type on headings ---------- */
 h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .home-bottom-cta h2 {
   font-family: var(--font-display);
 }
 .home-hero h1 { letter-spacing: -0.03em; }
 .page-hero h1 { letter-spacing: -0.02em; }
 
-/* ---------- inline SVG icons ---------- */
 .icon-svg {
   width: 1em;
   height: 1em;
@@ -26,7 +19,6 @@ h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .home-bottom-cta h2 {
 .home-icon svg, .info-card .icon svg { width: 26px; height: 26px; color: var(--accent); }
 .theme-toggle svg { width: 13px; height: 13px; margin-right: 2px; }
 
-/* ---------- status pills (classification) ---------- */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -47,14 +39,12 @@ h1, h2, .home-hero h1, .page-hero h1, .section-heading h2, .home-bottom-cta h2 {
 .badge.badge--inconclusive { color: var(--warn); background: rgba(251, 191, 36, 0.12) !important; border-color: rgba(251, 191, 36, 0.32); }
 .badge.badge--unlikely { color: var(--bad); background: rgba(251, 113, 133, 0.12) !important; border-color: rgba(251, 113, 133, 0.32); }
 
-/* ---------- glass polish ---------- */
 .card, .stat-card, .home-card, .home-section-card, .page-hero, .toast, .workflow-step {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: var(--glass-border);
 }
 
-/* ---------- nav / button hover polish ---------- */
 .navbar a { overflow: hidden; }
 .navbar a::before {
   content: "";
@@ -79,7 +69,6 @@ button:hover:not(:disabled), .home-cta:hover {
   transform: translateY(-2px);
 }
 
-/* warm accent reserved for marketing CTAs, not functional/data buttons */
 .home-cta, .home-bottom-cta .home-cta {
   background: linear-gradient(135deg, var(--accent-warm-bright), var(--accent-warm)) !important;
   box-shadow: var(--shadow-glow-warm) !important;
@@ -87,7 +76,6 @@ button:hover:not(:disabled), .home-cta:hover {
 }
 .home-cta:hover { box-shadow: 0 16px 45px var(--accent-warm-glow) !important; }
 
-/* ---------- custom star cursor ---------- */
 html.has-custom-cursor, html.has-custom-cursor * {
   cursor: none !important;
 }
@@ -105,8 +93,6 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   margin: -11px 0 0 -11px;
   pointer-events: none;
   z-index: 9999;
-  /* no transition here: transform is updated every frame by JS for
-     position tracking, and a transition on it would fight/lag that. */
 }
 #cursor-star .cursor-star-inner {
   display: block;
@@ -135,13 +121,11 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
 
-/* ---------- reduced motion + touch safety net ---------- */
 @media (hover: none), (pointer: coarse) {
   html.has-custom-cursor, html.has-custom-cursor * { cursor: auto !important; }
   #cursor-star, .cursor-sparkle { display: none !important; }
 }
 
-/* ---------- interactive 3D moon (Three.js), black-card hero layout ---------- */
 .home-hero-fade {
   position: absolute;
   inset: 0;
@@ -193,7 +177,6 @@ html.has-custom-cursor input, html.has-custom-cursor textarea {
   .home-hero-moon { flex-basis: 320px; min-height: 320px; }
 }
 
-/* Data provenance badge (simulated / published / raster) */
 .prov { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; vertical-align: middle; }
 .prov--simulated { color: var(--warn, #fbbf24); }
 .prov--published { color: #60a5fa; }

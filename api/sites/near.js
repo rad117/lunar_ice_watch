@@ -9,8 +9,6 @@ function distKm(a, b) {
   return 2 * MOON_RADIUS_KM * Math.asin(Math.sqrt(h));
 }
 
-// GET /api/sites/near?lat=-85&lon=0&km=300 -> sites within km (default 200), nearest first.
-// $centerSphere takes radians, so the Moon radius is used (the meters in $near assume Earth).
 module.exports = route(["GET"], async function (req, res) {
   const lat = Number(req.query.lat), lon = Number(req.query.lon), km = req.query.km == null ? 200 : Number(req.query.km);
   if (![lat, lon, km].every(Number.isFinite) || Math.abs(lat) > 90 || Math.abs(lon) > 180 || km <= 0 || km > 5000) {

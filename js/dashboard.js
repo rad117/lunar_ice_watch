@@ -1,8 +1,3 @@
-// Powers dashboard.html: builds the stat tiles, filter chips, and the sortable site table
-// from siteData (js/data.js). Everything below writes into the #statsRow/#chipRow/#siteTable
-// elements defined in dashboard.html.
-
-// ---- Stat tiles at the top of the page (#statsRow) ----
 const highCount = siteData.filter(function (s) { return s.classification === "ICE-SUPPORTED-HIGH"; }).length;
 const passCount = siteData.filter(function (s) { return s.thermalGate === "pass"; }).length;
 const flagCount = siteData.filter(function (s) { return s.altFlag; }).length;
@@ -18,7 +13,6 @@ statsRow.querySelectorAll(".num").forEach(function (el) {
   animateCount(el, Number(el.dataset.target));
 });
 
-// ---- Filter chips row (#chipRow) — each key maps to a predicate used to filter the table ----
 const filters = {
   all: function () { return true; },
   supported: function (s) { return s.classification === "ICE-SUPPORTED-HIGH" || s.classification === "ICE-SUPPORTED-MODERATE"; },
@@ -39,7 +33,6 @@ let activeFilter = "all";
 let sortKey = null;
 let sortDir = 1;
 
-// Draws the chip buttons (with live counts) and wires up clicking one to change activeFilter
 function renderChips() {
   document.getElementById("chipRow").innerHTML = chipDefs.map(function (c) {
     const count = siteData.filter(filters[c.key]).length;
@@ -56,8 +49,6 @@ function renderChips() {
   });
 }
 
-// ---- Main results table (#siteTable) ----
-// Rebuilds every row from the current filter + sort settings; clicking a row opens site.html for that site
 function renderTable() {
   let rows = siteData.filter(filters[activeFilter]);
 
@@ -94,7 +85,6 @@ function renderTable() {
   });
 }
 
-// Clicking a column header (Site/Crater/Thermal Gate/Hazard/Classification) sorts the table by that column
 document.querySelectorAll("#tableHead th.sortable").forEach(function (th) {
   th.addEventListener("click", function () {
     const key = th.dataset.key;
@@ -117,6 +107,5 @@ function goToSite(id) {
   window.location.href = "site.html?id=" + id;
 }
 
-// Initial render when the dashboard page loads
 renderChips();
 renderTable();

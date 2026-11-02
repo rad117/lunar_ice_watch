@@ -1,5 +1,3 @@
-// Usage: MONGODB_URI=... node scripts/seed.js   (add --reset to wipe `sites` first)
-// Loads the demo sites from scripts/seed.json into MongoDB (provenance "simulated") and creates indexes.
 const { MongoClient } = require("mongodb");
 const { siteDoc } = require("../api/_lib/siteDoc");
 

@@ -1,8 +1,5 @@
-// Powers traverse.html: draws the rover's route from the base station to the chosen site, splits it into
-// 5 waypoints and animates the rover along it. The view zooms to fit each route (js/traverse-view.js).
-
-const TRAVERSE_MS = 6000;      // one full run at 1x speed
-const LINE_POINTS = 21;        // a straight line is split into this many points so it follows the same code as a real route
+const TRAVERSE_MS = 6000;
+const LINE_POINTS = 21;
 const stepFractions = [0.2, 0.4, 0.6, 0.8, 1.0];
 
 const params = new URLSearchParams(window.location.search);
@@ -13,17 +10,16 @@ const playBtn = document.getElementById("playBtn");
 const statusText = document.getElementById("statusText");
 
 let currentSite = getSiteById(params.get("id")) || siteData[0];
-let routes = [];     // every planned route, loaded once so changing site is instant
-let plan = null;     // the current site's route: { route, points, totalKm, waypoints }
-let view = null;     // fitView() result for the current route and canvas size
+let routes = [];
+let plan = null;
+let view = null;
 let width = 0, height = 0;
 
-let progress = 0;    // 0 at the base, 1 at the target
-let raf = null;      // animation frame while the rover is moving
+let progress = 0;
+let raf = null;
 let lastTick = 0;
 let speed = 1;
 
-// ---- "Target site" dropdown (#siteSelect) ----
 siteData.forEach(function (s) {
   const opt = document.createElement("option");
   opt.value = s.id;
@@ -32,24 +28,20 @@ siteData.forEach(function (s) {
   select.appendChild(opt);
 });
 
-// Swaps the route in place, keeping the URL shareable
 function changeSite(id) {
-  try { history.replaceState(null, "", "?id=" + encodeURIComponent(id)); } catch (e) { /* some file:// pages refuse this; the switch below still works */ }
+  try { history.replaceState(null, "", "?id=" + encodeURIComponent(id)); } catch (e) {  }
   applySite(getSiteById(id));
 }
 
-// great-circle km on the Moon
 function legKm(a, b) {
   const r = Math.PI / 180, h = Math.sin((b[1] - a[1]) * r / 2) ** 2 + Math.cos(a[1] * r) * Math.cos(b[1] * r) * Math.sin((b[0] - a[0]) * r / 2) ** 2;
   return 2 * 1737.4 * Math.asin(Math.sqrt(h));
 }
 
-// Hazard tiers follow VIPER: <=15 deg operational (Low), <=25 extended (Medium), above that slip risk (High).
 function slopeHazard(slope) {
   return slope <= 15 ? "Low" : slope <= 25 ? "Medium" : "High";
 }
 
-// The hazard score only exists for sites with simulated or uploaded data; a site with no score says so.
 function siteHazard(site) {
   const s = site.terrainHazard;
   return s == null ? "n/a" : s < 30 ? "Low" : s < 50 ? "Medium" : "High";
@@ -60,13 +52,11 @@ function slopeColor(slope) {
   return slope <= 15 ? "#4ade80" : slope <= 25 ? "#fbbf24" : "#f87171";
 }
 
-// Colour of the segment ending at point i, from the steeper of its two ends
 function segmentColor(i) {
   const a = plan.points[i - 1].slope, b = plan.points[i].slope;
   return slopeColor(a == null || b == null ? null : Math.max(a, b));
 }
 
-// The site's A* route (pipeline/route.py) when there is one, otherwise a straight line from the base, for scale only.
 function buildPlan(site) {
   const route = routes.find(function (r) {
     return r.siteId === site.id && r.planner === "astar-lola-v1" && Array.isArray(r.slopes) && r.slopes.length === r.path.coordinates.length;
@@ -91,8 +81,6 @@ function buildPlan(site) {
   return { route: route, points: points, totalKm: route ? Number(route.distanceKm) : cumKm[cumKm.length - 1], waypoints: buildWaypoints(site, points, cumKm) };
 }
 
-// 5 waypoints at equal distances along the route; slope = steepest planning cell in each leg, hazard from that slope.
-// Boulder counts are not measured by any dataset yet, so they show "n/a".
 function buildWaypoints(site, points, cumKm) {
   let from = 0, prevIdx = 0;
   return stepFractions.map(function (frac, k) {
@@ -118,7 +106,6 @@ function waypointColor(type) {
   return "#7dd3fc";
 }
 
-// Index of the segment the rover is on at progress p, and how far along it
 function segmentAt(p) {
   const pts = plan.points;
   let i = 1;
@@ -132,11 +119,10 @@ function roverPoint(p) {
   return { x: s.a.x + (s.b.x - s.a.x) * s.t, y: s.a.y + (s.b.y - s.a.y) * s.t };
 }
 
-// ---- Canvas: sized to its container each time so text stays sharp on any screen ----
 function fitCanvas() {
   const dpr = window.devicePixelRatio || 1;
   width = canvas.parentElement.clientWidth;
-  height = Math.round(Math.max(280, Math.min(width * 0.52, window.innerHeight - 300))); // leaves room for the controls and readouts on a laptop screen
+  height = Math.round(Math.max(280, Math.min(width * 0.52, window.innerHeight - 300)));
   canvas.style.height = height + "px";
   canvas.width = Math.round(width * dpr);
   canvas.height = Math.round(height * dpr);
@@ -147,14 +133,13 @@ function fitCanvas() {
 function drawLabel(text, x, y, color) {
   ctx.font = "12px 'JetBrains Mono', Consolas, monospace";
   const w = ctx.measureText(text).width;
-  const left = Math.max(6, Math.min(x, width - w - 10)); // labels stay on the canvas near the edges
+  const left = Math.max(6, Math.min(x, width - w - 10));
   ctx.fillStyle = "rgba(5, 8, 16, 0.78)";
   ctx.fillRect(left - 5, y - 14, w + 10, 19);
   ctx.fillStyle = color;
   ctx.fillText(text, left, y);
 }
 
-// Range rings around the base, on round km values, so the zoom level can be read off the picture
 function drawRings(base) {
   const pxPerKm = view.scale / KM_PER_PERCENT;
   const step = niceStep(plan.totalKm / 3);
@@ -183,7 +168,6 @@ function drawRings(base) {
   drawLabel(barKm + " km", 18, height - 26, "#a8b0c0");
 }
 
-// The route, coloured by slope. The stretch already driven is drawn brighter and thicker on top.
 function drawRoute(rover) {
   const pts = plan.points.map(view.toScreen);
   ctx.lineCap = "round";
@@ -269,7 +253,6 @@ function draw() {
   drawMarkers(base, target, rover);
 }
 
-// Text shown in #statusText (e.g. "en route to Nav Node", "arrived at Ice Target")
 function statusForProgress(p) {
   if (p <= 0) return "rover parked at base station";
   if (p >= 1) return "arrived at Ice Target";
@@ -277,7 +260,6 @@ function statusForProgress(p) {
   return "en route to " + w.type;
 }
 
-// Readouts under the canvas, and the "wp-active" highlight on the current waypoint's table row
 function updateReadouts() {
   statusText.textContent = statusForProgress(progress);
   document.getElementById("hudDistance").textContent = (plan.totalKm * progress).toFixed(1) + " / " + plan.totalKm.toFixed(1) + " km";
@@ -313,7 +295,6 @@ function tick(now) {
   }
 }
 
-// Wired to the Play button: starts, pauses, resumes, or replays a finished run
 function playTraverse() {
   if (raf) {
     stopRover();
@@ -323,13 +304,11 @@ function playTraverse() {
   progress = startProgress(progress);
   lastTick = performance.now();
   playBtn.textContent = "Pause";
-  // Brings the controls, canvas and readouts into view together when the page sits above them
   const bottom = document.querySelector(".traverse-hud").getBoundingClientRect().bottom;
   if (bottom > window.innerHeight) document.querySelector(".traverse-controls").scrollIntoView({ behavior: "smooth", block: "start" });
   raf = requestAnimationFrame(tick);
 }
 
-// Wired to the Reset button: puts the rover back at the base station
 function resetTraverse() {
   stopRover();
   progress = 0;
@@ -337,7 +316,6 @@ function resetTraverse() {
   render();
 }
 
-// ---- Waypoint Plan table and the planned-route card ----
 function renderTable() {
   document.getElementById("waypointTable").replaceChildren(...plan.waypoints.map(function (w, i) {
     return h("tr", null, h("td", null, String(i + 1)), h("td", null, w.type), h("td", null, w.distance.toLocaleString()),
@@ -379,7 +357,6 @@ window.addEventListener("resize", function () {
   render();
 });
 
-// Routes load once, so switching site afterwards is immediate. With no routes at all the straight line still works.
 statusText.textContent = "loading route...";
 loadRoutes().catch(function () { return []; }).then(function (list) {
   routes = list;

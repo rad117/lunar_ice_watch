@@ -36,9 +36,9 @@ MOON_POLAR = CRS.from_proj4(f"+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +x_0=0
 TO_POLAR = Transformer.from_crs(MOON_GEO, MOON_POLAR, always_xy=True)
 
 DIVINER_BASE = "https://luna1.diviner.ucla.edu/~jpierre/diviner/level4_polar/additional_maps/"
-DIVINER = {  # name -> file
+DIVINER = {
     "summer_max": "polar_south_80_summer_max-float.tif",
-    "winter_max": "polar_south_80_winter_max-float.tif",  # derived by fetch() from the published .grd, see derive_winter_max()
+    "winter_max": "polar_south_80_winter_max-float.tif",
     "summer_avg": "polar_south_80_summer_avg-float.tif",
     "winter_avg": "polar_south_80_winter_avg-float.tif",
 }
@@ -50,13 +50,11 @@ CITE = {
     "lola": "LRO LOLA polar gridded data record LDEM_80S_80M (PDS dataset LRO-L-LOLA-4-GDR-V1.0, product version V2.0, D. E. Smith, created 2017-06-15)",
 }
 
-# Optional rasters that cannot be downloaded automatically: drop a GeoTIFF matching the glob into data/<dir>/.
-# Any CRS is fine (it is warped to Moon polar stereographic). scale() maps raw values to the stored unit.
 OPTIONAL = {
     "cpr": dict(glob="minirf/*cpr*.tif", name="LRO Mini-RF circular polarization ratio mosaic", scale=lambda a: a),
     "neutronSuppression": dict(glob="lend/*neutron*.tif", name="LRO LEND epithermal neutron suppression map", scale=lambda a: a),
     "illumFraction": dict(glob="illum/*illum*.tif", name="LOLA-derived illumination fraction map",
-                          scale=lambda a: a / 100.0 if np.nanmax(a) > 1.5 else a),  # accepts 0-1 or 0-100 %
+                          scale=lambda a: a / 100.0 if np.nanmax(a) > 1.5 else a),
 }
 
 
@@ -108,14 +106,13 @@ def derive_winter_max():
         m = ~np.isnan(a)
         assert np.corrcoef(a[m], b[m])[0, 1] > 0.8, "winter_max.grd looks flipped"
         prof = ref.profile
-    tmp = out + ".part"  # write then rename, so an interrupted run never leaves a half-written file at `out`
+    tmp = out + ".part"
     with rasterio.open(tmp, "w", **prof) as dst:
         dst.write(a.astype(prof["dtype"]), 1)
     os.replace(tmp, out)
     print("derived", os.path.relpath(out, HERE))
 
 
-# ---------- geometry / raster helpers ----------
 
 def is_moon_polar(src):
     wkt = src.crs.to_wkt() if src.crs else ""
@@ -177,7 +174,6 @@ def roughness_deg(slope, size=5):
     return np.sqrt(np.maximum(m2 - m * m, 0.0))
 
 
-# ---------- per-site computation ----------
 
 def now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
@@ -186,10 +182,9 @@ def now():
 def compute_site(site):
     (x, y), circle = site_geometry(site)
     feats = {k: None for k in ("maxTempK", "meanTempK", "pctBelow110K", "cpr", "slopeDeg", "roughness", "illumFraction", "neutronSuppression")}
-    prov = {k: None for k in feats}  # provenance of each value; None while the value is null
+    prov = {k: None for k in feats}
     evidence, missing = [], []
 
-    # Diviner: annual maximum = max(summer max, winter max); mean = average of the two seasonal averages
     dv = {k: os.path.join(DATA, "diviner", f) for k, f in DIVINER.items()}
     if all(os.path.exists(p) for p in dv.values()):
         arr, tfs = {}, {}
@@ -199,7 +194,7 @@ def compute_site(site):
                 full = circle.area / abs(s.transform.a * s.transform.e)
         if len({a.shape for a in arr.values()}) != 1 or len(set(tfs.values())) != 1:
             raise RuntimeError("Diviner rasters are not on the same grid (shape or transform differ)")
-        tmax = np.maximum(arr["summer_max"], arr["winter_max"])  # NaN if either season is missing: no half-known maximum
+        tmax = np.maximum(arr["summer_max"], arr["winter_max"])
         tavg = (arr["summer_avg"] + arr["winter_avg"]) / 2
         feats["maxTempK"], n = median_in(tmax, inside, full=full)
         feats["meanTempK"], _ = median_in(tavg, inside, full=full)
@@ -217,16 +212,14 @@ def compute_site(site):
     else:
         missing.append("Diviner (run `python pipeline.py fetch`)")
 
-    # LOLA: slope and roughness from the 80 m DEM (DN * 0.5 = height in metres)
     lola = os.path.join(DATA, "lola", "LDEM_80S_80M.LBL")
     if os.path.exists(lola) and os.path.exists(lola.replace(".LBL", ".IMG")):
         with open_polar(lola) as s:
             cell = abs(s.transform.a)
-            a, inside, tf = masked(s, circle, pad=2 * cell)  # pad: np.gradient / filters need neighbours
+            a, inside, tf = masked(s, circle, pad=2 * cell)
         z = a * 0.5
         sl = slope_deg(z, cell)
         ro = roughness_deg(sl)
-        # keep only pixels inside the circle (the pad ring is dropped by the circle mask itself)
         feats["slopeDeg"], n = median_in(np.where(np.isnan(z), np.nan, sl), inside, full=circle.area / cell ** 2)
         feats["roughness"], _ = median_in(np.where(np.isnan(z), np.nan, ro), inside, full=circle.area / cell ** 2)
         if feats["slopeDeg"] is not None:
@@ -236,7 +229,6 @@ def compute_site(site):
     else:
         missing.append("LOLA (run `python pipeline.py fetch`)")
 
-    # Manual datasets: only if the user has placed the file
     for key, d in OPTIONAL.items():
         found = sorted(glob.glob(os.path.join(DATA, d["glob"])))
         if not found:
@@ -258,7 +250,7 @@ def compute_site(site):
         e["pipeline"] = True
         e["processedAt"] = now()
     boundary = None
-    if not circle.contains(Point(0, 0)):  # a polygon around the pole has no valid lon/lat ring
+    if not circle.contains(Point(0, 0)):
         geo = gpd.GeoSeries([circle], crs=MOON_POLAR).to_crs(MOON_GEO).iloc[0]
         boundary = mapping(geo)
     return dict(siteId=site["siteId"], name=site["name"], region=site["region"], lat=site["lat"], lon=site["lon"],
@@ -271,7 +263,6 @@ def published_for(site_id):
             for e in CFG["published_ice_evidence"] if e["siteId"] == site_id]
 
 
-# ---------- MongoDB ----------
 
 def load_env():
     p = os.path.join(HERE, "..", ".env")
@@ -296,21 +287,17 @@ def write_mongo(results, started):
         old = sites.find_one({"_id": r["siteId"]}) or {}
         base = {"features." + k: v for k, v in r["features"].items() if r["featureProvenance"][k] == "raster"}
         base.update({"featureProvenance." + k: p for k, p in r["featureProvenance"].items() if p})
-        # A value this pipeline wrote earlier but cannot compute now must not linger: null it. Simulated/seed values are left alone.
         for k, v in r["features"].items():
             if v is None and old.get("featureProvenance", {}).get(k) == "raster":
                 base["features." + k], base["featureProvenance." + k] = None, None
-        # The analysis centre is stored separately; `location` (which the published citation refers to) is only filled when absent.
         base["pipelineCenter"] = {"type": "Point", "coordinates": [r["lon"], r["lat"]]}
         if not old.get("location"):
             base["location"] = base["pipelineCenter"]
         base["boundary"] = r["boundary"]
-        # A run that started earlier than the one already stored must not overwrite it, even if it finishes writing last.
         base["pipelineRunAt"] = started
         ops.append(UpdateOne({"_id": r["siteId"], "pipelineRunAt": {"$not": {"$gt": started}}},
                              {"$set": base, "$pull": {"evidence": {"pipeline": True}}}))
         ops.append(UpdateOne({"_id": r["siteId"], "pipelineRunAt": started}, {"$push": {"evidence": {"$each": r["evidence"]}}}))
-    # Brand-new sites (not in the seed) get a minimal document; the other fields stay null until a model/pipeline run fills them.
     for r in results:
         if sites.count_documents({"_id": r["siteId"]}) == 0:
             sites.insert_one({"_id": r["siteId"], "name": r["name"], "region": r["region"],
@@ -320,7 +307,7 @@ def write_mongo(results, started):
                               "evidence": [], "legacy": {}, "provenance": "raster",
                               "createdAt": datetime.datetime.now(datetime.timezone.utc)})
     sites.bulk_write(ops)
-    for r in results:  # summary provenance: raster if every non-null feature is raster, mixed if simulated values remain
+    for r in results:
         d = sites.find_one({"_id": r["siteId"]})
         pv = d.get("featureProvenance", {})
         simulated = [k for k, v in d["features"].items() if v is not None and pv.get(k) != "raster"]

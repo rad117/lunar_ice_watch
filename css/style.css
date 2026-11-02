@@ -1,15 +1,3 @@
-/* ============================================================
-   style.css — main stylesheet, shared by every page.
-   Loosely organized as: global resets -> navbar -> dashboard
-   (stats/chips/table) -> site detail (cards/pills/gauge) ->
-   map & traverse (canvas) -> upload (dropzone/checklist)
-   -> toasts -> animations -> responsive tweaks -> homepage.
-   Colors/spacing come from css/tokens.css (the --variables used
-   everywhere below); css/premium.css and css/starfield.css layer
-   extra polish and the star background on top of this file.
-   ============================================================ */
-
-/* Global reset: applies to every element on every page */
 * {
   box-sizing: border-box;
 }
@@ -76,7 +64,6 @@ th:focus-visible {
   outline-offset: 2px;
 }
 
-/* ---- NAVBAR: the sticky top bar with the logo and page links, on every page ---- */
 .navbar {
   position: sticky;
   top: 0;
@@ -166,7 +153,6 @@ h3 {
   line-height: 1.5;
 }
 
-/* ---- DASHBOARD: the number tiles at the top of dashboard.html (#statsRow) ---- */
 .stat-card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -199,7 +185,6 @@ h3 {
   margin-top: 4px;
 }
 
-/* ---- DASHBOARD: filter chips (#chipRow) above the results table ---- */
 .chip {
   font-family: var(--font-sans);
   font-size: 12px;
@@ -233,7 +218,6 @@ h3 {
   color: var(--accent);
 }
 
-/* ---- DASHBOARD: the sortable candidate-site results table (also reused for the traverse waypoint table) ---- */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -308,7 +292,6 @@ tr.wp-active td {
   background: rgba(125, 211, 252, 0.08);
 }
 
-/* ---- SITE DETAIL: the colored classification badge, e.g. "ICE-SUPPORTED-HIGH" (also used in the dashboard table) ---- */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -318,7 +301,6 @@ tr.wp-active td {
   color: #0b0e14;
 }
 
-/* Generic panel box used all over the site: stat tiles, site detail cards, upload card, map info card, etc. */
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -328,7 +310,6 @@ tr.wp-active td {
   color: var(--text);
 }
 
-/* ---- SITE DETAIL: "Radar Metrics" card — each labeled bar (#metricsBox) ---- */
 .metric-row {
   display: flex;
   align-items: center;
@@ -366,7 +347,6 @@ tr.wp-active td {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- SITE DETAIL: "Gates & Flags" card — pass/fail/flagged pills (#thermalPill, #altPill) ---- */
 .pill {
   display: inline-block;
   padding: 4px 10px;
@@ -400,7 +380,6 @@ tr.wp-active td {
   color: var(--text-dim);
 }
 
-/* ---- SITE DETAIL: the circular hazard gauge (#hazardGauge, an SVG ring) ---- */
 .gauge-wrap {
   display: flex;
   align-items: center;
@@ -468,13 +447,11 @@ canvas {
   border-radius: 8px;
 }
 
-/* ---- MAP: wraps #mapCanvas so the tooltip below can be positioned over it ---- */
 .canvas-wrap {
   position: relative;
   display: inline-block;
 }
 
-/* ---- MAP: the little popup label that follows the mouse over a site marker ---- */
 .map-tooltip {
   position: absolute;
   pointer-events: none;
@@ -501,7 +478,6 @@ canvas {
   color: var(--accent);
 }
 
-/* ---- TRAVERSE: the "Speed" label + slider next to Play/Reset ---- */
 .speed-control {
   font-family: var(--font-sans);
   font-size: 12px;
@@ -623,7 +599,6 @@ button:active:not(:disabled) {
   color: var(--accent-bright);
 }
 
-/* ---- UPLOAD PAGE: the drag-and-drop file area ---- */
 .dropzone {
   border: 1.5px dashed var(--border-bright);
   border-radius: 8px;
@@ -662,7 +637,6 @@ button:active:not(:disabled) {
   font-family: var(--font-mono);
 }
 
-/* ---- UPLOAD PAGE: the "Reading file / Computing radar metrics / ..." simulated progress list ---- */
 .checklist {
   list-style: none;
   padding: 0;
@@ -732,7 +706,6 @@ button:active:not(:disabled) {
   transform: rotate(45deg);
 }
 
-/* ---- TOAST NOTIFICATIONS: small popup messages in the bottom-right corner, used across pages (e.g. "analysis complete") ---- */
 .toast-stack {
   position: fixed;
   bottom: 20px;
@@ -770,7 +743,6 @@ button:active:not(:disabled) {
   border-left-color: var(--warn);
 }
 
-/* ---- Shared animations used by the styles above (fade/rise-in, pulsing dot, shake, toast slide) ---- */
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -797,7 +769,6 @@ button:active:not(:disabled) {
   to { opacity: 0; transform: translateX(20px); }
 }
 
-/* ---- Responsive tweaks for small screens/phones ---- */
 @media (max-width: 720px) {
   .navbar {
     flex-wrap: wrap;
@@ -817,14 +788,8 @@ button:active:not(:disabled) {
     transition-duration: 0.001ms !important;
   }
 }
-/* ===== Lunar Ice Watch — visual refresh ===== */
-/* Color/type/spacing tokens now live in tokens.css (loaded before this file). */
-/* This second half of the file RE-STYLES the same selectors above with the
-   premium dark/glass look — later rules win, so these override the plainer
-   ones near the top of the file. */
 
 html { scroll-behavior: smooth; }
-/* Background gradient + the big ambient corner moon image (body::before) + the faint starfield text (body::after) behind every page */
 body {
   position: relative;
   overflow-x: hidden;
@@ -920,7 +885,6 @@ body::after {
   padding: 38px clamp(14px, 3vw, 28px) 72px;
 }
 
-/* ---- Every inner page's title banner (e.g. "Candidate Site Overview", "Rover Traverse Simulation") ---- */
 .page-hero {
   position: relative;
   padding: clamp(22px, 4vw, 42px);
@@ -1005,7 +969,6 @@ button.secondary { background: rgba(30,41,59,.76); border-color: rgba(148,163,18
 .dropzone:hover, .dropzone.drag-over { background: rgba(76,201,255,.06); box-shadow: inset 0 0 30px rgba(76,201,255,.05); }
 
 
-/* ---- HOMEPAGE: the workflow steps strip and the site-label legend in the "Mission Briefing" section ---- */
 .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .info-card h3 { margin-bottom: 9px; }
 .info-card p, .info-card li { font-family: var(--font-sans); color: var(--text-dim); font-size: 14px; line-height: 1.7; }
@@ -1050,12 +1013,6 @@ body.no-moon::before, body.no-moon::after { display:none; }
 body.no-moon .starfield { display:none; }
 .map-tooltip { transform: translate(-50%, -120%); }
 
-/* ============================================================
-   HOMEPAGE ONLY (index.html) — hero banner with the fallback
-   moon graphic (the real animated one is drawn by js/moon3d.js
-   over #moon3dCanvas), the 3 info cards, workflow steps, legend
-   and the bottom call-to-action.
-   ============================================================ */
 .home-page { overflow-x:hidden; }
 .home-hero {
   min-height: 680px; position:relative; overflow:hidden; display:flex; align-items:stretch;
@@ -1102,7 +1059,6 @@ body.no-moon .starfield { display:none; }
 .home-workflow { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .small-note { margin:15px 0 0; font-size:12px !important; }
 
-/* ---- LOADING: shown by js/data.js while the sites are on their way; the empty page parts stay hidden until then ---- */
 body.is-loading #main-content > :not(.page-hero):not(.load-status) { visibility:hidden; }
 .load-status { display:flex; align-items:center; gap:12px; margin:0 0 18px; padding:14px 18px; border-radius:14px; border:1px solid rgba(125,211,252,.18); background:rgba(9,18,33,.8); color:var(--text-mid); font:14px var(--font-sans); }
 .load-status button { margin:0 0 0 auto; padding:7px 14px; }
@@ -1110,7 +1066,6 @@ body.is-loading #main-content > :not(.page-hero):not(.load-status) { visibility:
 @keyframes load-spin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .load-spinner { animation:none; } }
 
-/* ---- TRAVERSE: controls above the canvas, live readouts below it ---- */
 .traverse-controls { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 28px; margin-bottom:16px; padding:14px 18px; border-radius:16px; border:1px solid rgba(148,163,184,.14); background:rgba(9,18,33,.86); scroll-margin-top:76px; }
 .table-scroll { overflow-x:auto; }
 .traverse-target { flex:1 1 280px; max-width:420px; }
@@ -1130,7 +1085,6 @@ body.is-loading #main-content > :not(.page-hero):not(.load-status) { visibility:
 .route-legend i { width:18px; height:4px; border-radius:2px; }
 @media (max-width:760px) { .traverse-hud { grid-template-columns:1fr 1fr; } .route-flag { white-space:normal; width:86%; text-align:center; } }
 
-/* ---- UPLOAD: per-site results listed after an analysis run ---- */
 .upload-results { list-style:none; margin:14px 0 0; padding:0; }
 .upload-results li { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; padding:10px 0; border-top:1px solid rgba(148,163,184,.12); color:var(--text); font:14px var(--font-sans); }
 .text-link { color:#8edcff !important; text-decoration:none; font:600 13px var(--font-sans); }

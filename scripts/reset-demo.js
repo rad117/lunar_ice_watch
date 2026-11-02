@@ -1,5 +1,3 @@
-// After a demo: `MONGODB_URI=... npm run reset-demo` removes everything uploaded and leaves the 7 original sites.
-// `npm run demo` does not need this: its in-memory data is gone when it stops.
 const KEEP = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
 
 async function resetDemo(db) {

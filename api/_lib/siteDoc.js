@@ -1,5 +1,3 @@
-// Flat site (the shape the pages were built on) -> the `sites` collection schema.
-// Values with no real source keep provenance "simulated"; fields we have no value for stay null.
 const MOON_RADIUS_KM = 1737.4;
 
 function siteDoc(s, createdAt) {
@@ -23,9 +21,8 @@ function siteDoc(s, createdAt) {
       cpr: s.cpr, slopeDeg: null, roughness: null, illumFraction: null, neutronSuppression: null
     },
     prediction: { iceProb: null, label: s.classification, tier: s.tier, rationale: s.rationale, modelVersion: "rules-v0", updatedAt: createdAt },
-    featureProvenance: { maxTempK: "simulated", cpr: "simulated" }, // every other feature is null until the pipeline fills it
+    featureProvenance: { maxTempK: "simulated", cpr: "simulated" },
     evidence,
-    // Screening inputs with no column in the target schema yet; all simulated until the pipeline (phase 3) replaces them.
     legacy: {
       x: s.x, y: s.y, pv: s.pv, serd: s.serd, tRatio: s.tRatio, thermalGate: s.thermalGate, thermalTemp: s.thermalTemp,
       altFlag: s.altFlag, altNote: s.altNote, terrainHazard: s.terrainHazard, boulderCount: s.boulderCount

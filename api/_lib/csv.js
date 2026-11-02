@@ -1,5 +1,3 @@
-// Small CSV parser: header row -> array of {column: value}. Handles a UTF-8 BOM, quoted fields, "" escapes and
-// commas / newlines inside quotes.
 function parseCsv(text) {
   const rows = [];
   let row = [], cell = "", quoted = false;

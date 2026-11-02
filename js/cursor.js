@@ -1,5 +1,3 @@
-// Custom glowing star cursor + trailing sparkles, visible on every page (replaces the normal mouse pointer).
-// Skips itself on touch devices and when the user has reduced-motion enabled.
 (function () {
   var canUse = window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,7 +29,6 @@
   }, { passive: true });
 
   function raf() {
-    // snappy follow: light easing just enough to smooth jitter, not to lag
     sx += (mx - sx) * 0.45;
     sy += (my - sy) * 0.45;
     star.style.transform = "translate(" + sx + "px," + sy + "px)";
@@ -46,7 +43,6 @@
     s.setAttribute("aria-hidden", "true");
     s.style.transform = "translate(" + x + "px," + y + "px) scale(1)";
     document.body.appendChild(s);
-    // next frame: kick off the CSS transition (compositor-driven, not JS-ticked)
     requestAnimationFrame(function () {
       s.style.opacity = "0";
       s.style.transform = "translate(" + x + "px," + y + "px) scale(0.3)";

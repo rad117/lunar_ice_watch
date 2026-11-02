@@ -1,5 +1,3 @@
-// Per-client hourly rate limit. One atomic $inc on a counter document reserves the slot, so parallel
-// requests cannot slip past the cap (a count-then-insert check can). Counters expire via a TTL index.
 const { httpError } = require("./http");
 
 module.exports = async function limit(db, key, max) {

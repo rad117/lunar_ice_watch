@@ -1,4 +1,3 @@
-// Vercel Blob upload; its own module so tests can swap it out. Needs BLOB_READ_WRITE_TOKEN.
 const { put } = require("@vercel/blob");
 
 module.exports = async function store(pathname, body, contentType) {

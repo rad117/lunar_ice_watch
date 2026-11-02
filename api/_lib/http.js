@@ -1,5 +1,3 @@
-// Tiny wrapper: method check + JSON errors, so each route is just its handler body.
-// POSTs must be application/json, which a cross-site <form> cannot send.
 const crypto = require("crypto");
 
 function route(methods, fn) {
@@ -24,8 +22,6 @@ route.httpError = function (status, message) {
   return Object.assign(new Error(message), { status });
 };
 
-// Keyed hash of the client IP, used only as a rate-limit key that expires within hours. HMAC with a server-side
-// secret (IPv4 is too small a space for a plain hash). Falls back to MONGODB_URI as the key so no new env var is required.
 route.clientId = function (req) {
   const h = req.headers || {};
   const ip = String(h["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";

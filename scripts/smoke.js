@@ -1,5 +1,3 @@
-// Local check without Atlas: starts an in-memory MongoDB, seeds it, calls every API handler directly.
-// Usage: node scripts/smoke.js   (first run downloads a MongoDB binary)
 const assert = require("assert");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
@@ -29,47 +27,43 @@ function call(handler, req) {
   assert.strictEqual((await call(api("sites/[id]"), { query: { id: "nope" } })).code, 404);
 
   r = await call(api("sites/near"), { query: { lat: "-87", lon: "70", km: "100" } });
-  assert.deepStrictEqual(r.body.map(function (s) { return s._id; }), ["s2", "s3"]); // Faustini ~15 km, Shoemaker ~46 km (meridians converge at the pole)
+  assert.deepStrictEqual(r.body.map(function (s) { return s._id; }), ["s2", "s3"]);
   assert.strictEqual((await call(api("sites/near"), { query: { lat: "x" } })).code, 400);
 
-  // ---- open writes (no sign-in): size / type / rate guards instead ----
   const post = function (p, body, extra) { return call(api(p), { method: "POST", body, headers: Object.assign({ "content-type": "application/json", "x-forwarded-for": "1.2.3.4" }, extra) }); };
   assert.strictEqual((await call(api("upload"), { method: "POST", body: {}, headers: { "content-type": "text/plain" } })).code, 415);
   const csv = ["label,cpr,thermalTemp,terrainHazard,lat,lon", "T,1.3,-235,20,-85,10", ""].join("\n");
   assert.strictEqual((await post("upload", { filename: "x.txt", csv })).code, 400);
   assert.strictEqual((await post("upload", { filename: "x.csv", csv: "a".repeat(1024 * 1024 + 1) })).code, 413);
-  assert.strictEqual((await post("upload", { filename: "x.csv", csv: "cpr\n1" })).code, 400); // missing columns
-  assert.deepStrictEqual(stored, []); // nothing stored for rejected files
+  assert.strictEqual((await post("upload", { filename: "x.csv", csv: "cpr\n1" })).code, 400);
+  assert.deepStrictEqual(stored, []);
   r = await post("upload", { name: "T", filename: "my file.csv", csv });
   assert.strictEqual(r.code, 201);
   assert.strictEqual(r.body[0].prediction.label, "ICE-SUPPORTED-HIGH");
   assert.strictEqual(stored.length, 1);
   assert.strictEqual((await call(api("sites/index"))).body.length, 7);
-  assert.strictEqual(r.body[0].legacy.x, null); // lat/lon with no x,y: the map must use the real position, not the 50,50 default
+  assert.strictEqual(r.body[0].legacy.x, null);
   const obs =await (await require("../api/_lib/db")()).collection("observations").find().toArray();
   assert.strictEqual(obs.length, 1);
   assert.strictEqual(obs[0].fileUrl, "https://blob.test/" + stored[0]);
-  assert.ok(!("csv" in obs[0]) && !JSON.stringify(obs[0]).includes("1.2.3.4")); // no file body, no raw IP
+  assert.ok(!("csv" in obs[0]) && !JSON.stringify(obs[0]).includes("1.2.3.4"));
 
-  // rate limit: 4 attempts used so far by this client; 20 parallel more must leave exactly 16 allowed
   const burst = await Promise.all(Array.from({ length: 20 }, function () { return post("upload", { filename: "x.csv", csv }); }));
   assert.strictEqual(burst.filter(function (x) { return x.code === 201; }).length, 16);
   assert.strictEqual(burst.filter(function (x) { return x.code === 429; }).length, 4);
-  assert.strictEqual((await post("upload", { filename: "x.csv", csv }, { "x-forwarded-for": "9.9.9.9" })).code, 201); // other client unaffected
+  assert.strictEqual((await post("upload", { filename: "x.csv", csv }, { "x-forwarded-for": "9.9.9.9" })).code, 201);
 
-  // ---- routes ----
   const rt = { siteId: "s1", start: [0, -89], end: [-46.5, -84.5], distanceKm: 12.5, difficulty: "Medium", path: { type: "LineString", coordinates: [[0, -89], [-46.5, -84.5]] } };
   assert.strictEqual((await post("routes", Object.assign({}, rt, { path: { type: "Point" } }))).code, 400);
-  assert.strictEqual((await post("routes", Object.assign({}, rt, { start: [300, 200] }))).code, 400); // outside lon/lat range
+  assert.strictEqual((await post("routes", Object.assign({}, rt, { start: [300, 200] }))).code, 400);
   assert.strictEqual((await post("routes", rt)).code, 201);
   assert.strictEqual((await call(api("routes"), { query: { siteId: "s1" } })).body.length, 1);
 
-  // ---- reset after a demo: uploaded sites go, the original sites stay ----
   const d = await require("../api/_lib/db")();
   await d.collection("routes").insertOne({ siteId: "u1", path: {} });
   await require("./reset-demo")(d);
   const left = (await call(api("sites/index"))).body.map(function (s) { return s._id; }).sort();
-  assert.deepStrictEqual(left, ["s1", "s2", "s3", "s4", "s5", "s6"]); // this test seeds no s7; it is on the keep list too
+  assert.deepStrictEqual(left, ["s1", "s2", "s3", "s4", "s5", "s6"]);
   assert.strictEqual(await d.collection("observations").countDocuments(), 0);
   assert.strictEqual(await d.collection("routes").countDocuments(), 1);
 

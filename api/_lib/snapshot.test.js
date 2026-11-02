@@ -1,4 +1,3 @@
-// Run with `npm test`. With MONGODB_URI unset the API must serve the saved snapshot read-only and refuse writes.
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
@@ -16,7 +15,7 @@ function call(handler, req) {
   let r = await call(require("../sites/index"));
   assert.strictEqual(r.code, 200);
   assert.strictEqual(r.headers["x-data-source"], "snapshot");
-  assert.strictEqual(r.body.length, 7);                               // 6 seed sites + Shackleton from the pipeline
+  assert.strictEqual(r.body.length, 7);
   assert(r.body.every(function (s) { return !("ownerId" in s); }));
   assert.strictEqual(r.body.find(function (s) { return s._id === "s3"; }).screening.score, 1);
 
@@ -29,10 +28,9 @@ function call(handler, req) {
   assert.strictEqual((await call(require("../routes"), { method: "POST", body: {} })).code, 503);
   assert.strictEqual((await call(require("../upload"), { method: "POST", body: {} })).code, 503);
 
-  // The saved copy the browser falls back on must hold the same 7 sites as the server snapshot, with their scores
   const window = {};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../../js/snapshot-data.js"), "utf8"), { window });
-  const saved = JSON.parse(JSON.stringify(window.LIW_SNAPSHOT)), server = require("./snapshot.json"); // the copy gives plain arrays, not the vm's own
+  const saved = JSON.parse(JSON.stringify(window.LIW_SNAPSHOT)), server = require("./snapshot.json");
   assert.deepStrictEqual(saved.sites.map(function (s) { return s._id; }), server.sites.map(function (s) { return s._id; }));
   assert.deepStrictEqual(saved.sites.map(function (s) { return s._id; }).sort(), ["s1", "s2", "s3", "s4", "s5", "s6", "s7"]);
   assert.strictEqual(saved.routes.length, server.routes.length);

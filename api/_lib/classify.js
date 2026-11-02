@@ -1,5 +1,3 @@
-// Server-side "evidence engine": the single source of truth for turning raw radar/thermal/terrain
-// numbers into a classification. Clients send raw metrics only, so results can't be faked.
 const RANGE = { cpr: [0, 10], thermalTemp: [-273.15, 130], terrainHazard: [0, 100], x: [0, 100], y: [0, 100], boulderCount: [0, 10000] };
 
 function classify(m) {
@@ -18,9 +16,7 @@ function classify(m) {
   return { classification: "INCONCLUSIVE", tier: "NONE", rationale: "Radar signal is weak. Thermal gate passed but evidence is not strong enough for a confident call." };
 }
 
-// One raw row ({column: value}, e.g. from a CSV) -> a full site document. Throws on bad input.
 function buildSite(row, i, fallbackName) {
-  // A value must parse completely ("12abc", "1e999" and "" are rejected, not truncated) and sit in its valid range.
   const num = function (k, d) {
     const raw = row[k] == null ? "" : String(row[k]).trim();
     if (raw === "") { if (d === undefined) throw new Error("Row " + (i + 2) + ": " + k + " must be a number"); return d; }
@@ -30,7 +26,7 @@ function buildSite(row, i, fallbackName) {
     }
     return v;
   };
-  const cpr = num("cpr"), thermalTemp = num("thermalTemp"), terrainHazard = num("terrainHazard"); // required: no default
+  const cpr = num("cpr"), thermalTemp = num("thermalTemp"), terrainHazard = num("terrainHazard");
   const altFlag = /^(true|1|yes)$/i.test(String(row.altFlag || ""));
   const thermalGate = thermalTemp < -190 ? "pass" : "fail";
   return Object.assign({

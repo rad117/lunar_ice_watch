@@ -113,10 +113,3 @@ site is `INCONCLUSIVE`, and CPR strength decides `ICE-SUPPORTED-HIGH` vs
 
 **Prototype disclaimer:** all data, classifications and rover traverses are
 simulated locally for demonstration — this is not real lunar science.
-
-## Code comments
-
-Every HTML/CSS/JS file has inline comments marking which part of the code
-drives which part of the website (e.g. `<!-- DASHBOARD: filter chips -->` or
-`/* ---- SITE DETAIL: hazard gauge ---- */`), so you can trace a visible
-element back to the exact code that builds it.

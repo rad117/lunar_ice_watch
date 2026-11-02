@@ -37,7 +37,6 @@
     <p class="subtext">Simulate a route from the base station to a selected candidate site and inspect every waypoint.</p>
   </section>
 
-  <!-- Site picker and playback controls sit above the canvas so the route stays in view while the rover drives -->
   <div class="traverse-controls">
     <div class="traverse-target">
       <label for="siteSelect">Target site</label>
@@ -54,13 +53,11 @@
     </div>
   </div>
 
-  <!-- js/traverse.js draws the route and animates the rover along it -->
   <div class="canvas-wrap traverse-stage">
     <canvas id="traverseCanvas" aria-label="Rover route from the base station to the target site"></canvas>
     <p class="route-flag" id="routeFlag" hidden>No planned route: straight line, for scale only</p>
   </div>
 
-  <!-- Live readouts, filled in by js/traverse.js -->
   <div class="traverse-hud">
     <div><span class="hud-label">Status</span><span class="hud-value" id="statusText" role="status">rover parked at base station</span></div>
     <div><span class="hud-label">Distance driven</span><span class="hud-value" id="hudDistance">-</span></div>
@@ -73,7 +70,6 @@
     <span><i style="background:#f87171"></i>over 25&deg;</span>
   </p>
 
-  <!-- Table listing every waypoint on the route (distance, slope, hazard, boulders) -->
   <div class="card">
     <h3>Waypoint Plan</h3>
     <div class="table-scroll">

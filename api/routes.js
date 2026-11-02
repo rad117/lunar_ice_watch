@@ -4,11 +4,8 @@ const limit = require("./_lib/limit");
 const snap = require("./_lib/snapshot");
 
 const { httpError, clientId } = route;
-const isPoint = function (p) { return Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && Math.abs(p[0]) <= 180 && Math.abs(p[1]) <= 90; }; // [lon, lat]
+const isPoint = function (p) { return Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && Math.abs(p[0]) <= 180 && Math.abs(p[1]) <= 90; };
 
-// GET /api/routes[?siteId=s1] -> saved routes, newest first.
-// POST { siteId, start, end, distanceKm, difficulty, path } -> save one (60 per client per hour).
-// start/end are [lon, lat]; path is a GeoJSON LineString. Phase 5 adds the planner that produces these.
 module.exports = route(["GET", "POST"], async function (req, res) {
   if (snap.active()) {
     if (req.method !== "GET") snap.needsDb();

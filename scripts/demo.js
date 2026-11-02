@@ -1,8 +1,3 @@
-// Local demo with no accounts: `npm run demo` -> http://localhost:3000
-// Starts an in-memory MongoDB (first run downloads a MongoDB binary), seeds the sites, loads the real pipeline
-// results (pipeline/output/*.json, written by pipeline.py / route.py) and serves the pages plus the /api functions.
-// Data lives only while this runs; uploads are accepted but the CSV file itself is not stored (no Blob).
-// `npm run demo -- --snapshot` skips MongoDB and serves the API from api/_lib/snapshot.json (what Vercel does with no MONGODB_URI).
 const http = require("http"), fs = require("fs"), path = require("path");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
@@ -10,7 +5,6 @@ const ROOT = path.join(__dirname, "..");
 const PORT = process.env.PORT || 3000;
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".json": "application/json" };
 
-// Same math as pipeline.py write_mongo, from the committed output files (no Python needed).
 async function loadPipelineResults(db) {
   const feats = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/output/site_features.json"))).sites;
   const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/config.json")));

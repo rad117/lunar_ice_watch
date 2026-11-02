@@ -1,8 +1,3 @@
-// Powers the interactive 3D moon in the homepage hero (index.html, <div id="moon3dCanvas">).
-// Built with the three.js library: renders a textured sphere the user can drag to rotate,
-// and clicking it plays a one-time animation that reveals a particle ring + asteroid belt around it.
-// If the browser has no WebGL or three.js fails to load, the plain CSS ".moon3d-fallback" circle
-// (already in index.html) is left showing instead — see supportsWebGL() below.
 (function () {
   var host = document.getElementById("moon3dCanvas");
   if (!host) return;
@@ -18,7 +13,6 @@
     }
   }
 
-  // No WebGL: leave the static CSS moon (.moon3d-fallback) showing.
   if (!supportsWebGL()) return;
 
   init();
@@ -29,10 +23,9 @@
       THREE = await import("three");
       OrbitControls = (await import("three/addons/controls/OrbitControls.js")).OrbitControls;
     } catch (e) {
-      return; // fallback CSS moon stays showing
+      return;
     }
 
-    // ---- Basic three.js setup: renderer + scene + camera + lights, sized to fill the hero's moon area ----
     var width = host.clientWidth;
     var height = host.clientHeight;
     if (!width || !height) return;
@@ -59,12 +52,9 @@
     group.rotation.x = Math.PI / 8;
     scene.add(group);
 
-    // ---- realistic moon (real NASA-sourced texture, three.js's own bundled example asset) ----
     var RADIUS = 2.0;
     var loader = new THREE.TextureLoader();
     var moonTex = loader.load("js/vendor/three/moon_1024.jpg", undefined, undefined, function () {
-      // texture failed to load: fall back to the static CSS moon instead of
-      // showing an untextured sphere.
       renderer.domElement.remove();
       if (fallback) fallback.style.display = "";
     });
@@ -76,7 +66,6 @@
     );
     group.add(moon);
 
-    // ---- click-to-reveal particle ring ----
     var PARTICLE_COUNT = 60000;
     var ringPositions = new Float32Array(PARTICLE_COUNT * 3);
     var ringColors = new Float32Array(PARTICLE_COUNT * 3);
@@ -125,7 +114,6 @@
       time: { value: 0 }
     };
 
-    // Custom shader tweaks so particles spiral in from a swirl and dodge nearby asteroids (see uAsteroids below)
     var ringMaterial = new THREE.PointsMaterial({
       size: 0.008,
       vertexColors: true,
@@ -187,7 +175,6 @@
     particleRing.rotation.set(-Math.PI / 2, 0, 0);
     group.add(particleRing);
 
-    // ---- click-to-reveal asteroid belt ----
     var ASTEROID_COUNT = 75;
     var massiveAsteroids = new Float32Array(ASTEROID_COUNT * 4);
     var asteroids = (function generateAsteroids(count) {
@@ -221,11 +208,9 @@
     var dummy = new THREE.Object3D();
     var asteroidScale = 0;
 
-    // ---- ring state machine (hidden -> animating -> visible), triggered by clicking the moon ----
     var ringState = "hidden";
     var raycaster = new THREE.Raycaster();
     var pointer = new THREE.Vector2();
-    // Detects a click landing on the moon itself (via raycasting) and starts the reveal animation
     renderer.domElement.addEventListener("click", function (e) {
       var rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -235,7 +220,6 @@
       if (hit.length && ringState === "hidden") ringState = "animating";
     });
 
-    // Lets the user drag to orbit the camera around the moon (that's the "drag to rotate" interaction)
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
@@ -259,8 +243,6 @@
     var invMat = new THREE.Matrix4();
     var astVec = new THREE.Vector3();
 
-    // The per-frame render loop: spins the moon/ring, advances the click-reveal animation
-    // progress, moves the asteroids along their orbits, then draws the frame
     (function animate() {
       requestAnimationFrame(animate);
       if (!visible) return;

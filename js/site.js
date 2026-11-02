@@ -1,14 +1,9 @@
-// Powers site.html (the "Candidate Evidence" detail page). Reads ?id=... from the URL
-// (set by dashboard.js/map.js when a site is clicked) and fills in every panel on the page.
-
-// Page title + subtitle at the top
 const params = new URLSearchParams(window.location.search);
 const site = getSiteById(params.get("id")) || siteData[0];
 
 document.getElementById("siteTitle").textContent = site.label;
 document.getElementById("siteSub").textContent = site.crater;
 
-// ---- "Radar Metrics" card: builds one animated bar per metric (#metricsBox) ----
 const metrics = [
   { name: "Pv", val: site.pv },
   { name: "CPR", val: site.cpr },
@@ -35,7 +30,6 @@ requestAnimationFrame(function () {
   });
 });
 
-// ---- "Gates & Flags" card: thermal gate pill + alt-explanation flag pill + boulder count ----
 const thermalPill = document.getElementById("thermalPill");
 thermalPill.textContent = site.thermalGate ? site.thermalGate.toUpperCase() : "N/A";
 thermalPill.className = "pill " + (site.thermalGate === "pass" ? "pass" : site.thermalGate === "fail" ? "fail" : "unknown");
@@ -53,7 +47,6 @@ document.getElementById("altNoteText").textContent = site.altNote;
 
 document.getElementById("boulderText").textContent = site.boulderCount == null ? "n/a" : site.boulderCount;
 
-// The circular hazard gauge (an SVG ring whose stroke-dasharray is animated to "fill up" to the hazard %)
 const hazard = site.terrainHazard == null ? 0 : site.terrainHazard;
 const gaugeColor = hazardLevelColor(hazard);
 const gaugeRadius = 30;
@@ -73,7 +66,6 @@ requestAnimationFrame(function () {
   });
 });
 
-// ---- "Evidence Engine Result" card: final classification badge, tier, rationale text, and the link to the Traverse page ----
 const badge = document.getElementById("classBadge");
 badge.textContent = site.classification;
 badge.className = "badge " + classificationClass(site.classification);
@@ -83,7 +75,6 @@ document.getElementById("tierText").textContent = site.tier;
 document.getElementById("rationaleText").textContent = site.rationale + " (Classification still uses the simulated screening inputs above, not the measured features; the trained model comes later.)";
 document.getElementById("traverseLink").href = "traverse.html?id=" + site.id;
 
-// ---- "Measured Features" card: every value from the sites collection with where it came from (null = not available yet) ----
 const featureRows = [
   ["maxTempK", "Annual max temperature (K)"], ["meanTempK", "Annual mean temperature (K)"], ["pctBelow110K", "Area below 110 K (%)"],
   ["slopeDeg", "Median slope (deg)"], ["roughness", "Roughness (deg)"], ["cpr", "Radar CPR"],
