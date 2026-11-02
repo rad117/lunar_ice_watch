@@ -1,0 +1,7 @@
+label,crater,lat,lon,pv,cpr,serd,tRatio,thermalTemp,altFlag,terrainHazard,boulderCount
+Survey 01,de Gerlache crater floor (strong signal),-88.5,-87.1,0.71,1.42,0.18,0.62,-238,false,20,4
+Survey 02,Malapert massif slope (rough terrain),-85.9,0.0,0.58,1.05,0.26,0.47,-214,false,44,14
+Survey 03,Scott crater rim (too warm),-81.9,48.3,0.44,1.36,0.31,0.38,-142,false,28,8
+Survey 04,Wiechert crater ejecta (fresh ejecta),-84.5,165.0,0.63,1.33,0.24,0.52,-225,true,26,19
+Survey 05,Hedervari crater floor (weak radar),-81.8,84.2,0.32,0.61,0.35,0.29,-203,false,33,7
+Survey 06,Amundsen crater rim (warm and hazardous),-84.5,82.8,0.38,0.97,0.33,0.34,-118,false,67,31

@@ -83,6 +83,8 @@ async function startUpload() {
   document.querySelectorAll("#checklist li").forEach(function (li) {
     li.classList.remove("active", "done");
   });
+  const results = document.getElementById("uploadResults");
+  results.replaceChildren();
 
   const stages = ["read", "radar", "thermal", "evidence"];
   let sites;
@@ -101,8 +103,8 @@ async function startUpload() {
           signal: ctl.signal
         }).catch(function (e) { throw new Error(e.name === "AbortError" ? "The server did not answer within 30 s. Try again." : e.message); })
           .finally(function () { clearTimeout(timer); });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error || "Upload failed");
+        const body = await res.json().catch(function () { return {}; }); // a static server answers with HTML, not JSON
+        if (!res.ok) throw new Error(body.error || "Uploads need the server (returned " + res.status + "). Use the live site or npm run demo.");
         sites = body;
       }
       await wait(300);
@@ -115,12 +117,19 @@ async function startUpload() {
   }
   sites.forEach(function (site) { siteData.push(flattenSite(site)); });
 
-  status.textContent = "analysis complete - " + sites.length + " site(s) added to dashboard";
+  // Show what the evidence engine decided for each row, with a way through to the updated dashboard
+  results.replaceChildren(...sites.map(function (site) {
+    const label = site.prediction.label;
+    return h("li", null, h("span", null, site.name + " - " + site.region), h("span", { class: "badge " + classificationClass(label) }, label));
+  }));
+
+  status.replaceChildren("analysis complete - " + sites.length + " site(s) added. ", h("a", { class: "text-link", href: "dashboard.html" }, "View on the dashboard →"));
   showToast(sites.length + " site(s) added to the dashboard", "success");
   nameInput.value = "";
 }
 
-// Say so up front when this deployment has no database (the API then serves saved read-only data and refuses uploads).
+// Say so up front when this page has no database behind it (a read-only deployment, or no server at all).
+const UPLOADS_OFF = "Uploads need a running server and database, so they are switched off here. Use the live site or npm run demo.";
 fetch("/api/routes?siteId=none").then(function (r) {
-  if (r.headers.get("x-data-source") === "snapshot") document.getElementById("statusText").textContent = "Uploads are switched off on this deployment (no database connected). Use npm run demo locally to try them.";
-}).catch(function () {});
+  if (!r.ok || r.headers.get("x-data-source") === "snapshot") document.getElementById("statusText").textContent = UPLOADS_OFF;
+}).catch(function () { document.getElementById("statusText").textContent = UPLOADS_OFF; });

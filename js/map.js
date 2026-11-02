@@ -32,6 +32,22 @@ function drawLabel(text, x, y, color) {
   ctx.fillText(text, x, y);
 }
 
+// Draws a site's label on the first side of its marker that is clear of earlier labels and inside the canvas,
+// so uploaded sites sitting close together stay readable. Falls back to the usual spot if every side is taken.
+function drawSiteLabel(text, p, color, placed) {
+  ctx.font = "11px 'JetBrains Mono', Consolas, monospace";
+  const w = ctx.measureText(text).width + 8, h = 16;
+  const spots = [[p.px + 10, p.py - 8], [p.px + 10, p.py + 20], [p.px - w - 8, p.py - 8], [p.px - w - 8, p.py + 20], [p.px - w / 2, p.py - 22], [p.px - w / 2, p.py + 32]];
+  const fits = function (s) {
+    const box = { l: s[0] - 4, r: s[0] - 4 + w, t: s[1] - 12, b: s[1] - 12 + h };
+    return box.l >= 0 && box.r <= canvas.width && box.t >= 0 && box.b <= canvas.height &&
+      placed.every(function (o) { return box.r < o.l || box.l > o.r || box.b < o.t || box.t > o.b; }) ? box : null;
+  };
+  const spot = spots.find(fits) || spots[0];
+  placed.push(fits(spot) || { l: spot[0] - 4, r: spot[0] - 4 + w, t: spot[1] - 12, b: spot[1] - 12 + h });
+  drawLabel(text, spot[0], spot[1], color);
+}
+
 // Green/yellow/red translucent glow drawn under each site marker, sized by that site's hazard score
 function hazardFillColor(h) {
   if (h < 30) return "rgba(74, 222, 128, 0.18)";
@@ -86,6 +102,7 @@ function draw() {
   ctx.fill();
   drawLabel("base station", landerX + 10, landerY + 20, "#a8b0c0");
 
+  const placed = [{ l: landerX + 6, r: landerX + 100, t: landerY + 8, b: landerY + 24 }]; // the base station label's box
   siteData.forEach(function (site) {
     const p = toPixel(site);
     const isHovered = hovered === site;
@@ -99,7 +116,7 @@ function draw() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    drawLabel(site.label, p.px + 10, p.py - 8, isHovered ? "#ffffff" : "#e6e9ef");
+    drawSiteLabel(site.label, p, isHovered ? "#ffffff" : "#e6e9ef", placed);
   });
 
   if (selected) {

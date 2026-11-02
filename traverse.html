@@ -37,45 +37,70 @@
     <p class="subtext">Simulate a route from the base station to a selected candidate site and inspect every waypoint.</p>
   </section>
 
-  <!-- Dropdown to pick which candidate site's traverse to simulate -->
-  <label for="siteSelect">Target site</label>
-  <select id="siteSelect" onchange="changeSite(this.value)"></select>
-
-  <!-- js/traverse.js draws the route and animates the rover icon moving along it -->
-  <canvas id="traverseCanvas" width="760" height="440"></canvas>
-
-  <!-- Playback controls for the animation: Play/Reset buttons + speed slider -->
-  <div class="control-row d-flex align-items-center flex-wrap gap-3 mb-3">
-    <button id="playBtn" onclick="playTraverse()">Play</button>
-    <button class="secondary" onclick="resetTraverse()">Reset</button>
-    <div class="speed-control d-flex align-items-center gap-2">
-      <span>Speed</span>
-      <input type="range" id="speedRange" min="0.5" max="3" step="0.5" value="1">
-      <span id="speedLabel">1.0&times;</span>
+  <!-- Site picker and playback controls sit above the canvas so the route stays in view while the rover drives -->
+  <div class="traverse-controls">
+    <div class="traverse-target">
+      <label for="siteSelect">Target site</label>
+      <select id="siteSelect" onchange="changeSite(this.value)"></select>
     </div>
-    <span class="subtext" id="statusText">rover parked at base station</span>
+    <div class="control-row d-flex align-items-center flex-wrap gap-3">
+      <button id="playBtn" onclick="playTraverse()" disabled>Play</button>
+      <button class="secondary" onclick="resetTraverse()">Reset</button>
+      <div class="speed-control d-flex align-items-center gap-2">
+        <span>Speed</span>
+        <input type="range" id="speedRange" min="0.5" max="3" step="0.5" value="1" aria-label="Rover speed">
+        <span id="speedLabel">1.0&times;</span>
+      </div>
+    </div>
   </div>
+
+  <!-- js/traverse.js draws the route and animates the rover along it -->
+  <div class="canvas-wrap traverse-stage">
+    <canvas id="traverseCanvas" aria-label="Rover route from the base station to the target site"></canvas>
+    <p class="route-flag" id="routeFlag" hidden>No planned route: straight line, for scale only</p>
+  </div>
+
+  <!-- Live readouts, filled in by js/traverse.js -->
+  <div class="traverse-hud">
+    <div><span class="hud-label">Status</span><span class="hud-value" id="statusText" role="status">rover parked at base station</span></div>
+    <div><span class="hud-label">Distance driven</span><span class="hud-value" id="hudDistance">-</span></div>
+    <div><span class="hud-label">Slope here</span><span class="hud-value" id="hudSlope">-</span></div>
+    <div><span class="hud-label">Route difficulty</span><span class="hud-value" id="hudDifficulty">-</span></div>
+  </div>
+  <p class="route-legend">
+    <span><i style="background:#4ade80"></i>under 15&deg;</span>
+    <span><i style="background:#fbbf24"></i>15&ndash;25&deg;</span>
+    <span><i style="background:#f87171"></i>over 25&deg;</span>
+  </p>
 
   <!-- Table listing every waypoint on the route (distance, slope, hazard, boulders) -->
   <div class="card">
     <h3>Waypoint Plan</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Type</th>
-          <th>Distance (m)</th>
-          <th>Slope (deg)</th>
-          <th>Hazard</th>
-          <th>Boulders</th>
-        </tr>
-      </thead>
-      <tbody id="waypointTable"></tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Distance (m)</th>
+            <th>Slope (deg)</th>
+            <th>Hazard</th>
+            <th>Boulders</th>
+          </tr>
+        </thead>
+        <tbody id="waypointTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Planned route (LOLA terrain)</h3>
+    <div id="routeInfo"></div>
   </div>
 </main>
 
 <script src="js/ui.js"></script>
+<script src="js/traverse-view.js"></script>
 <script src="js/data.js" data-page="js/traverse.js"></script>
 <script src="js/starfield.js"></script>
 <script src="js/cursor.js"></script>

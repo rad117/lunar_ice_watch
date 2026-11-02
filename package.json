@@ -6,7 +6,8 @@
     "seed": "node scripts/seed.js",
     "demo": "node scripts/demo.js",
     "snapshot": "node scripts/snapshot.js",
-    "test": "node api/_lib/classify.test.js && node api/_lib/score.test.js && node api/_lib/snapshot.test.js"
+    "reset-demo": "node scripts/reset-demo.js",
+    "test": "node api/_lib/classify.test.js && node api/_lib/score.test.js && node api/_lib/snapshot.test.js && node js/traverse-view.test.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",

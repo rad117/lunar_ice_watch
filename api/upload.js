@@ -36,7 +36,10 @@ module.exports = route(["POST"], async function (req, res) {
     docs = rows.map(function (r, i) {
       const flat = buildSite(r, i, siteName);
       const lat = parseFloat(r.lat), lon = parseFloat(r.lon);
-      if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) { flat.lat = lat; flat.lon = lon; }
+      if (Math.abs(lat) <= 90 && Math.abs(lon) <= 180) {
+        flat.lat = lat; flat.lon = lon;
+        if (!r.x && !r.y) flat.x = flat.y = null; // the map then places the site from its real position instead of the 50,50 default
+      }
       const doc = siteDoc(flat, new Date(+now + i));
       doc.evidence.push({ source: "user CSV upload", note: "Unverified user-supplied values", acquiredAt: now, provenance: "simulated", citation: null });
       return doc;

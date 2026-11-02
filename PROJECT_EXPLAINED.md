@@ -216,7 +216,7 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 4. **The classification is still the old hand-written rules** (`rules-v0`) on partly simulated inputs; CPR, boulders, hazard and some other fields are still simulated.
 5. **Routes ignore** sunlight, radio contact and rover dynamics. Rover slope limits are VIPER's, not a specific mission's plan.
 6. **No trained model:** a model trained on 7 sites would look scientific without being so.
-7. **Not yet run against real Atlas / Blob / `vercel dev`** (needs your accounts). Everything was tested against an in-memory MongoDB.
+7. **Uploads have only been tested against the in-memory database**, not the live Atlas one, to keep the live site at its 7 sites. Reading sites and routes is confirmed on the live site.
 8. The traverse page's boulder column says "n/a": no dataset measures it yet.
 
 ---
@@ -225,6 +225,8 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 
 - `npm run demo` starts a temporary in-memory MongoDB on your computer, loads the 7 sites and 6 routes, and serves the whole site at `http://localhost:3000`. Uploads work; data resets when you stop it.
 - If the deployed site has **no database connected** (no `MONGODB_URI`), the API serves a saved **snapshot** of the same data (`api/_lib/snapshot.json`, made with `npm run snapshot`). The pages work read-only and say so; uploads are switched off with a clear message. As soon as a real `MONGODB_URI` is added, the site uses the database automatically.
+- If the **API cannot be reached at all** (a page opened by double-click or VS Code Live Server, or the live database is down), the browser loads the same data from `js/snapshot-data.js` and says so on the page. It waits up to 12 seconds first.
+- `demo-data/` holds CSV files to upload during a presentation. `npm run reset-demo` (with `MONGODB_URI` set) removes uploaded sites and leaves the original 7.
 
 ---
 
@@ -240,7 +242,7 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 
 **Why not train a machine-learning model?** No labelled examples of "ice / no ice" to learn from; 7 sites is far too few. A transparent formula with documented sources is more honest.
 
-**What if the database is down or not connected?** With no `MONGODB_URI` the site serves a saved read-only snapshot of the real data (labelled as such). If a database is configured but fails, the error is shown, not hidden.
+**What if the database is down or not connected?** The pages fall back to a saved read-only copy of the real data, and a note on the page says so. Uploads are switched off until the server is back.
 
 **Why did you remove login?** It's a mini-project; real authentication was built, then removed on request. Open endpoints are guarded with size limits and rate limits instead.
 
@@ -251,7 +253,7 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 ## 10. How to run and check it
 
 ```
-npm test                              # classification + score tests
+npm test                              # classification, score, saved copy + traverse view tests
 node scripts/smoke.js                 # every API function against an in-memory MongoDB
 cd pipeline && python -m unittest test_pipeline     # maths, projection, A* tests
 
