@@ -32,7 +32,7 @@ MongoDB keeps only its URL plus the per-row observations. Every stored value car
 ## Demo
 
 The pages work however they are opened. With no API (double-clicking an HTML file, VS Code Live Server) they show a
-saved copy of the 7 sites and routes from `js/snapshot-data.js`, and uploads are off. `npm run demo` runs everything,
+saved copy of the 4 sites and routes from `js/snapshot-data.js`, and uploads are off. `npm run demo` runs everything,
 uploads included, with no accounts. `demo-data/` has CSV files to upload, and `npm run reset-demo` removes uploaded sites.
 
 ## Real data pipeline
@@ -46,8 +46,8 @@ by hand. `CHANGELOG.md` lists everything that changed and what is still simulate
 The six demo sites correspond to real south-pole craters. Their coordinates, diameters and
 (where found) Diviner annual maximum temperatures are in the `published` field of
 `scripts/seed.json`, each with a citation. Radar (CPR, Pv, SERD, T-ratio), terrain hazard and
-boulder counts are **simulated**: no per-site values for them have been published. Shackleton,
-the seventh site, comes from the data pipeline. Run `npm run seed` after changing `seed.json`.
+boulder counts are **simulated**: no per-site values for them have been published. The pipeline still
+computes all 7 craters; `KEEP` in `scripts/reset-demo.js` sets which sites the app shows. Run `npm run seed` after changing `seed.json`.
 
 ## Uploading data
 

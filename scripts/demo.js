@@ -1,12 +1,14 @@
 const http = require("http"), fs = require("fs"), path = require("path");
 const { MongoMemoryServer } = require("mongodb-memory-server");
+const { KEEP } = require("./reset-demo");
 
 const ROOT = path.join(__dirname, "..");
 const PORT = process.env.PORT || 3000;
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".json": "application/json" };
 
 async function loadPipelineResults(db) {
-  const feats = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/output/site_features.json"))).sites;
+  const kept = function (r) { return KEEP.includes(r.siteId); };
+  const feats = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/output/site_features.json"))).sites.filter(kept);
   const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/config.json")));
   for (const r of feats) {
     const old = await db.collection("sites").findOne({ _id: r.siteId });
@@ -29,7 +31,7 @@ async function loadPipelineResults(db) {
       }, { boundary: r.boundary, pipelineCenter: set.pipelineCenter }));
     }
   }
-  const routes = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/output/routes.json"))).routes.filter(function (r) { return !r.error; });
+  const routes = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/output/routes.json"))).routes.filter(function (r) { return !r.error && kept(r); });
   await db.collection("routes").insertMany(routes.map(function (r) { const d = Object.assign({}, r, { planner: "astar-lola-v1", createdAt: new Date() }); delete d.name; return d; }));
   return { sites: feats.length, routes: routes.length };
 }

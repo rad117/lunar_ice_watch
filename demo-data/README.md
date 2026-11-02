@@ -23,4 +23,4 @@ Why each row in file 2 gets its result:
 The thermal gate passes below -190 °C.
 
 **After the demo:** run `npm run reset-demo` with `MONGODB_URI` set to remove uploaded sites and return to the
-original 7. With `npm run demo`, just stop the server: its data is in memory only.
+4 kept sites. With `npm run demo`, just stop the server: its data is in memory only.

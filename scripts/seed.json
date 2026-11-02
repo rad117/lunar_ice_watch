@@ -46,7 +46,7 @@
     "rationale": "Passed the thermal gate but the alternative-explanation flag is raised. Radar signal alone is not enough to confirm ice.",
     "published": {
       "lat": -87.3,
-      "lon": 77.0,
+      "lon": 77,
       "diameterKm": 42.48,
       "tmaxK": "85-95",
       "source": "Hayne et al. 2015 (Icarus), Diviner annual maximum FWHM; coordinates per Wikipedia"
@@ -100,56 +100,10 @@
     "rationale": "Moderate radar and thermal evidence align. Terrain hazard is on the higher side so confidence is not maximal.",
     "published": {
       "lat": -86.9,
-      "lon": -4.0,
+      "lon": -4,
       "diameterKm": 51.4,
       "tmaxK": "60-80",
       "source": "Hayne et al. 2015 (Icarus), Diviner annual maximum FWHM; coordinates per Wikipedia"
-    }
-  },
-  {
-    "id": "s5",
-    "label": "Site A5",
-    "crater": "Amundsen crater",
-    "x": 78,
-    "y": 33,
-    "pv": 0.25,
-    "cpr": 0.7,
-    "serd": 0.6,
-    "tRatio": 0.3,
-    "thermalGate": "fail",
-    "thermalTemp": -160,
-    "altFlag": true,
-    "altNote": "Ejecta blanket overlaps candidate zone",
-    "terrainHazard": 61,
-    "boulderCount": 14,
-    "classification": "ICE-UNLIKELY",
-    "tier": "NONE",
-    "rationale": "Failed thermal gate and a raised alternative-explanation flag. Radar anomaly most likely explained by terrain."
-  },
-  {
-    "id": "s6",
-    "label": "Site A6",
-    "crater": "Sverdrup ridge",
-    "x": 44,
-    "y": 78,
-    "pv": 0.66,
-    "cpr": 1.3,
-    "serd": 0.16,
-    "tRatio": 0.58,
-    "thermalGate": "pass",
-    "thermalTemp": -242,
-    "altFlag": false,
-    "altNote": "No competing terrain explanation identified",
-    "terrainHazard": 18,
-    "boulderCount": 3,
-    "classification": "ICE-SUPPORTED-HIGH",
-    "tier": "PROOF",
-    "rationale": "Strongest candidate in the set. Passed thermal gate, low hazard, high CPR, and no alternative explanation.",
-    "published": {
-      "lat": -88.5,
-      "lon": -152.0,
-      "diameterKm": 35,
-      "source": "Coordinates per Wikipedia; no published temperature found"
     }
   }
 ]

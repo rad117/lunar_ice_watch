@@ -63,7 +63,7 @@ We use **MongoDB**, a *document database*. Instead of tables with rows and colum
 
 | Collection | Holds | One document is... |
 |---|---|---|
-| `sites` | Every candidate ice site (7 real craters + any uploaded) | One place on the Moon |
+| `sites` | Every candidate ice site (4 real craters + any uploaded) | One place on the Moon |
 | `observations` | One record per uploaded CSV row | A measurement event tied to a site |
 | `routes` | Planned rover paths | One path from base to a site |
 | `rateLimits` | Counters that stop spam | One counter per client per hour (auto-deleted) |
@@ -216,17 +216,17 @@ Sanity check: Faustini (90 K), Shoemaker (77 K) and Haworth (68 K) agree with pu
 4. **The classification is still the old hand-written rules** (`rules-v0`) on partly simulated inputs; CPR, boulders, hazard and some other fields are still simulated.
 5. **Routes ignore** sunlight, radio contact and rover dynamics. Rover slope limits are VIPER's, not a specific mission's plan.
 6. **No trained model:** a model trained on 7 sites would look scientific without being so.
-7. **Uploads have only been tested against the in-memory database**, not the live Atlas one, to keep the live site at its 7 sites. Reading sites and routes is confirmed on the live site.
+7. **Automated upload tests only use the in-memory database**, not the live Atlas one. Reading sites and routes is confirmed on the live site.
 8. The traverse page's boulder column says "n/a": no dataset measures it yet.
 
 ---
 
 ## 8b. Running without a database (demo and snapshot mode)
 
-- `npm run demo` starts a temporary in-memory MongoDB on your computer, loads the 7 sites and 6 routes, and serves the whole site at `http://localhost:3000`. Uploads work; data resets when you stop it.
+- `npm run demo` starts a temporary in-memory MongoDB on your computer, loads the 4 sites and 4 routes, and serves the whole site at `http://localhost:3000`. Uploads work; data resets when you stop it.
 - If the deployed site has **no database connected** (no `MONGODB_URI`), the API serves a saved **snapshot** of the same data (`api/_lib/snapshot.json`, made with `npm run snapshot`). The pages work read-only and say so; uploads are switched off with a clear message. As soon as a real `MONGODB_URI` is added, the site uses the database automatically.
 - If the **API cannot be reached at all** (a page opened by double-click or VS Code Live Server, or the live database is down), the browser loads the same data from `js/snapshot-data.js` and says so on the page. It waits up to 12 seconds first.
-- `demo-data/` holds CSV files to upload during a presentation. `npm run reset-demo` (with `MONGODB_URI` set) removes uploaded sites and leaves the original 7.
+- `demo-data/` holds CSV files to upload during a presentation. `npm run reset-demo` (with `MONGODB_URI` set) removes every site outside its `KEEP` list and leaves the 4 kept sites.
 
 ---
 
@@ -250,10 +250,10 @@ npm run demo
 - Open **http://localhost:3000** in your browser.
 - Stop it with **Ctrl+C**.
 
-**What it does:** starts a temporary database in memory, loads the 6 demo sites, adds the real Diviner/LOLA results (7 sites in total, including Shackleton) and the 6 planned routes, then serves the website and the API.
+**What it does:** starts a temporary database in memory, loads the 4 demo sites, adds their real Diviner/LOLA results and their 4 planned routes, then serves the website and the API.
 
 **A 5-minute tour to show your teacher**
-1. **Dashboard** (`/dashboard.html`): 7 sites with their classifications and a provenance badge on each (real / mixed / simulated).
+1. **Dashboard** (`/dashboard.html`): 4 sites with their classifications and a provenance badge on each (real / mixed / simulated).
 2. **Site page:** click Shoemaker or Haworth. The "Measured Features" card shows real values tagged RASTER, "not available yet" for the missing radar and neutron data, and the screening score with its coverage.
 3. **Map:** hover a site for the tooltip and click it for the detail panel.
 4. **Traverse:** pick a site such as Cabeus, press **Play**, and watch the rover follow the green route while the waypoint table highlights the current leg.

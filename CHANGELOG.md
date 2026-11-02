@@ -62,7 +62,7 @@ and (later) a real ML model. Phases 1-5 have a first version (phase 4 is a heuri
 - Traverse rebuilt on `js/traverse-view.js`: the view zooms to fit each route (short ones used to be a few pixels), routes are coloured by slope, range rings and a scale bar show real km, and live readouts sit below the canvas. Play now pauses, resumes and replays; a second Play after arrival used to do nothing. Changing site no longer reloads the page.
 - Sites with real coordinates use them on every page, so the Map and Traverse agree. Uploaded rows with `lat`/`lon` and no `x`/`y` no longer land at the map centre.
 - Map labels avoid each other and the canvas edge. The Upload page lists each site's result. MongoDB connection timeout cut to 8 s.
-- `demo-data/` CSV files and `npm run reset-demo` to return to the original 7 sites.
+- `demo-data/` CSV files and `npm run reset-demo` to return to the kept sites (now 4: `s1`-`s4`, one per classification; `pipeline/output/` still holds all 7 craters).
 
 ## Tests
 - `npm test` (classification rules), `node scripts/smoke.js` (API + DB + rate-limit burst), `cd pipeline && python -m unittest test_pipeline` (CRS, slope, roughness, null handling).

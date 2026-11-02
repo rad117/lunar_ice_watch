@@ -1,4 +1,4 @@
-const KEEP = ["s1", "s2", "s3", "s4", "s5", "s6", "s7"];
+const KEEP = ["s1", "s2", "s3", "s4"];
 
 async function resetDemo(db) {
   const notKept = { $nin: KEEP };
@@ -9,6 +9,7 @@ async function resetDemo(db) {
 }
 
 module.exports = resetDemo;
+module.exports.KEEP = KEEP;
 
 if (require.main === module) (async function () {
   if (!process.env.MONGODB_URI) throw new Error("Set MONGODB_URI first (see .env.example)");

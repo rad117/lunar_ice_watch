@@ -18,14 +18,14 @@ function coverage(points) {
   return Math.max(w / WIDTH, h / HEIGHT);
 }
 
-assert.strictEqual(snapshot.routes.length, 6);
+assert.strictEqual(snapshot.routes.length, 4);
 snapshot.routes.forEach(function (r) {
   const points = r.path.coordinates.map(function (c) { return polarPercent(c[1], c[0]); });
   assert(coverage(points) > 0.5, r.siteId + " route is too small to see");
 });
 
-const shackleton = flattenSite(snapshot.sites.find(function (s) { return s._id === "s7"; }));
-const direct = [polarPercent(PLANNER_BASE.lat, PLANNER_BASE.lon), { x: shackleton.x, y: shackleton.y }];
+const shackleton = require("../pipeline/output/site_features.json").sites.find(function (s) { return s.siteId === "s7"; });
+const direct = [polarPercent(PLANNER_BASE.lat, PLANNER_BASE.lon), polarPercent(shackleton.lat, shackleton.lon)];
 assert(coverage(direct) > 0.5, "direct line is too small to see");
 assert(Math.abs(kmBetween(direct[0], direct[1]) - 19.1) < 0.5, "base to Shackleton should be about 19 km");
 

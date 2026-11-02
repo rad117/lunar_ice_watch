@@ -18,7 +18,7 @@ function call(handler, req) {
   const api = function (p) { return require("../api/" + p); };
 
   let r = await call(api("sites/index"));
-  assert.strictEqual(r.body.length, 6);
+  assert.strictEqual(r.body.length, 4);
   assert.strictEqual(r.body[0]._id, "s1");
   assert.strictEqual(r.body[0].provenance, "simulated");
 
@@ -41,7 +41,7 @@ function call(handler, req) {
   assert.strictEqual(r.code, 201);
   assert.strictEqual(r.body[0].prediction.label, "ICE-SUPPORTED-HIGH");
   assert.strictEqual(stored.length, 1);
-  assert.strictEqual((await call(api("sites/index"))).body.length, 7);
+  assert.strictEqual((await call(api("sites/index"))).body.length, 5);
   assert.strictEqual(r.body[0].legacy.x, null);
   const obs =await (await require("../api/_lib/db")()).collection("observations").find().toArray();
   assert.strictEqual(obs.length, 1);
@@ -63,7 +63,7 @@ function call(handler, req) {
   await d.collection("routes").insertOne({ siteId: "u1", path: {} });
   await require("./reset-demo")(d);
   const left = (await call(api("sites/index"))).body.map(function (s) { return s._id; }).sort();
-  assert.deepStrictEqual(left, ["s1", "s2", "s3", "s4", "s5", "s6"]);
+  assert.deepStrictEqual(left, ["s1", "s2", "s3", "s4"]);
   assert.strictEqual(await d.collection("observations").countDocuments(), 0);
   assert.strictEqual(await d.collection("routes").countDocuments(), 1);
 
